@@ -114,7 +114,7 @@
       border: 1px solid var(--border2);
       border-radius: 14px; padding: 15px 18px;
       font-size: 1.05rem; color: var(--text);
-      font-family: inherit; margin-bottom: 18px;
+      font-family: inherit;
       transition: border-color 0.2s, box-shadow 0.2s;
       color-scheme: dark;
     }
@@ -452,6 +452,69 @@
       font-style: italic;
     }
 
+    /* ─── FORM ROW (date + time) ─── */
+    .form-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 18px; }
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-group--date { flex: 1 1 auto; }
+    .field-group--time { flex: 0 0 auto; }
+    .field-label { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .field-optional { font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 0.72rem; }
+    .inp-time {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1.05rem;
+      padding: 15px 16px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 130px;
+      color-scheme: dark;
+    }
+    .inp-time:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(155,89,255,0.15); }
+
+    /* ─── LIFE STATS ─── */
+    .section-sub { color: var(--muted); font-size: 0.85rem; margin: -8px 0 20px; }
+    .lifestats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+    .lifestats-card {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      padding: 20px 16px;
+      text-align: center;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .lifestats-card:hover { transform: translateY(-2px); border-color: var(--border3); }
+    .ls-emoji { font-size: 1.8rem; margin-bottom: 8px; }
+    .ls-value { font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .ls-label { font-size: 0.75rem; color: var(--muted); line-height: 1.35; }
+
+    /* ─── PLANET AGES ─── */
+    .planet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+    .planet-card {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      padding: 20px 12px;
+      text-align: center;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .planet-card:hover { transform: translateY(-2px); border-color: var(--border3); }
+    .planet-emoji { font-size: 2rem; margin-bottom: 6px; }
+    .planet-name { font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
+    .planet-age { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+
     /* ─── FOOTER ─── */
     footer {
       text-align: center; padding: 36px 20px;
@@ -479,8 +542,16 @@
     <p>Entre ta date de naissance et découvre tous tes anniversaires secrets — 10 000 jours, 1 milliard de secondes, et des dizaines d'autres.</p>
 
     <div class="form-card">
-      <label class="form-label" for="bd">Ta date de naissance</label>
-      <input type="date" id="bd" max="">
+      <div class="form-row">
+        <div class="field-group field-group--date">
+          <label class="field-label" for="bd">Ta date de naissance</label>
+          <input type="date" id="bd" max="" style="margin-bottom:0">
+        </div>
+        <div class="field-group field-group--time">
+          <label class="field-label" for="bt">Heure <span class="field-optional">(optionnel)</span></label>
+          <input type="time" id="bt" class="inp-time">
+        </div>
+      </div>
       <button class="btn-go" onclick="calculate()">🚀 Voir mes milestones</button>
     </div>
   </div>
@@ -493,6 +564,9 @@
     </div>
 
     <div class="stats-row" id="stats-row"></div>
+
+    <div id="lifestats-section"></div>
+    <div id="planet-section"></div>
 
     <div id="astro-section"></div>
     <div id="calendars-section"></div>
@@ -629,8 +703,12 @@ function fmtAgo(ms) {
   return `Il y a ${m}m`;
 }
 
-function fmtDate(dt) {
-  return dt.toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+function fmtDate(dt, showTime = false) {
+  const datePart = dt.toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  if (!showTime) return datePart;
+  const h = String(dt.getHours()).padStart(2, '0');
+  const min = String(dt.getMinutes()).padStart(2, '0');
+  return `${datePart} à ${h}h${min}`;
 }
 
 // ── ICS EXPORT ────────────────────────────────────────────────────────────────
@@ -673,7 +751,7 @@ function shareIdx(idx) {
 }
 function sharePast(milestoneJson, dateStr) {
   const m = JSON.parse(milestoneJson);
-  const text = `J'ai atteint ${m.n} le ${fmtDate(new Date(dateStr))} ! ${m.e}\nCalcule tes milestones → milestoneme.app`;
+  const text = `J'ai atteint ${m.n} le ${fmtDate(new Date(dateStr), true)} ! ${m.e}\nCalcule tes milestones → milestoneme.app`;
   if (navigator.share) navigator.share({ text });
   else navigator.clipboard.writeText(text).then(() => alert('Copié ! 📋'));
 }
@@ -953,7 +1031,7 @@ function renderFutureCard(item, isFirst) {
       ${unitBand(m.u)}
       <div class="card-label">${m.n}</div>
       <div class="card-tagline">${m.t}</div>
-      <div class="card-date">📅 <strong>${fmtDate(date)}</strong></div>
+      <div class="card-date">📅 <strong>${fmtDate(date, true)}</strong></div>
       <div class="countdown${diff < 864e5*7 ? ' hot' : ''}" id="cd-${idx}">${fmtCountdown(diff)}</div>
       <div class="prog-wrap">
         <div class="prog-meta"><span>Progression</span><span>${pct}%</span></div>
@@ -976,7 +1054,7 @@ function renderPastCard(item, cardIdx) {
       ${unitBand(m.u)}
       <div class="card-label">${m.n}</div>
       <div class="card-tagline">${m.t}</div>
-      <div class="card-date">📅 <strong>${fmtDate(date)}</strong></div>
+      <div class="card-date">📅 <strong>${fmtDate(date, true)}</strong></div>
       <div class="past-done">✅ Accompli — <span class="past-ago">${fmtAgo(diff)}</span></div>
       <div class="card-btns">
         <button class="btn-sm btn-share" onclick="sharePast('${mj.replace(/"/g,"&quot;")}', '${date.toISOString()}')">📤 Partager</button>
@@ -984,12 +1062,103 @@ function renderPastCard(item, cardIdx) {
     </div>`;
 }
 
+// ── LIFE STATS ────────────────────────────────────────────────────────────────
+function computeLifeStats(ageMs) {
+  const ageS = ageMs / 1000;
+  const ageDays = ageMs / 864e5;
+  const ageYears = ageDays / 365.25;
+  return {
+    heartbeats:    Math.round(ageS * 1.1),
+    breaths:       Math.round(ageS * 0.25),
+    blinks:        Math.round(ageDays * 14400),
+    meals:         Math.round(ageDays * 3),
+    sleepHours:    Math.round(ageDays * 8),
+    dreamHours:    Math.round(ageDays * 2),
+    kmSun:         Math.round(ageYears * 940e6),
+    sunrisesLived: Math.round(ageDays),
+    hairGrown_cm:  Math.round(ageDays * 0.35),
+  };
+}
+
+function renderLifeStats(stats) {
+  const items = [
+    { e: '❤️', v: fmt(stats.heartbeats),            l: 'battements de cœur' },
+    { e: '🌬️', v: fmt(stats.breaths),               l: 'respirations' },
+    { e: '👁️', v: fmt(stats.blinks),               l: 'clignements de paupières' },
+    { e: '🍽️', v: fmt(stats.meals),                l: 'repas avalés' },
+    { e: '😴', v: fmt(stats.sleepHours) + ' h',     l: 'de sommeil' },
+    { e: '💭', v: fmt(stats.dreamHours) + ' h',     l: 'de rêves' },
+    { e: '☀️', v: fmt(stats.sunrisesLived),         l: 'levers de soleil vécus' },
+    { e: '💇', v: fmt(stats.hairGrown_cm) + ' cm',  l: 'de cheveux poussés' },
+    { e: '🌍', v: fmt(stats.kmSun) + ' km',         l: 'parcourus autour du Soleil' },
+  ];
+  return `
+    <h2 class="section-head">🧬 Le savais-tu ?</h2>
+    <p class="section-sub">Estimations basées sur des moyennes — tes vrais chiffres sont encore plus fous.</p>
+    <div class="lifestats-grid">
+      ${items.map(i => `
+        <div class="lifestats-card">
+          <div class="ls-emoji">${i.e}</div>
+          <div class="ls-value">${i.v}</div>
+          <div class="ls-label">${i.l}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ── PLANET AGES ───────────────────────────────────────────────────────────────
+const PLANETS = [
+  { name: 'Mercure', emoji: '☿', days: 87.97  },
+  { name: 'Vénus',   emoji: '♀', days: 224.7  },
+  { name: 'Mars',    emoji: '♂', days: 686.97 },
+  { name: 'Jupiter', emoji: '♃', days: 4332.6 },
+  { name: 'Saturne', emoji: '♄', days: 10759  },
+  { name: 'Uranus',  emoji: '⛢', days: 30687  },
+  { name: 'Neptune', emoji: '♆', days: 60190  },
+];
+
+function renderPlanetAges(ageMs) {
+  const ageDays = ageMs / 864e5;
+  return `
+    <h2 class="section-head">🪐 Ton âge dans le système solaire</h2>
+    <div class="planet-grid">
+      ${PLANETS.map(p => {
+        const age = ageDays / p.days;
+        const display = age < 1
+          ? `${(age * 12).toFixed(1)} mois`
+          : age < 2
+          ? `${age.toFixed(2)} an`
+          : `${age.toFixed(2)} ans`;
+        return `
+          <div class="planet-card">
+            <div class="planet-emoji">${p.emoji}</div>
+            <div class="planet-name">${p.name}</div>
+            <div class="planet-age">${display}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+// ── URL PARTAGE ────────────────────────────────────────────────────────────────
+function updateURL() {
+  const d = document.getElementById('bd').value;
+  const t = document.getElementById('bt').value;
+  if (!d) return;
+  const params = new URLSearchParams({ d });
+  if (t) params.set('t', t);
+  history.replaceState(null, '', '?' + params.toString());
+}
+
 // ── MAIN CALCULATE ────────────────────────────────────────────────────────────
 function calculate() {
   const val = document.getElementById('bd').value;
   if (!val) { alert('Entre ta date de naissance 🎂'); return; }
 
-  const birth = new Date(val + 'T00:00:00');
+  const timeVal = document.getElementById('bt').value || '12:00';
+  const birth = new Date(val + 'T' + timeVal + ':00');
   if (isNaN(birth)) { alert('Date invalide'); return; }
 
   const now = new Date();
@@ -1026,6 +1195,12 @@ function calculate() {
     <div class="stat-pill d-pill"><strong>${fmt(Math.floor(ageMs/864e5))}</strong><span>📅 jours</span></div>
     <div class="stat-pill w-pill"><strong>${fmt(Math.floor(ageMs/6048e5))}</strong><span>📆 semaines</span></div>
   `;
+
+  // ── Life stats ──
+  document.getElementById('lifestats-section').innerHTML = renderLifeStats(computeLifeStats(ageMs));
+
+  // ── Planet ages ──
+  document.getElementById('planet-section').innerHTML = renderPlanetAges(ageMs);
 
   // ── Profil astral ──
   const birthMonth = birth.getMonth() + 1;
@@ -1176,6 +1351,7 @@ function calculate() {
     el.textContent = fmt(Math.floor((new Date() - birth) / 1e3));
   }, 1000));
 
+  updateURL();
   confetti();
 }
 
@@ -1184,6 +1360,16 @@ document.getElementById('bd').max = new Date().toISOString().split('T')[0];
 
 // Allow Enter key
 document.getElementById('bd').addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+
+// ── URL DÉCODAGE AU CHARGEMENT ────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const p = new URLSearchParams(location.search);
+  if (p.get('d')) {
+    document.getElementById('bd').value = p.get('d');
+    if (p.get('t')) document.getElementById('bt').value = p.get('t');
+    calculate();
+  }
+});
 </script>
 </body>
 </html>

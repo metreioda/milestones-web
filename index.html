@@ -8,20 +8,29 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #07071a;
+      --bg: #060614;
+      --bg2: #0d0d24;
       --surface: rgba(255,255,255,0.04);
-      --surface2: rgba(255,255,255,0.07);
-      --border: rgba(255,255,255,0.09);
-      --border2: rgba(255,255,255,0.18);
-      --text: #eeeeff;
-      --muted: rgba(220,220,255,0.45);
+      --surface2: rgba(255,255,255,0.08);
+      --surface3: rgba(255,255,255,0.12);
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.15);
+      --border3: rgba(255,255,255,0.25);
+      --text: #f0f0ff;
+      --text2: #c8c8e8;
+      --muted: rgba(200,200,240,0.45);
       --gold: #f5c842;
-      --gold-glow: rgba(245,200,66,0.18);
+      --gold-dim: rgba(245,200,66,0.12);
       --purple: #9b59ff;
-      --purple-glow: rgba(155,89,255,0.18);
+      --purple-dim: rgba(155,89,255,0.12);
+      --purple-glow: rgba(155,89,255,0.22);
       --green: #3fffaa;
-      --green-glow: rgba(63,255,170,0.15);
+      --green-dim: rgba(63,255,170,0.10);
       --pink: #ff4eb8;
+      --pink-dim: rgba(255,78,184,0.10);
+      --cyan: #38d9f5;
+      --radius-card: 20px;
+      --radius-pill: 100px;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,14 +44,22 @@
     }
 
     /* Animated background */
+    @keyframes bgshift {
+      0%   { opacity: 1; }
+      50%  { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
     body::before {
       content: '';
       position: fixed; inset: 0;
       background:
-        radial-gradient(ellipse 60% 50% at 15% 15%, rgba(155,89,255,0.13) 0%, transparent 100%),
-        radial-gradient(ellipse 50% 40% at 85% 85%, rgba(63,255,170,0.09) 0%, transparent 100%),
-        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(245,200,66,0.04) 0%, transparent 100%);
+        radial-gradient(ellipse 70% 55% at 10% 10%, rgba(155,89,255,0.16) 0%, transparent 70%),
+        radial-gradient(ellipse 55% 45% at 90% 85%, rgba(63,255,170,0.11) 0%, transparent 70%),
+        radial-gradient(ellipse 45% 40% at 50% 50%, rgba(245,200,66,0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 35% at 80% 15%, rgba(56,217,245,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 35% 30% at 20% 80%, rgba(255,78,184,0.07) 0%, transparent 70%);
       pointer-events: none; z-index: 0;
+      animation: bgshift 8s ease-in-out infinite;
     }
 
     .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
@@ -137,16 +154,21 @@
     .stats-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 44px; }
     .stat-pill {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 100px; padding: 10px 22px; text-align: center;
+      border-radius: var(--radius-pill); padding: 10px 22px; text-align: center;
       min-width: 130px; backdrop-filter: blur(8px);
     }
     .stat-pill strong {
       display: block; font-size: 1.25rem; font-weight: 900;
-      background: linear-gradient(135deg, var(--gold), var(--purple));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       font-variant-numeric: tabular-nums;
     }
     .stat-pill span { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+
+    /* Stat pill per-unit gradient colors */
+    .stat-pill.s-pill strong { background: linear-gradient(135deg, #ff7070, #ff4eb8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .stat-pill.m-pill strong { background: linear-gradient(135deg, #38d9f5, #38a8f5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .stat-pill.h-pill strong { background: linear-gradient(135deg, #f5c842, #f5a828); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .stat-pill.d-pill strong { background: linear-gradient(135deg, #3fffaa, #00d4aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .stat-pill.w-pill strong { background: linear-gradient(135deg, #9b59ff, #c459ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
     .ics-all-wrap { text-align: center; margin-bottom: 52px; }
     .btn-ics-all {
@@ -164,16 +186,103 @@
     }
     .section-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(275px, 1fr)); gap: 14px; margin-bottom: 56px; }
+    /* Compact section-head variant used inside astro/calendars sections */
+    .section-head.compact {
+      font-size: 1rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin: 0 0 16px;
+    }
+
+    /* ─── UNIT BAND ─── */
+    .card-unit-band {
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .unit-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 3px 8px;
+      border-radius: 6px; white-space: nowrap;
+    }
+    .unit-tag.s { background: rgba(255,78,78,0.12);  color: #ff7070; border: 1px solid rgba(255,78,78,0.2); }
+    .unit-tag.m { background: rgba(56,217,245,0.12); color: #38d9f5; border: 1px solid rgba(56,217,245,0.2); }
+    .unit-tag.h { background: rgba(245,200,66,0.12); color: #f5c842; border: 1px solid rgba(245,200,66,0.2); }
+    .unit-tag.d { background: rgba(63,255,170,0.12); color: #3fffaa; border: 1px solid rgba(63,255,170,0.2); }
+    .unit-tag.w { background: rgba(155,89,255,0.12); color: #9b59ff; border: 1px solid rgba(155,89,255,0.2); }
+
+    /* ─── ASTRO BOX ─── */
+    .astro-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+    .astro-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px; padding: 20px;
+      text-align: center;
+      transition: transform 0.2s, border-color 0.2s;
+      backdrop-filter: blur(10px);
+    }
+    .astro-card:hover { transform: translateY(-2px); border-color: var(--border2); }
+    .astro-card.western { border-color: rgba(245,200,66,0.2);  background: linear-gradient(140deg, rgba(245,200,66,0.04),  var(--surface)); }
+    .astro-card.moon    { border-color: rgba(155,89,255,0.2);  background: linear-gradient(140deg, rgba(155,89,255,0.04),  var(--surface)); }
+    .astro-card.chinese { border-color: rgba(255,78,78,0.2);   background: linear-gradient(140deg, rgba(255,78,78,0.04),   var(--surface)); }
+    .astro-emoji { font-size: 2.4rem; margin-bottom: 8px; }
+    .astro-type  { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px; }
+    .astro-name  { font-size: 1.15rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .astro-sub   { font-size: 0.75rem; color: var(--muted); }
+
+    /* ─── CALENDARS GRID ─── */
+    .calendars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 10px;
+      margin-bottom: 48px;
+    }
+    .cal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 18px 20px;
+      display: flex; align-items: flex-start; gap: 14px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .cal-card:hover { transform: translateY(-2px); border-color: var(--border2); }
+    .cal-flag { font-size: 2rem; flex-shrink: 0; line-height: 1; }
+    .cal-body { flex: 1; min-width: 0; }
+    .cal-type { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 3px; }
+    .cal-date { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .cal-note { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .card { animation: none !important; }
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+    @media (min-width: 900px) {
+      .grid { grid-template-columns: repeat(3, 1fr); }
+    }
 
     /* ─── MILESTONE CARDS ─── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 18px; padding: 22px;
+      border-radius: var(--radius-card); padding: 22px;
       position: relative; overflow: hidden;
       transition: transform 0.2s, border-color 0.2s;
+      animation: cardIn 0.4s ease both;
     }
+    /* Progressive delay applied via inline style in JS */
     .card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.2); }
 
     .card.future { border-color: rgba(155,89,255,0.22); background: linear-gradient(140deg, rgba(155,89,255,0.06), var(--surface)); }
@@ -231,6 +340,118 @@
       100% { transform: translateY(105vh) rotate(800deg); opacity: 0; }
     }
 
+    /* ─── PROFIL ASTRAL ÉTENDU ─── */
+    .astro-profile-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      margin: 0 0 12px;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, rgba(155,89,255,0.10), rgba(255,78,184,0.08));
+      border: 1px solid rgba(155,89,255,0.28);
+      border-radius: 14px;
+      color: var(--text2);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.22s;
+      text-align: center;
+      letter-spacing: 0.01em;
+    }
+    .astro-profile-btn::after {
+      content: '▾';
+      font-size: 1rem;
+      line-height: 1;
+      transition: transform 0.3s ease;
+      opacity: 0.55;
+      margin-left: 2px;
+    }
+    .astro-profile-btn.open::after {
+      transform: rotate(180deg);
+    }
+    .astro-profile-btn:hover {
+      background: linear-gradient(135deg, rgba(155,89,255,0.18), rgba(255,78,184,0.14));
+      border-color: rgba(155,89,255,0.5);
+      color: var(--text);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(155,89,255,0.14);
+    }
+    .astro-profile-btn.open {
+      border-color: rgba(155,89,255,0.45);
+      background: linear-gradient(135deg, rgba(155,89,255,0.15), rgba(255,78,184,0.11));
+      color: var(--text);
+    }
+
+    .astro-profile-panel {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+      opacity: 0;
+      margin-bottom: 0;
+    }
+    .astro-profile-panel.open {
+      max-height: 900px;
+      opacity: 1;
+      margin-bottom: 36px;
+    }
+
+    .astro-profile-inner {
+      background: linear-gradient(140deg, rgba(155,89,255,0.07), rgba(255,78,184,0.05), rgba(245,200,66,0.04));
+      border: 1px solid rgba(155,89,255,0.2);
+      border-radius: 20px;
+      padding: 28px 30px;
+    }
+    .astro-profile-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .astro-profile-sigils {
+      font-size: 1.6rem;
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+    .astro-profile-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .astro-profile-subtitle {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+    .astro-profile-body {
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--text2);
+    }
+    .astro-profile-body p {
+      margin-bottom: 10px;
+    }
+    .astro-profile-body p:last-child {
+      margin-bottom: 0;
+    }
+    .astro-profile-body em {
+      font-style: normal;
+      color: var(--purple);
+      font-weight: 600;
+    }
+    .astro-profile-disclaimer {
+      margin-top: 18px;
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: center;
+      font-style: italic;
+    }
+
     /* ─── FOOTER ─── */
     footer {
       text-align: center; padding: 36px 20px;
@@ -272,6 +493,9 @@
     </div>
 
     <div class="stats-row" id="stats-row"></div>
+
+    <div id="astro-section"></div>
+    <div id="calendars-section"></div>
 
     <div class="ics-all-wrap">
       <button class="btn-ics-all" id="ics-all-btn">📅 Ajouter mes prochains milestones au calendrier</button>
@@ -476,6 +700,244 @@ function confetti() {
   }
 }
 
+// ── UNIT LABELS ───────────────────────────────────────────────────────────────
+const UNIT_LABELS = { s: '⚡ Secondes', m: '⏰ Minutes', h: '🕰️ Heures', d: '📅 Jours', w: '📆 Semaines' };
+function unitBand(u) {
+  return `<div class="card-unit-band"><span class="unit-tag ${u}">${UNIT_LABELS[u]}</span></div>`;
+}
+
+// ── ASTROLOGIE ────────────────────────────────────────────────────────────────
+function getZodiacSign(month, day) {
+  const d = month * 100 + day;
+  if (d >= 1222 || d <= 119) return { name: 'Capricorne', emoji: '♑' };
+  if (d >= 120  && d <= 218) return { name: 'Verseau',    emoji: '♒' };
+  if (d >= 219  && d <= 320) return { name: 'Poissons',   emoji: '♓' };
+  if (d >= 321  && d <= 419) return { name: 'Bélier',     emoji: '♈' };
+  if (d >= 420  && d <= 520) return { name: 'Taureau',    emoji: '♉' };
+  if (d >= 521  && d <= 620) return { name: 'Gémeaux',    emoji: '♊' };
+  if (d >= 621  && d <= 722) return { name: 'Cancer',     emoji: '♋' };
+  if (d >= 723  && d <= 822) return { name: 'Lion',       emoji: '♌' };
+  if (d >= 823  && d <= 922) return { name: 'Vierge',     emoji: '♍' };
+  if (d >= 923  && d <= 1022) return { name: 'Balance',   emoji: '♎' };
+  if (d >= 1023 && d <= 1121) return { name: 'Scorpion',  emoji: '♏' };
+  return { name: 'Sagittaire', emoji: '♐' };
+}
+
+function getMoonPhase(date) {
+  const REF_NEW_MOON = new Date('2000-01-06T18:14:00Z');
+  const CYCLE = 29.530589;
+  const diffDays = (date - REF_NEW_MOON) / 864e5;
+  let phase = ((diffDays % CYCLE) + CYCLE) % CYCLE;
+  const moonSigns = [
+    { name: 'Bélier', emoji: '♈' }, { name: 'Taureau', emoji: '♉' },
+    { name: 'Gémeaux', emoji: '♊' }, { name: 'Cancer', emoji: '♋' },
+    { name: 'Lion', emoji: '♌' }, { name: 'Vierge', emoji: '♍' },
+    { name: 'Balance', emoji: '♎' }, { name: 'Scorpion', emoji: '♏' },
+    { name: 'Sagittaire', emoji: '♐' }, { name: 'Capricorne', emoji: '♑' },
+    { name: 'Verseau', emoji: '♒' }, { name: 'Poissons', emoji: '♓' },
+  ];
+  const phaseNames = [
+    { max: 1.85,  name: 'Nouvelle Lune',             emoji: '🌑' },
+    { max: 7.38,  name: 'Premier Croissant',          emoji: '🌒' },
+    { max: 11.15, name: 'Premier Quartier',           emoji: '🌓' },
+    { max: 14.77, name: 'Lune Gibbeuse Croissante',   emoji: '🌔' },
+    { max: 16.61, name: 'Pleine Lune',                emoji: '🌕' },
+    { max: 22.15, name: 'Lune Gibbeuse Décroissante', emoji: '🌖' },
+    { max: 25.92, name: 'Dernier Quartier',           emoji: '🌗' },
+    { max: 29.53, name: 'Dernier Croissant',          emoji: '🌘' },
+  ];
+  let phaseName = phaseNames[phaseNames.length - 1];
+  for (const p of phaseNames) { if (phase < p.max) { phaseName = p; break; } }
+  const signIdx = Math.floor(phase / (CYCLE / 12)) % 12;
+  return { phase, phaseName: phaseName.name, phaseEmoji: phaseName.emoji, moonSign: moonSigns[signIdx] };
+}
+
+function getChineseZodiac(date) {
+  const animals = [
+    { name: 'Rat', emoji: '🐭' }, { name: 'Bœuf', emoji: '🐮' },
+    { name: 'Tigre', emoji: '🐯' }, { name: 'Lapin', emoji: '🐰' },
+    { name: 'Dragon', emoji: '🐲' }, { name: 'Serpent', emoji: '🐍' },
+    { name: 'Cheval', emoji: '🐴' }, { name: 'Chèvre', emoji: '🐑' },
+    { name: 'Singe', emoji: '🐵' }, { name: 'Coq', emoji: '🐓' },
+    { name: 'Chien', emoji: '🐶' }, { name: 'Cochon', emoji: '🐷' },
+  ];
+  const elements = ['Bois', 'Bois', 'Feu', 'Feu', 'Terre', 'Terre', 'Métal', 'Métal', 'Eau', 'Eau'];
+  let year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  if (month === 1 || (month === 2 && day < 4)) year -= 1;
+  const idx = ((year - 1900) % 12 + 12) % 12;
+  const elemIdx = ((year - 1900) % 10 + 10) % 10;
+  return { ...animals[idx], element: elements[elemIdx], year };
+}
+
+// ── CALENDRIERS ALTERNATIFS ───────────────────────────────────────────────────
+function gregorianToJD(year, month, day) {
+  if (month <= 2) { year -= 1; month += 12; }
+  const A = Math.floor(year / 100);
+  const B = 2 - A + Math.floor(A / 4);
+  return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day + B - 1524.5;
+}
+
+function jdToHijri(jd) {
+  const z = Math.floor(jd) - 1948438 + 32167;
+  const era = Math.floor((30 * z + 29) / 10631);
+  const remaining = z - Math.floor((10631 * era) / 30);
+  const month = Math.min(12, Math.floor((11 * remaining + 330) / 325));
+  const day = remaining - Math.floor((325 * month - 320) / 11);
+  return {
+    year: era, month, day,
+    monthName: ['','Muharram','Safar','Rabi I','Rabi II','Joumada I','Joumada II','Rajab',"Sha'ban",'Ramadan','Chawwal','Dhou al-Qi\'da','Dhou al-Hijja'][month]
+  };
+}
+
+function toRoman(n) {
+  const vals = [1000,900,500,400,100,90,50,40,10,9,5,4,1];
+  const syms = ['M','CM','D','CD','C','XC','L','XL','X','IX','V','IV','I'];
+  let r = '';
+  for (let i = 0; i < vals.length; i++) while (n >= vals[i]) { r += syms[i]; n -= vals[i]; }
+  return r;
+}
+
+function gregorianToFrenchRevolutionary(year, month, day) {
+  const MOIS = ['Vendémiaire','Brumaire','Frimaire','Nivôse','Pluviôse','Ventôse','Germinal','Floréal','Prairial','Messidor','Thermidor','Fructidor'];
+  const JOURS_COMPL = ['Vertu','Génie','Travail','Opinion','Récompenses','Révolution'];
+  const EPOCH_JD = 2375839.5;
+  const jd = gregorianToJD(year, month, day);
+  const elapsed = jd - EPOCH_JD;
+  if (elapsed < 0) return { display: 'Avant la République', hypothetical: true };
+  const an = Math.floor(elapsed / 365.24219) + 1;
+  const jourDansAnnee = Math.floor(elapsed % 365.24219);
+  if (jourDansAnnee >= 360) {
+    const jc = jourDansAnnee - 360;
+    return { display: `${JOURS_COMPL[jc] || 'J.C.'} An ${toRoman(an)}`, hypothetical: false };
+  }
+  const moisIdx = Math.floor(jourDansAnnee / 30);
+  const jour = (jourDansAnnee % 30) + 1;
+  return { display: `${jour} ${MOIS[moisIdx]} An ${toRoman(an)}`, hypothetical: false };
+}
+
+function gregorianToEthiopian(year, month, day) {
+  const ETH_MONTHS = ['','Meskerem','Tikimt','Hidar','Tahsas','Tir','Yekatit','Megabit','Miazia','Ginbot','Sene','Hamle','Nehase','Pagumé'];
+  const ETH_EPOCH = 1724220.5;
+  const jd = gregorianToJD(year, month, day);
+  const r = (jd - ETH_EPOCH) % 1461;
+  const n = (r % 365) + 365 * Math.floor(r / 1460);
+  const ethYear  = 4 * Math.floor((jd - ETH_EPOCH) / 1461) + Math.floor(r / 365) + 1;
+  const ethMonth = Math.min(13, Math.floor(n / 30) + 1);
+  const ethDay   = (n % 30) + 1;
+  return { display: `${ethDay} ${ETH_MONTHS[ethMonth]} ${ethYear}` };
+}
+
+function gregorianToJalali(gy, gm, gd) {
+  const MONTHS = ['','Farvardin','Ordibehesht','Khordad','Tir','Mordad','Shahrivar','Mehr','Aban','Azar','Dey','Bahman','Esfand'];
+  function div(a, b) { return Math.floor(a / b); }
+  const g_d_no = 365 * gy + div(gy + 3, 4) - div(gy + 99, 100) + div(gy + 399, 400);
+  const gm_arr = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  let d_no = g_d_no;
+  for (let i = 1; i < gm; i++) d_no += gm_arr[i];
+  if (gm > 2 && ((gy % 4 === 0 && gy % 100 !== 0) || gy % 400 === 0)) d_no++;
+  d_no += gd;
+  const j_d_no = d_no - 79;
+  const j_np = div(j_d_no - 1, 12053);
+  let jdn = (j_d_no - 1) % 12053;
+  let jy = 979 + 33 * j_np + 4 * div(jdn, 1461);
+  jdn %= 1461;
+  if (jdn >= 366) { jy += div(jdn - 1, 365); jdn = (jdn - 1) % 365; }
+  const j_m_arr = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29];
+  let jm = 0;
+  for (; jm < 11 && jdn >= j_m_arr[jm]; jm++) jdn -= j_m_arr[jm];
+  return { display: `${jdn + 1} ${MONTHS[jm + 1]} ${jy}` };
+}
+
+function gregorianToJulian(year, month, day) {
+  const MONTHS_FR = ['','janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const jd = gregorianToJD(year, month, day);
+  const z = Math.floor(jd + 0.5);
+  const b = z + 1524;
+  const c = Math.floor((b - 122.1) / 365.25);
+  const dd = Math.floor(365.25 * c);
+  const e = Math.floor((b - dd) / 30.6001);
+  const julianDay   = b - dd - Math.floor(30.6001 * e);
+  const julianMonth = e < 14 ? e - 1 : e - 13;
+  const julianYear  = julianMonth > 2 ? c - 4716 : c - 4715;
+  return { display: `${julianDay} ${MONTHS_FR[julianMonth]} ${julianYear}` };
+}
+
+// ── PROFIL ASTRAL : DONNÉES ───────────────────────────────────────────────────
+const ZODIAC_TRAITS = {
+  'Bélier':      { core: 'un fonceur impulsif qui agit avant de réfléchir', shadow: 'une patience à peu près aussi longue qu\'un feu rouge', style: 'toujours premier, même dans la file d\'attente du boulanger', love: 'tombe amoureux en 30 secondes et repart en 31 si ça l\'ennuie' },
+  'Taureau':     { core: 'un épicurien têtu qui aime le bon vin, le bon fromage et sa couette', shadow: 'une résistance au changement digne d\'un monument historique', style: 'refuse de bouger une fois installé dans son canapé favori', love: 'loyal comme un golden retriever, possessif comme un chien de garde' },
+  'Gémeaux':     { core: 'un esprit brillant et volage, capable de tenir deux conversations simultanément', shadow: 'une constance à géométrie très variable', style: 'change d\'avis entre le début et la fin de cette phrase', love: 'adore la séduction mais a peur des longs week-ends en tête-à-tête' },
+  'Cancer':      { core: 'un être hypersensible qui ressent tout à fond, vraiment tout', shadow: 'une tendance à transformer chaque petite déception en opéra tragique', style: 'accumule des couvertures, des animaux de compagnie et des rancunes', love: 'dévouement maternel total, avec un côté "je me souviens de tout ce que tu as dit en 2017"' },
+  'Lion':        { core: 'un ego royal qui entre dans une pièce et attend les applaudissements', shadow: 'une modestie inversement proportionnelle à la taille de sa crinière', style: 'ne fait jamais rien à moitié, surtout pas son look', love: 'aime être adoré, cajolé et filmé en train d\'être adoré et cajolé' },
+  'Vierge':      { core: 'un perfectionniste analytique qui a refait la to-do list trois fois ce matin', shadow: 'une capacité critique qui transforme tout repas en inspection sanitaire', style: 'range ses épices par ordre alphabétique et par date de péremption', love: 'exprime son affection en corrigeant les fautes d\'orthographe de tes textos' },
+  'Balance':     { core: 'un diplomate charmeur incapable de choisir entre deux menus identiques', shadow: 'une indécision qui ferait rater un TGV à l\'heure', style: 'redécore son intérieur deux fois par an pour des raisons "d\'harmonie"', love: 'romantique invétéré qui tombe amoureux de l\'idée de l\'amour' },
+  'Scorpion':    { core: 'un être magnétique et intense qui voit clair dans le jeu de tout le monde', shadow: 'une rancune conservée avec soin, comme un grand cru millésimé', style: 'observe en silence, note tout, oublie rien', love: 'passion absolue ou silence radio, pas de demi-mesure possible' },
+  'Sagittaire':  { core: 'un aventurier philosophe qui a toujours un billet d\'avion dans la poche', shadow: 'une tact comparable à un éléphant dans un magasin de porcelaine', style: 'planifie cinq voyages simultanément depuis son canapé', love: 'liberté à tout prix — "je t\'aime mais ne m\'enferme pas"' },
+  'Capricorne':  { core: 'un ambitieux discipliné qui travaille pendant que les autres dorment', shadow: 'un sens de l\'humour activé uniquement le week-end, après 21h', style: 'a un plan à cinq ans depuis l\'âge de huit ans', love: 'met autant de sérieux dans une relation qu\'un rapport trimestriel' },
+  'Verseau':     { core: 'un visionnaire excentrique convaincu d\'avoir cinq ans d\'avance sur l\'humanité', shadow: 'une proximité émotionnelle qui frise le zéro absolu', style: 'explique ses opinions à tout le monde, qu\'on lui demande ou non', love: 'ami idéal de l\'humanité, partenaire qui a besoin "d\'espace"' },
+  'Poissons':    { core: 'un rêveur empathique qui vit à mi-chemin entre le réel et l\'imaginaire', shadow: 'une relation au temps et aux délais assez créative', style: 'commence cinq projets par semaine et en finit un par trimestre', love: 'romantisme total et fusion émotionnelle, jusqu\'à se perdre dans l\'autre' },
+};
+
+const MOON_TRAITS = {
+  'Bélier':      { core: 'réagit avant d\'avoir fini de penser', shadow: 'les émotions partent comme des feux d\'artifice — vite et fort', love: 'besoin d\'excitation permanente, s\'ennuie au calme plat' },
+  'Taureau':     { core: 'cherche la sécurité et le confort en toutes choses', shadow: 'digère les émotions lentement, très lentement', love: 'rassure par les gestes concrets plutôt que les grands discours' },
+  'Gémeaux':     { core: 'traite ses émotions par la parole et l\'analyse', shadow: 'les sentiments changent aussi vite que les sujets de conversation', love: 'préfère discuter des sentiments plutôt que les vivre pleinement' },
+  'Cancer':      { core: 'une sensibilité émotionnelle hors du commun', shadow: 'garde tout en mémoire, les blessures incluses', love: 'a besoin de se sentir protégé pour s\'ouvrir vraiment' },
+  'Lion':        { core: 'exprime ses émotions avec théâtre et grandeur', shadow: 'l\'ego blessé est une catastrophe internationale', love: 'généreux et chaud, mais attend beaucoup de reconnaissance en retour' },
+  'Vierge':      { core: 'analyse chaque émotion sous toutes ses coutures', shadow: 'l\'anxiété silencieuse comme mode de vie par défaut', love: 'soigne plutôt qu\'il ne déclare — attention = amour' },
+  'Balance':     { core: 'a besoin d\'harmonie autour de soi pour être bien dans sa tête', shadow: 'évite les conflits même quand il faudrait en avoir un', love: 'l\'équilibre émotionnel dépend entièrement de la qualité de la relation' },
+  'Scorpion':    { core: 'ressent tout à une profondeur que la plupart ne soupçonnent pas', shadow: 'jalousie et intensité à doses industrielles', love: 'tout ou rien — pas de zone grise possible' },
+  'Sagittaire':  { core: 'optimisme naturel et besoin d\'espace intérieur', shadow: 'fuit les émotions lourdes vers de nouveaux horizons', love: 'genereux et joyeux, tant que personne n\'essaie de le retenir' },
+  'Capricorne':  { core: 'contrôle ses émotions avec la rigueur d\'un directeur financier', shadow: 'exprime ses vulnérabilités uniquement dans l\'obscurité totale', love: 'montre son amour par des actes durables, pas des mots' },
+  'Verseau':     { core: 'émotions vécues de façon détachée, presque intellectuelle', shadow: 'a du mal à distinguer ce qu\'il ressent de ce qu\'il analyse', love: 'aime l\'humanité en général, l\'individu en particulier c\'est plus compliqué' },
+  'Poissons':    { core: 'éponge émotionnelle qui absorbe l\'humeur de toute une salle', shadow: 'se noie parfois dans des sentiments qui ne lui appartiennent pas', love: 'fusion totale, dissolution des frontières, poésie et larmes mélangées' },
+};
+
+const CHINESE_TRAITS = {
+  'Rat':     { core: 'malin comme un singe et charmant comme un renard', shadow: 'thésauriseur compulsif, y compris des informations utiles qu\'il garde pour lui', love: 'séducteur efficace qui sait exactement quoi dire et quand' },
+  'Bœuf':    { core: 'travailleur acharné, fiable comme une montre suisse', shadow: 'entêtement légendaire — changer d\'avis lui coûte un effort physique', love: 'lent à s\'engager mais bétonné une fois que c\'est fait' },
+  'Tigre':   { core: 'magnétique et audacieux, entre dans les pièces comme une rockstar', shadow: 'imprévisible et incontrôlable, même pour lui-même', love: 'passion intense qui dévore tout sur son passage' },
+  'Lapin':   { core: 'diplomate raffiné qui fait les choses avec élégance ou pas du tout', shadow: 'fuit les situations inconfortables avec une agilité déconcertante', love: 'tendre et attentionné, mais besoin d\'une bulle de sécurité totale' },
+  'Dragon':  { core: 'flamboyant, ambitieux, convaincu d\'être exceptionnel — et souvent raison', shadow: 'l\'humilité est son angle mort le plus flagrant', love: 'conquérant en amour aussi, veut impressionner à chaque rendez-vous' },
+  'Serpent': { core: 'intuitif et mystérieux, sait des choses sans savoir comment il les sait', shadow: 'méfiance et possessivité en fond de tableau', love: 'séducteur subtil, envoûtant, difficile à oublier une fois rencontré' },
+  'Cheval':  { core: 'libre comme l\'air, énergique et toujours en mouvement', shadow: 'l\'engagement long terme lui donne des sueurs froides', love: 'romantique fougueux, mais la routine le fait s\'évaporer' },
+  'Chèvre':  { core: 'créatif et sensible, vit dans un monde d\'intuitions et d\'esthétique', shadow: 'tendance à dépendre des autres pour les décisions pratiques', love: 'besoin de tendresse et de sécurité émotionnelle avant tout' },
+  'Singe':   { core: 'brillant, inventif et capable de résoudre n\'importe quel problème en riant', shadow: 's\'ennuie à une vitesse stupéfiante et le fait savoir', love: 'jeux de séduction permanents, même en couple stable depuis dix ans' },
+  'Coq':     { core: 'organisé, perfectionniste, et ne rate jamais l\'occasion de le dire', shadow: 'critique naturel qui voit d\'abord ce qui ne va pas', love: 'prend soin de l\'autre avec méthode et un cahier de suivi imaginaire' },
+  'Chien':   { core: 'loyal et honnête jusqu\'à en être maladroit parfois', shadow: 'anxiété chronique sur l\'état du monde et des gens qu\'il aime', love: 'fidèle absolument, s\'oublie souvent pour les autres' },
+  'Cochon':  { core: 'généreux, jovial, et sincère avec une désarmante naïveté', shadow: 'une confiance en l\'humanité que les déceptions n\'arrivent pas à entamer', love: 'tout-ou-rien dans la générosité affective' },
+};
+
+function generateAstralDescription(zodiacName, moonSignName, chineseAnimal) {
+  const z = ZODIAC_TRAITS[zodiacName];
+  const mo = MOON_TRAITS[moonSignName];
+  const ch = CHINESE_TRAITS[chineseAnimal];
+
+  // Fallback si un signe n'est pas trouvé (ne devrait pas arriver)
+  if (!z || !mo || !ch) return '<p>Les astres refusent de se prononcer pour le moment.</p>';
+
+  const sentences = [
+    `En apparence, tu es <em>${z.core}</em> — avec <em>${z.shadow}</em>.`,
+    `Intérieurement, ta Lune en ${moonSignName} révèle que tu <em>${mo.core}</em>, et qu'en amour, tu <em>${mo.love}</em>.`,
+    `Mais c'est ton côté <em>${chineseAnimal}</em> qui te trahit vraiment : <em>${ch.core}</em>, avec pour défaut principal <em>${ch.shadow}</em>.`,
+    `Résultat ? <em>${z.style}</em> — et ${ch.love}.`,
+  ];
+
+  return sentences.map(s => `<p>${s}</p>`).join('');
+}
+
+function toggleAstralProfile() {
+  const btn   = document.getElementById('astro-profile-btn');
+  const label = document.getElementById('astro-profile-btn-label');
+  const panel = document.getElementById('astro-profile-panel');
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  label.textContent = isOpen ? '🔮 En savoir plus sur mon profil astral' : '✨ Masquer mon profil astral';
+}
+
 // ── RENDER HELPERS ────────────────────────────────────────────────────────────
 function renderFutureCard(item, isFirst) {
   const { m, date, diff, idx } = item;
@@ -483,10 +945,12 @@ function renderFutureCard(item, isFirst) {
   const elapsed = total - diff;
   const pct = Math.min(99, Math.max(1, Math.round(elapsed / total * 100)));
 
+  const delay = Math.min(idx * 40, 400);
   return `
-    <div class="card ${isFirst ? 'next' : 'future'}">
+    <div class="card ${isFirst ? 'next' : 'future'}" style="animation-delay:${delay}ms">
       ${isFirst ? '<div class="next-tag">Prochain !</div>' : ''}
       <div class="card-emoji">${m.e}</div>
+      ${unitBand(m.u)}
       <div class="card-label">${m.n}</div>
       <div class="card-tagline">${m.t}</div>
       <div class="card-date">📅 <strong>${fmtDate(date)}</strong></div>
@@ -502,12 +966,14 @@ function renderFutureCard(item, isFirst) {
     </div>`;
 }
 
-function renderPastCard(item) {
+function renderPastCard(item, cardIdx) {
   const { m, date, diff } = item;
   const mj = JSON.stringify(m).replace(/'/g,"\\'");
+  const delay = Math.min((cardIdx || 0) * 40, 400);
   return `
-    <div class="card past">
+    <div class="card past" style="animation-delay:${delay}ms">
       <div class="card-emoji">${m.e}</div>
+      ${unitBand(m.u)}
       <div class="card-label">${m.n}</div>
       <div class="card-tagline">${m.t}</div>
       <div class="card-date">📅 <strong>${fmtDate(date)}</strong></div>
@@ -554,11 +1020,115 @@ function calculate() {
   const statsRow = document.getElementById('stats-row');
   const totalS = Math.floor(ageMs/1e3);
   statsRow.innerHTML = `
-    <div class="stat-pill"><strong id="live-s">${fmt(totalS)}</strong><span>secondes</span></div>
-    <div class="stat-pill"><strong>${fmt(Math.floor(ageMs/6e4))}</strong><span>minutes</span></div>
-    <div class="stat-pill"><strong>${fmt(Math.floor(ageMs/36e5))}</strong><span>heures</span></div>
-    <div class="stat-pill"><strong>${fmt(Math.floor(ageMs/864e5))}</strong><span>jours</span></div>
-    <div class="stat-pill"><strong>${fmt(Math.floor(ageMs/6048e5))}</strong><span>semaines</span></div>
+    <div class="stat-pill s-pill"><strong id="live-s">${fmt(totalS)}</strong><span>⚡ secondes</span></div>
+    <div class="stat-pill m-pill"><strong>${fmt(Math.floor(ageMs/6e4))}</strong><span>⏰ minutes</span></div>
+    <div class="stat-pill h-pill"><strong>${fmt(Math.floor(ageMs/36e5))}</strong><span>🕰️ heures</span></div>
+    <div class="stat-pill d-pill"><strong>${fmt(Math.floor(ageMs/864e5))}</strong><span>📅 jours</span></div>
+    <div class="stat-pill w-pill"><strong>${fmt(Math.floor(ageMs/6048e5))}</strong><span>📆 semaines</span></div>
+  `;
+
+  // ── Profil astral ──
+  const birthMonth = birth.getMonth() + 1;
+  const birthDay   = birth.getDate();
+  const zodiac  = getZodiacSign(birthMonth, birthDay);
+  const moon    = getMoonPhase(birth);
+  const chinese = getChineseZodiac(birth);
+  const astroDescription = generateAstralDescription(zodiac.name, moon.moonSign.name, chinese.name);
+  document.getElementById('astro-section').innerHTML = `
+    <h2 class="section-head">🔮 Ton profil astral</h2>
+    <div class="astro-box">
+      <div class="astro-card western">
+        <div class="astro-emoji">${zodiac.emoji}</div>
+        <div class="astro-type">Signe occidental</div>
+        <div class="astro-name">${zodiac.name}</div>
+        <div class="astro-sub">Zodiaque tropical</div>
+      </div>
+      <div class="astro-card moon">
+        <div class="astro-emoji">${moon.phaseEmoji} ${moon.moonSign.emoji}</div>
+        <div class="astro-type">Signe lunaire</div>
+        <div class="astro-name">Lune en ${moon.moonSign.name}</div>
+        <div class="astro-sub">${moon.phaseName} à ta naissance</div>
+      </div>
+      <div class="astro-card chinese">
+        <div class="astro-emoji">${chinese.emoji}</div>
+        <div class="astro-type">Zodiaque chinois</div>
+        <div class="astro-name">${chinese.name}</div>
+        <div class="astro-sub">Élément : ${chinese.element} · ${chinese.year}</div>
+      </div>
+    </div>
+    <button class="astro-profile-btn" id="astro-profile-btn" onclick="toggleAstralProfile()">
+      <span id="astro-profile-btn-label">🔮 En savoir plus sur mon profil astral</span>
+    </button>
+    <div class="astro-profile-panel" id="astro-profile-panel">
+      <div class="astro-profile-inner">
+        <div class="astro-profile-header">
+          <div class="astro-profile-sigils">${zodiac.emoji} ${moon.moonSign.emoji} ${chinese.emoji}</div>
+          <div>
+            <div class="astro-profile-title">${zodiac.name} · Lune en ${moon.moonSign.name} · ${chinese.name}</div>
+            <div class="astro-profile-subtitle">Analyse astrologique non certifiée par les étoiles</div>
+          </div>
+        </div>
+        <div class="astro-profile-body">
+          ${astroDescription}
+        </div>
+        <div class="astro-profile-disclaimer">
+          * Ceci est de l'astrologie de magazine. Les astres déclinent toute responsabilité.
+        </div>
+      </div>
+    </div>
+  `;
+
+  // ── Calendriers alternatifs ──
+  const y = birth.getFullYear(), mo = birth.getMonth() + 1, da = birth.getDate();
+  const hijri    = jdToHijri(gregorianToJD(y, mo, da));
+  const french   = gregorianToFrenchRevolutionary(y, mo, da);
+  const ethiopian = gregorianToEthiopian(y, mo, da);
+  const jalali   = gregorianToJalali(y, mo, da);
+  const julian   = gregorianToJulian(y, mo, da);
+  document.getElementById('calendars-section').innerHTML = `
+    <h2 class="section-head">🗓️ Ta naissance dans d'autres calendriers</h2>
+    <div class="calendars-grid">
+      <div class="cal-card">
+        <div class="cal-flag">☪️</div>
+        <div class="cal-body">
+          <div class="cal-type">Calendrier Hijri</div>
+          <div class="cal-date">${hijri.day} ${hijri.monthName} ${hijri.year} H</div>
+          <div class="cal-note">Calendrier lunaire islamique</div>
+        </div>
+      </div>
+      <div class="cal-card">
+        <div class="cal-flag">🇫🇷</div>
+        <div class="cal-body">
+          <div class="cal-type">Calendrier Républicain</div>
+          <div class="cal-date">${french.display}</div>
+          <div class="cal-note">Révolution française · An I = 1792</div>
+        </div>
+      </div>
+      <div class="cal-card">
+        <div class="cal-flag">🇪🇹</div>
+        <div class="cal-body">
+          <div class="cal-type">Calendrier Éthiopien</div>
+          <div class="cal-date">${ethiopian.display}</div>
+          <div class="cal-note">7-8 ans de décalage avec le grégorien</div>
+        </div>
+      </div>
+      <div class="cal-card">
+        <div class="cal-flag">🇮🇷</div>
+        <div class="cal-body">
+          <div class="cal-type">Calendrier Persan (Jalali)</div>
+          <div class="cal-date">${jalali.display}</div>
+          <div class="cal-note">Le calendrier solaire le plus précis</div>
+        </div>
+      </div>
+      <div class="cal-card">
+        <div class="cal-flag">🏛️</div>
+        <div class="cal-body">
+          <div class="cal-type">Calendrier Julien</div>
+          <div class="cal-date">${julian.display}</div>
+          <div class="cal-note">13 jours de décalage (actuel)</div>
+        </div>
+      </div>
+    </div>
   `;
 
   // ── ICS all ──
@@ -578,7 +1148,7 @@ function calculate() {
   const pSec = document.getElementById('past-section');
   pSec.innerHTML = past.length ? `
     <h2 class="section-head">🏅 Milestones accomplis (${past.length})</h2>
-    <div class="grid">${past.map(x => renderPastCard(x)).join('')}</div>
+    <div class="grid">${past.map((x, i) => renderPastCard(x, i)).join('')}</div>
   ` : '';
 
   // show

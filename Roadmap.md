@@ -1,6 +1,6 @@
 # Roadmap -- MilestoneMe (milestones-web)
 
-> Derniere mise a jour : 2026-03-08
+> Derniere mise a jour : 2026-03-09
 
 ## Complete
 
@@ -29,6 +29,7 @@
 - [2026-03-08] **Timeline view (toggle grille/frise)** -- Visualisation chronologique avec bouton toggle entre vue grille et frise temporelle. Navigation des milestones plus fluide.
 - [2026-03-08] **Sous-page "Ma Timeline"** -- Page dédiée timeline.html avec frise chronologique verticale, cards alternées gauche/droite, marqueur "Vous êtes ici", compteurs live, navigation flottante, fond cosmique. Accessible via CTA depuis la page principale.
 - [2026-03-08] **PWA / mode hors-ligne** -- manifest.json + service-worker.js (cache-first static, network-first fonts), bannière "Installer l'app" dismissible, registration dans index.html et timeline.html. Dégradation gracieuse sur file://.
+- [2026-03-09] **Animations milestone atteint** -- Célébration en temps réel quand un compteur atteint zéro : flash écran or/indigo, confetti burst doré (120 pièces, palette or+indigo), toast glassmorphism avec barre de progression auto-dismiss 6.5s, transformation visuelle de la card (glow pulsé or/indigo, badge "Atteint !"). Gestion `prefers-reduced-motion`, compatible dark/light mode.
 
 ## En cours
 
@@ -37,8 +38,7 @@
 ## A faire (priorise)
 
 ### Priorite haute
-1. **Animations milestone atteint** -- Animation speciale quand un milestone est atteint en temps reel (le compteur passe a zero)
-3. **Comparaison avec un ami** -- Entrer deux dates de naissance et voir les milestones communs ou proches
+1. **Comparaison avec un ami** -- Entrer deux dates de naissance et voir les milestones communs ou proches
 
 ## Idees / Backlog
 

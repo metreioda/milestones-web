@@ -245,6 +245,122 @@ function confetti() {
   }
 }
 
+// ── MILESTONE CELEBRATION — triggered when a countdown hits zero ───────────────
+function confettiBurst() {
+  // Denser, gold-biased burst for the milestone moment
+  const cols = ['#fbbf24','#f59e0b','#6366f1','#8b5cf6','#ffffff','#34d399','#fbbf24'];
+  for (let i = 0; i < 120; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'c-piece';
+      const size = 6 + Math.random() * 10;
+      // Bias origin toward the center of the viewport
+      const leftPct = 20 + Math.random() * 60;
+      p.style.cssText = `
+        left:${leftPct}vw;
+        width:${size}px; height:${size}px;
+        background:${cols[Math.floor(Math.random() * cols.length)]};
+        border-radius:${Math.random() > 0.4 ? '50%' : '3px'};
+        animation-duration:${1.8 + Math.random() * 2.8}s;
+        animation-delay:${Math.random() * 0.6}s;
+      `;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 6000);
+    }, i * 14);
+  }
+}
+
+function showMilestoneFlash() {
+  const el = document.getElementById('milestone-flash');
+  if (!el) return;
+  el.classList.remove('active');
+  // Force reflow so the animation restarts cleanly if called multiple times
+  void el.offsetWidth;
+  el.classList.add('active');
+  setTimeout(() => el.classList.remove('active'), 2000);
+}
+
+function showMilestoneToast(milestone) {
+  const container = document.getElementById('milestone-toast-container');
+  if (!container) return;
+
+  const DURATION_MS = 6500;
+
+  const toast = document.createElement('div');
+  toast.className = 'milestone-toast';
+  toast.setAttribute('role', 'alert');
+  toast.style.setProperty('--toast-duration', `${DURATION_MS / 1000}s`);
+
+  toast.innerHTML = `
+    <div class="toast-icon" aria-hidden="true">${milestone.e}</div>
+    <div class="toast-body">
+      <div class="toast-title">Milestone atteint !</div>
+      <div class="toast-name">${milestone.n}</div>
+      <div class="toast-tagline">${milestone.t}</div>
+    </div>
+    <button class="toast-close" aria-label="Fermer" onclick="this.closest('.milestone-toast').dispatchEvent(new Event('dismiss'))">✕</button>
+    <div class="toast-progress" aria-hidden="true"></div>
+  `;
+
+  const dismiss = () => {
+    toast.classList.add('toast-exit');
+    setTimeout(() => toast.remove(), 420);
+  };
+
+  toast.addEventListener('dismiss', dismiss);
+
+  // Limit to 3 stacked toasts max — remove oldest if needed
+  while (container.children.length >= 3) {
+    container.firstElementChild.remove();
+  }
+
+  container.appendChild(toast);
+  setTimeout(dismiss, DURATION_MS);
+}
+
+function celebrateMilestone(item, cardEl) {
+  // Respect reduced motion — only run confetti/flash if animations are welcome
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 1. Update countdown text
+  ['cd', 'cd-top', 'tl-cd'].forEach(prefix => {
+    const el = document.getElementById(`${prefix}-${item.idx}`);
+    if (el) {
+      el.textContent = 'Atteint maintenant !';
+      el.classList.remove('hot');
+      el.classList.add('achieved');
+    }
+  });
+
+  // 2. Restyle the milestone card
+  if (cardEl) {
+    cardEl.classList.add('milestone-achieved');
+
+    // Replace "Prochain !" badge if present
+    const nextTag = cardEl.querySelector('.next-tag');
+    if (nextTag) nextTag.remove();
+
+    // Inject "Atteint !" badge if not already there
+    if (!cardEl.querySelector('.achieved-badge')) {
+      const badge = document.createElement('div');
+      badge.className = 'achieved-badge';
+      badge.textContent = 'Atteint !';
+      cardEl.appendChild(badge);
+    }
+  }
+
+  if (!reducedMotion) {
+    // 3. Screen flash
+    showMilestoneFlash();
+
+    // 4. Confetti burst (staggered slightly after flash)
+    setTimeout(confettiBurst, 200);
+  }
+
+  // 5. Toast notification — always shown, CSS handles reduced-motion appearance
+  showMilestoneToast(item.m);
+}
+
 // ── URL PARTAGE ────────────────────────────────────────────────────────────────
 function updateURL() {
   const d = document.getElementById('bd').value;
@@ -557,8 +673,29 @@ function calculate() {
     const el    = document.getElementById(`cd-${item.idx}`);
     const elTop = document.getElementById(`cd-top-${item.idx}`);
     const elTl  = document.getElementById(`tl-cd-${item.idx}`);
+
+    // Track whether this milestone has already triggered a celebration
+    // to avoid firing multiple times (the interval keeps running briefly)
+    let celebrated = false;
+
     const tick = () => {
       const d = item.date - new Date();
+
+      // ── Milestone reached in real-time ───────────────────────────────────
+      if (d <= 0 && !celebrated) {
+        celebrated = true;
+
+        // Find the card element for this milestone (grid view)
+        // Cards are identified by the countdown element's closest .card ancestor
+        const cardEl = el ? el.closest('.card') : null;
+
+        celebrateMilestone(item, cardEl);
+        return; // celebration function handles all countdown text updates
+      }
+
+      // ── Normal countdown tick ────────────────────────────────────────────
+      if (celebrated) return; // don't overwrite "Atteint maintenant !" text
+
       const str = fmtCountdown(d);
       const isHot = d > 0 && d < 864e5 * 7;
       if (el) {

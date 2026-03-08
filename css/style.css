@@ -1995,6 +1995,276 @@ input[type="date"]:focus,
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   MILESTONE CELEBRATION — real-time zero-crossing animations
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Screen flash overlay ─────────────────────────────────────────────── */
+#milestone-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center,
+    rgba(251,191,36,0.22) 0%,
+    rgba(99,102,241,0.14) 50%,
+    transparent 80%
+  );
+  opacity: 0;
+}
+
+#milestone-flash.active {
+  animation: milestoneFlash 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes milestoneFlash {
+  0%   { opacity: 0; }
+  12%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Toast notification ───────────────────────────────────────────────── */
+#milestone-toast-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9995;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  width: min(92vw, 480px);
+}
+
+.milestone-toast {
+  pointer-events: auto;
+  width: 100%;
+  background: rgba(10, 8, 24, 0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(251,191,36,0.35);
+  border-radius: 16px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow:
+    0 0 0 1px rgba(99,102,241,0.15),
+    0 8px 32px rgba(0,0,0,0.55),
+    0 0 60px rgba(251,191,36,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+
+  /* Entrance animation */
+  animation: toastSlideIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.milestone-toast.toast-exit {
+  animation: toastSlideOut 0.4s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateY(-28px) scale(0.92); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastSlideOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(-16px) scale(0.94); }
+}
+
+/* Gradient top border line */
+.milestone-toast::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 16px;
+  right: 16px;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(251,191,36,0.6) 30%,
+    rgba(99,102,241,0.6) 70%,
+    transparent
+  );
+  border-radius: 99px;
+}
+
+.toast-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 10px rgba(251,191,36,0.5));
+  animation: toastIconPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.12s both;
+}
+
+@keyframes toastIconPop {
+  from { transform: scale(0) rotate(-20deg); }
+  to   { transform: scale(1) rotate(0deg); }
+}
+
+.toast-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--amber);
+  margin-bottom: 3px;
+}
+
+.toast-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toast-tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 1.1rem;
+  padding: 4px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+  line-height: 1;
+}
+
+.toast-close:hover { color: var(--text2); }
+
+/* Progress bar that drains as toast auto-dismisses */
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--amber), var(--indigo));
+  border-radius: 0 0 16px 16px;
+  transform-origin: left center;
+  animation: toastProgress var(--toast-duration, 6s) linear forwards;
+}
+
+@keyframes toastProgress {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+/* ── Card celebration state ───────────────────────────────────────────── */
+.card.milestone-achieved {
+  /* Override future card styles with a golden celebration palette */
+  background: linear-gradient(140deg,
+    rgba(251,191,36,0.09) 0%,
+    rgba(99,102,241,0.06) 60%,
+    var(--surface) 100%
+  ) !important;
+  border-color: rgba(251,191,36,0.40) !important;
+  animation: achievedPulse 0.6s ease forwards, cardCelebration 2.4s ease 0.5s;
+}
+
+/* Accent bar turns gold */
+.card.milestone-achieved::before {
+  background: linear-gradient(180deg, var(--amber), var(--indigo)) !important;
+}
+
+@keyframes achievedPulse {
+  /* Snap open with scale + glow burst */
+  0%   { transform: scale(1);    box-shadow: 0 0 0 rgba(251,191,36,0); }
+  30%  { transform: scale(1.03); box-shadow: 0 0 40px rgba(251,191,36,0.30), 0 0 80px rgba(99,102,241,0.15); }
+  60%  { transform: scale(1.015); }
+  100% { transform: scale(1);    box-shadow: 0 0 20px rgba(251,191,36,0.14), 0 0 40px rgba(99,102,241,0.08); }
+}
+
+@keyframes cardCelebration {
+  /* Gentle 3-pulse glow that lingers */
+  0%, 100% { box-shadow: 0 0 20px rgba(251,191,36,0.14), 0 0 40px rgba(99,102,241,0.08); }
+  33%       { box-shadow: 0 0 35px rgba(251,191,36,0.24), 0 0 60px rgba(99,102,241,0.14); }
+  66%       { box-shadow: 0 0 28px rgba(251,191,36,0.18), 0 0 50px rgba(99,102,241,0.10); }
+}
+
+/* Countdown text when milestone is achieved */
+.countdown.achieved,
+.top-milestone-countdown.achieved {
+  color: var(--amber);
+  font-size: 0.90rem;
+  font-weight: 700;
+  animation: none;
+  letter-spacing: 0.01em;
+}
+
+/* Achievement badge that replaces "Prochain !" */
+.achieved-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: linear-gradient(135deg, var(--amber) 0%, #FBBF24 100%);
+  color: #1a1000;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.60rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  box-shadow: 0 0 12px rgba(251,191,36,0.40);
+  animation: badgePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s both;
+}
+
+@keyframes badgePop {
+  from { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .card.milestone-achieved { animation: none; }
+  .milestone-toast { animation: none; }
+  .milestone-toast.toast-exit { animation: none; opacity: 0; }
+  #milestone-flash.active { animation: none; opacity: 0; }
+  .toast-icon { animation: none; }
+  .toast-progress { animation: none; }
+  .achieved-badge { animation: none; }
+}
+
+/* Light mode adjustments */
+:root[data-theme="light"] .milestone-toast {
+  background: rgba(250, 251, 255, 0.92);
+  border-color: rgba(217,119,6,0.40);
+  box-shadow:
+    0 0 0 1px rgba(79,70,229,0.12),
+    0 8px 32px rgba(0,0,0,0.18),
+    0 0 40px rgba(217,119,6,0.06);
+}
+
+:root[data-theme="light"] #milestone-flash {
+  background: radial-gradient(ellipse at center,
+    rgba(217,119,6,0.18) 0%,
+    rgba(79,70,229,0.10) 50%,
+    transparent 80%
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    FOOTER
    ═══════════════════════════════════════════════════════════════════════════ */
 footer {

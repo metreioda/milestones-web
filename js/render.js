@@ -1,3 +1,20 @@
+// ── ASCENDANT CALCULATION ─────────────────────────────────────────────────────
+function computeAscendant(birthHour, month, day, city) {
+  const signs = ['Bélier','Taureau','Gémeaux','Cancer','Lion','Vierge','Balance','Scorpion','Sagittaire','Capricorne','Verseau','Poissons'];
+  const signEmojis = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+  const dayOfYear = Math.floor((new Date(2000, month - 1, day) - new Date(2000, 0, 0)) / 864e5);
+  const lstBase = (dayOfYear / 365.25) * 24;
+  const localLST = (lstBase + birthHour + (city.lon / 15) + 24) % 24;
+  const latFactor = 1 + Math.abs(city.lat) / 180;
+  const ascIdx = Math.floor((localLST * latFactor) % 12);
+  return {
+    sign: signs[ascIdx],
+    emoji: signEmojis[ascIdx],
+    city: city.name,
+    hemisphere: city.lat >= 0 ? 'nord' : 'sud'
+  };
+}
+
 // ── UNIT BAND ─────────────────────────────────────────────────────────────────
 // Dépend de UNIT_LABELS (data.js)
 function unitBand(u) {
@@ -143,6 +160,10 @@ function computeLifeStats(ageMs) {
     kmSun:         Math.round(ageYears * 940e6),
     sunrisesLived: Math.round(ageDays),
     hairGrown_cm:  Math.round(ageDays * 0.35),
+    wordsSpoken:   Math.round(ageDays * 16000),
+    coffeeEquiv:   Math.round(ageDays * 1.5),
+    laughsLived:   Math.round(ageDays * 15),
+    ageDays:       Math.round(ageDays),
   };
 }
 
@@ -158,17 +179,21 @@ function renderLifeStats(stats, persona = {}) {
     { e: '☀️', v: fmt(stats.sunrisesLived),         l: 'levers de soleil vécus' },
     { e: '💇', v: fmt(stats.hairGrown_cm) + ' cm',  l: 'de cheveux poussés' },
     { e: '🌍', v: fmt(stats.kmSun) + ' km',         l: 'parcourus autour du Soleil' },
+    { e: '💬', v: fmt(stats.wordsSpoken),            l: 'mots prononcés (estimation)' },
+    { e: '☕', v: fmt(stats.coffeeEquiv),             l: 'cafés équivalents bus' },
+    { e: '😂', v: fmt(stats.laughsLived),            l: 'éclats de rire vécus' },
   ];
 
   let passionCard = '';
   if (passion && PASSION_FACTS[passion]) {
     const pf = PASSION_FACTS[passion];
-    const passionAccord = accord(genre, 'passionné', 'passionnée', 'passionné·e');
+    const fact2HTML = pf.fact2 ? `<div class="ls-label" style="opacity:0.8;font-style:italic;margin-top:6px;">${pf.fact2(stats.ageDays)}</div>` : '';
     passionCard = `
-      <div class="lifestats-card" style="border-color:rgba(155,89,255,0.3);background:linear-gradient(140deg,rgba(155,89,255,0.08),var(--surface2));">
+      <div class="lifestats-card passion-card" style="border-color:rgba(99,102,241,0.3);background:linear-gradient(140deg,rgba(99,102,241,0.08),var(--surface2));grid-column:span 2;">
         <div class="ls-emoji">${pf.emoji}</div>
-        <div class="ls-value" style="font-size:0.85rem;line-height:1.4;">En tant que ${passionAccord} de ${pf.label}</div>
+        <div class="ls-value" style="font-size:0.88rem;line-height:1.4;color:var(--text2);">Passionné·e de ${pf.label}</div>
         <div class="ls-label">${pf.fact(stats.sleepHours)}</div>
+        ${fact2HTML}
       </div>`;
   }
 
@@ -238,6 +263,24 @@ function renderNumerologyProfileBlock(lifePathNum, expressionNum, firstName) {
     : `<span class="numerology-label">Chemin de vie ${lifePathNum}</span>`;
   const traitsHTML = lp.traits.map(t => `<span class="numerology-trait">${t}</span>`).join('');
 
+  const strengthHTML = lp.strength ? `
+    <div class="numerology-insight">
+      <div class="numerology-sub-label">✦ Ton atout principal</div>
+      <p class="numerology-desc-small">${lp.strength}</p>
+    </div>` : '';
+
+  const challengeHTML = lp.challenge ? `
+    <div class="numerology-insight">
+      <div class="numerology-sub-label">◎ Ton défi de vie</div>
+      <p class="numerology-desc-small">${lp.challenge}</p>
+    </div>` : '';
+
+  const famousHTML = lp.famous ? `
+    <div class="numerology-insight">
+      <div class="numerology-sub-label">Personnalités chemin ${lifePathNum}</div>
+      <div class="numerology-famous-list">${lp.famous.map(f => `<span class="numerology-famous-name">${f}</span>`).join('')}</div>
+    </div>` : '';
+
   let expressionHTML = '';
   if (expressionNum !== null) {
     const exp = NUMEROLOGY_DATA[expressionNum];
@@ -262,6 +305,9 @@ function renderNumerologyProfileBlock(lifePathNum, expressionNum, firstName) {
         ${masterLabel}
         <div class="numerology-title">${lifePathNum} — ${lp.name} ${lp.emoji}</div>
         <p class="numerology-desc">${lp.description}</p>
+        ${strengthHTML}
+        ${challengeHTML}
+        ${famousHTML}
         <div class="numerology-traits">${traitsHTML}</div>
         <div class="numerology-method">Somme des chiffres de ta date de naissance, réduite selon la tradition pythagoricienne</div>
       </div>
@@ -295,7 +341,7 @@ function renderSeasonAndEvents(birthDate, genre) {
   const events = HISTORICAL_EVENTS
     .filter(e => e.month === month && e.day === day)
     .sort((a, b) => Math.abs(a.year) - Math.abs(b.year))
-    .slice(0, 5);
+    .slice(0, 7);
 
   const eventsHTML = events.length > 0
     ? events.map(ev => {

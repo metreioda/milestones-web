@@ -111,15 +111,6 @@
               <label class="field-label" for="pname">Ton prénom <span class="field-optional">(optionnel)</span></label>
               <input type="text" id="pname" class="inp-place" placeholder="Alex, Marie, Jordan…" maxlength="30" autocomplete="given-name" spellcheck="false">
             </div>
-            <div class="field-group" style="margin-bottom: 16px;">
-              <div class="field-label">Genre <span class="field-optional">(optionnel)</span></div>
-              <div class="genre-btns" role="group" aria-label="Sélection du genre">
-                <button type="button" class="genre-btn" data-genre="f" onclick="selectGenre(this)">Elle</button>
-                <button type="button" class="genre-btn" data-genre="m" onclick="selectGenre(this)">Il</button>
-                <button type="button" class="genre-btn" data-genre="n" onclick="selectGenre(this)">Iel</button>
-                <button type="button" class="genre-btn" data-genre="" onclick="selectGenre(this)">Passer</button>
-              </div>
-            </div>
             <div class="field-group">
               <label class="field-label" for="passion">Ta passion principale <span class="field-optional">(optionnel)</span></label>
               <select id="passion" class="inp-select">
@@ -134,6 +125,9 @@
                 <option value="science">🔬 Science</option>
                 <option value="nature">🌿 Nature</option>
                 <option value="cinema">🎬 Cinéma</option>
+                <option value="photo">📷 Photographie</option>
+                <option value="mode">👗 Mode & Style</option>
+                <option value="yoga">🧘 Yoga & Bien-être</option>
                 <option value="autre">✨ Autre</option>
               </select>
             </div>
@@ -328,6 +322,56 @@
 <script src="js/calendars.js"></script>
 <script src="js/render.js"></script>
 <script src="js/app.js"></script>
+
+<!-- Dynamic section theming — background change par section -->
+<script>
+(function initSectionTheming() {
+  const sectionThemes = [
+    { id: 'planet-section',         theme: 'theme-planets'   },
+    { id: 'astro-section',          theme: 'theme-astro'     },
+    { id: 'top-milestones-section', theme: 'theme-future'    },
+    { id: 'future-section',         theme: 'theme-future'    },
+    { id: 'past-section',           theme: 'theme-past'      },
+    { id: 'lifestats-section',      theme: 'theme-life'      },
+    { id: 'calendars-section',      theme: 'theme-calendars' },
+    { id: 'season-events-section',  theme: 'theme-seasons'   },
+  ];
+  const allThemes = sectionThemes.map(s => s.theme);
+  allThemes.push('theme-hero');
+  let current = 'theme-hero';
+  document.body.classList.add('theme-hero');
+
+  function setTheme(t) {
+    if (t === current) return;
+    current = t;
+    document.body.classList.remove(...allThemes);
+    document.body.classList.add(t);
+  }
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const found = sectionThemes.find(s => s.id === e.target.id);
+        if (found) setTheme(found.theme);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '-10% 0px -60% 0px' });
+
+  const heroEl = document.querySelector('.hero');
+  if (heroEl) {
+    new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) setTheme('theme-hero');
+    }, { threshold: 0.3 }).observe(heroEl);
+  }
+
+  window.observeThemeSections = function() {
+    sectionThemes.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) obs.observe(el);
+    });
+  };
+})();
+</script>
 
 <!-- Scroll reveal via IntersectionObserver — après app.js -->
 <script>

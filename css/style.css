@@ -698,6 +698,30 @@ input[type="date"]:focus,
   color: var(--text);
 }
 
+/* ─── SHOW MORE BUTTON ───────────────────────────────────────────────────── */
+.btn-show-more {
+  display: block;
+  margin: 24px auto 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 14px 32px;
+  color: var(--text2);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.01em;
+}
+.btn-show-more:hover {
+  background: var(--surface3);
+  border-color: var(--border3);
+  color: var(--text);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
 /* ─── UNIT BAND ──────────────────────────────────────────────────────────── */
 .card-unit-band {
   display: flex;
@@ -2121,4 +2145,111 @@ footer {
 /* Event item hover */
 :root[data-theme="light"] .event-item:hover {
   background: rgba(51,65,85,0.04);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DYNAMIC SECTION BACKGROUNDS — body::after changes per section
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transition: background 1.8s ease, opacity 1.2s ease;
+  opacity: 0.55;
+}
+
+body.theme-hero::after {
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(99,102,241,0.14) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 85% 90%, rgba(139,92,246,0.12) 0%, transparent 70%);
+}
+
+body.theme-planets::after {
+  background:
+    radial-gradient(ellipse 100% 80% at 50% 50%, rgba(6,182,212,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 20% 30%, rgba(139,92,246,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 30% at 80% 70%, rgba(245,158,11,0.10) 0%, transparent 50%);
+}
+
+body.theme-astro::after {
+  background:
+    radial-gradient(ellipse 70% 60% at 30% 20%, rgba(139,92,246,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 50% at 70% 80%, rgba(245,158,11,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(244,63,94,0.06) 0%, transparent 50%);
+}
+
+body.theme-future::after {
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 50%, rgba(99,102,241,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 30%, rgba(16,185,129,0.08) 0%, transparent 55%);
+}
+
+body.theme-past::after {
+  background:
+    radial-gradient(ellipse 80% 60% at 80% 50%, rgba(245,158,11,0.12) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 20% 30%, rgba(244,63,94,0.07) 0%, transparent 50%);
+}
+
+body.theme-life::after {
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 40%, rgba(16,185,129,0.10) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 15% 70%, rgba(6,182,212,0.08) 0%, transparent 50%);
+}
+
+body.theme-calendars::after {
+  background:
+    radial-gradient(ellipse 60% 60% at 40% 40%, rgba(245,158,11,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 70% 60%, rgba(244,63,94,0.07) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 20% 20%, rgba(16,185,129,0.07) 0%, transparent 45%);
+}
+
+body.theme-seasons::after {
+  background:
+    radial-gradient(ellipse 80% 60% at 60% 30%, rgba(245,158,11,0.10) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 30% 70%, rgba(139,92,246,0.08) 0%, transparent 50%);
+}
+
+/* Light mode: reduce theme intensity */
+:root[data-theme="light"] body::after { opacity: 0.3; }
+
+/* ─── ASCENDANT CARD ─── */
+.astro-card.ascendant { border-color: rgba(6,182,212,0.2); background: linear-gradient(140deg, rgba(6,182,212,0.05), var(--surface)); }
+
+/* ─── NUMEROLOGY ENRICHED ─── */
+.numerology-insight { margin-top: 14px; }
+.numerology-sub-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.numerology-desc-small {
+  font-size: 0.82rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin: 0;
+}
+.numerology-famous-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.numerology-famous-name {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  background: var(--indigo-dim, rgba(99,102,241,0.12));
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: 100px;
+  color: var(--text2);
+}
+
+/* Passion card span 2 columns responsively */
+@media (max-width: 500px) {
+  .passion-card { grid-column: span 1 !important; }
 }

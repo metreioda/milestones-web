@@ -26,9 +26,8 @@ function findCity(input) {
 // ── PERSONNALISATION ──────────────────────────────────────────────────────────
 function getPersonalization() {
   const name    = (document.getElementById('pname').value || '').trim();
-  const genre   = document.querySelector('.genre-btn.selected')?.dataset.genre ?? '';
   const passion = document.getElementById('passion').value;
-  return { name, genre, passion };
+  return { name, genre: '', passion };
 }
 
 function togglePersonalize() {
@@ -39,14 +38,7 @@ function togglePersonalize() {
   btn.setAttribute('aria-expanded', String(!isOpen));
 }
 
-function selectGenre(el) {
-  document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('selected'));
-  el.classList.add('selected');
-}
-
 function accord(genre, masc, fem, neutre) {
-  if (genre === 'f') return fem;
-  if (genre === 'n') return neutre !== undefined ? neutre : masc + '·e';
   return masc;
 }
 
@@ -124,6 +116,27 @@ function downloadICS(events) {
     href: URL.createObjectURL(blob), download: 'mes-milestones.ics'
   });
   a.click(); URL.revokeObjectURL(a.href);
+}
+
+// ── TOGGLE MILESTONE SECTIONS ─────────────────────────────────────────────
+function toggleMilestoneSection(section) {
+  const hidden = document.getElementById(`${section}-hidden`);
+  const btn = document.getElementById(`btn-show-${section}`);
+  if (!hidden || !btn) return;
+  const isOpen = hidden.style.display !== 'none';
+  hidden.style.display = isOpen ? 'none' : '';
+  btn.textContent = isOpen
+    ? btn.dataset.showLabel
+    : (section === 'future' ? 'Masquer les milestones' : 'Masquer les milestones accomplis');
+  if (!isOpen) {
+    // Animate newly visible cards
+    hidden.querySelectorAll('.card').forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(15px)';
+      el.style.transition = `opacity 0.35s ease ${i * 40}ms, transform 0.35s ease ${i * 40}ms`;
+      requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; });
+    });
+  }
 }
 
 // ── SHARE ─────────────────────────────────────────────────────────────────────
@@ -278,6 +291,17 @@ function calculate() {
   const lifePathNum   = getLifePathNumber(birth);
   const expressionNum = name ? getExpressionNumber(name) : null;
 
+  // Ascendant estimé (basé sur heure + lieu)
+  const birthHour = parseFloat(timeVal.split(':')[0]) + parseFloat(timeVal.split(':')[1]) / 60;
+  const ascendant = detectedCity ? computeAscendant(birthHour, birthMonth, birthDay, detectedCity) : null;
+  const ascendantCard = ascendant ? `
+    <div class="astro-card ascendant">
+      <div class="astro-emoji">${ascendant.emoji}</div>
+      <div class="astro-type">Ascendant estimé</div>
+      <div class="astro-name">Ascendant ${ascendant.sign}</div>
+      <div class="astro-sub">Basé sur ${ascendant.city} · hémisphère ${ascendant.hemisphere}</div>
+    </div>` : '';
+
   document.getElementById('astro-section').innerHTML = `
     <h2 class="section-head">🔮 Ton profil astral</h2>
     <div class="astro-box">
@@ -299,6 +323,7 @@ function calculate() {
         <div class="astro-name">${chinese.name}</div>
         <div class="astro-sub">Élément : ${chinese.element} · ${chinese.year}</div>
       </div>
+      ${ascendantCard}
       ${renderNumerologyCard(lifePathNum, expressionNum)}
     </div>
     <button class="astro-profile-btn" id="astro-profile-btn" onclick="toggleAstralProfile()">
@@ -386,22 +411,52 @@ function calculate() {
   document.getElementById('ics-all-btn').onclick = () =>
     downloadICS(future.slice(0,10).map(x => ({ m: x.m, date: x.date })));
 
-  // ── Future cards ──
+  // ── Future cards (collapsed by default) ──
+  const FUTURE_PREVIEW = 3;
   const futureTitle = name
     ? `⏳ Les prochains milestones de ${name} (${future.length})`
     : `⏳ Prochains milestones (${future.length})`;
   const fSec = document.getElementById('future-section');
-  fSec.innerHTML = future.length ? `
-    <h2 class="section-head">${futureTitle}</h2>
-    <div class="grid">${future.map((x,i) => renderFutureCard(x, i===0)).join('')}</div>
-  ` : '';
+  if (future.length) {
+    const futureCards = future.map((x,i) => renderFutureCard(x, i===0));
+    const visibleFuture = futureCards.slice(0, FUTURE_PREVIEW).join('');
+    const hiddenFuture = futureCards.slice(FUTURE_PREVIEW).join('');
+    const hasMoreFuture = future.length > FUTURE_PREVIEW;
+    fSec.innerHTML = `
+      <h2 class="section-head">${futureTitle}</h2>
+      <div class="grid">${visibleFuture}</div>
+      ${hasMoreFuture ? `
+        <div class="milestone-hidden-grid grid" id="future-hidden" style="display:none">${hiddenFuture}</div>
+        <button class="btn-show-more" id="btn-show-future" data-show-label="Découvrir ${future.length - FUTURE_PREVIEW} milestones de plus" onclick="toggleMilestoneSection('future')">
+          Découvrir ${future.length - FUTURE_PREVIEW} milestones de plus
+        </button>
+      ` : ''}
+    `;
+  } else {
+    fSec.innerHTML = '';
+  }
 
-  // ── Past cards ──
+  // ── Past cards (collapsed by default) ──
+  const PAST_PREVIEW = 3;
   const pSec = document.getElementById('past-section');
-  pSec.innerHTML = past.length ? `
-    <h2 class="section-head">🏅 Milestones accomplis (${past.length})</h2>
-    <div class="grid">${past.map((x, i) => renderPastCard(x, i)).join('')}</div>
-  ` : '';
+  if (past.length) {
+    const pastCards = past.map((x, i) => renderPastCard(x, i));
+    const visiblePast = pastCards.slice(0, PAST_PREVIEW).join('');
+    const hiddenPast = pastCards.slice(PAST_PREVIEW).join('');
+    const hasMorePast = past.length > PAST_PREVIEW;
+    pSec.innerHTML = `
+      <h2 class="section-head">🏅 Milestones accomplis (${past.length})</h2>
+      <div class="grid">${visiblePast}</div>
+      ${hasMorePast ? `
+        <div class="milestone-hidden-grid grid" id="past-hidden" style="display:none">${hiddenPast}</div>
+        <button class="btn-show-more" id="btn-show-past" data-show-label="Découvrir ${past.length - PAST_PREVIEW} milestones accomplis de plus" onclick="toggleMilestoneSection('past')">
+          Découvrir ${past.length - PAST_PREVIEW} milestones accomplis de plus
+        </button>
+      ` : ''}
+    `;
+  } else {
+    pSec.innerHTML = '';
+  }
 
   // show
   const res = document.getElementById('results');
@@ -459,6 +514,11 @@ function calculate() {
       window.observeRevealSections();
     }
   }, 10);
+
+  // Activer le theming dynamique par section
+  if (typeof window.observeThemeSections === 'function') {
+    setTimeout(window.observeThemeSections, 100);
+  }
 
   updateURL();
   confetti();

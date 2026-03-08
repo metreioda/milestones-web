@@ -3,7 +3,7 @@
    Cache-first pour les assets statiques, network-first pour les polices.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME    = `milestoneme-${CACHE_VERSION}`;
 
 /* Assets précachés à l'installation — liste exhaustive des fichiers statiques */
@@ -11,6 +11,7 @@ const PRECACHE_URLS = [
   '/',
   '/index.html',
   '/timeline.html',
+  '/boutique.html',
   '/css/style.css',
   '/js/app.js',
   '/js/data.js',
@@ -18,6 +19,7 @@ const PRECACHE_URLS = [
   '/js/calendars.js',
   '/favicon.svg',
   '/manifest.json',
+  '/blog/',
   '/blog/index.html',
   '/blog/style.css',
   '/blog/milliardieme-seconde.html',
@@ -67,18 +69,30 @@ self.addEventListener('fetch', event => {
 
   // Assets du même domaine → Cache-first avec fallback réseau
   if (url.origin === self.location.origin) {
-    event.respondWith(cacheFirst(request));
+    // Pour les navigations (HTML), on ne redirige jamais vers index.html
+    const isNavigation = request.mode === 'navigate';
+    event.respondWith(cacheFirst(request, isNavigation));
     return;
   }
 });
 
 /* ── STRATÉGIE : Cache-first ────────────────────────────────────────────────
-   1. Cherche dans le cache → si trouvé, renvoie immédiatement
+   1. Cherche dans le cache (avec fallback /index.html → /blog/index.html)
    2. Sinon fetch réseau → met en cache → renvoie
-   3. Si les deux échouent (hors ligne + pas en cache) → page offline générique
+   3. Si les deux échouent (hors ligne + pas en cache) :
+      - Navigation HTML : laisse le navigateur afficher l'erreur (pas de redirect)
+      - Assets (CSS/JS/img) : réponse vide 503
 */
-async function cacheFirst(request) {
-  const cached = await caches.match(request);
+async function cacheFirst(request, isNavigation = false) {
+  // Cherche dans le cache — essaie aussi la variante index.html pour les répertoires
+  let cached = await caches.match(request);
+  if (!cached && isNavigation) {
+    // /blog/ → essaie /blog/index.html
+    const urlObj = new URL(request.url);
+    if (urlObj.pathname.endsWith('/') && urlObj.pathname !== '/') {
+      cached = await caches.match(urlObj.pathname + 'index.html');
+    }
+  }
   if (cached) return cached;
 
   try {
@@ -89,11 +103,21 @@ async function cacheFirst(request) {
     }
     return response;
   } catch {
-    // Hors ligne et non caché → renvoie l'index comme fallback
-    const fallback = await caches.match('/index.html');
-    if (fallback) return fallback;
-    // Dernier recours : réponse vide 503
-    return new Response('Hors ligne — MilestoneMe', {
+    if (isNavigation) {
+      // Pour les navigations hors ligne, affiche l'index app uniquement pour la racine
+      // Pour toute autre page (blog, boutique...), laisse le navigateur gérer l'erreur
+      const urlObj = new URL(request.url);
+      if (urlObj.pathname === '/' || urlObj.pathname === '/index.html') {
+        const fallback = await caches.match('/index.html');
+        if (fallback) return fallback;
+      }
+      return new Response('Hors ligne — cette page n\'est pas disponible sans connexion.', {
+        status: 503,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+      });
+    }
+    // Assets (CSS/JS/img) : réponse vide 503
+    return new Response('', {
       status: 503,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' }
     });

@@ -22,6 +22,11 @@
 - [2026-03-07] **Numerologie** -- Chemin de vie (somme des chiffres, maitres 11/22/33 preserves), nombre d'expression depuis le prenom (table de Pythagore), 13 archetypes avec descriptions et traits, 4eme carte dans le profil astral, bloc detaille dans "En savoir plus".
 - [2026-03-08] **Saisons et événements** -- Saison de naissance (hémisphère Nord), jour de la semaine de naissance, 118 événements historiques hardcodés du même jour/mois
 - [2026-03-08] **Mode clair / toggle theme** -- Switch light/dark mode avec toggle visuel. Améliore l'accessibilité et l'expérience utilisateur.
+- [2026-03-08] **Blog (4 articles + listing + showcase)** -- Section blog intégrée avec 4 articles détaillés, page listing, et showcase sur page principale. Enrichit le contenu éditorial.
+- [2026-03-08] **SEO complet** -- Meta tags, OpenGraph, Twitter Cards, canonical, favicon, robots.txt, sitemap.xml, JSON-LD, agent SEO. App indexable et optimisée pour partage social.
+- [2026-03-08] **Collapsible milestones** -- Bouton "découvrir plus" pour révéler les détails de chaque milestone. Améliore l'UX sans surcharger l'interface.
+- [2026-03-08] **Cosmic background** -- Animation background avec étoiles, planètes, étoiles filantes, et nébuleuses. Design immersif et thématique.
+- [2026-03-08] **Timeline view (toggle grille/frise)** -- Visualisation chronologique avec bouton toggle entre vue grille et frise temporelle. Navigation des milestones plus fluide.
 
 ## En cours
 

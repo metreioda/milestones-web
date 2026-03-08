@@ -909,10 +909,14 @@ input[type="date"]:focus,
   margin: 0 0 16px;
 }
 
-/* ─── ICS ALL BUTTON ─────────────────────────────────────────────────────── */
+/* ─── ICS ALL BUTTON + TIMELINE CTA ─────────────────────────────────────── */
 .ics-all-wrap {
   text-align: center;
   margin-bottom: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
 .btn-ics-all {
@@ -937,6 +941,32 @@ input[type="date"]:focus,
   border-color: var(--border3);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  color: var(--text);
+}
+
+/* Timeline CTA — sibling of btn-ics-all */
+.btn-timeline-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--indigo);
+  text-decoration: none;
+  padding: 12px 24px;
+  background: var(--indigo-dim);
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  letter-spacing: 0.01em;
+}
+.btn-timeline-cta:hover {
+  background: rgba(99,102,241,0.18);
+  border-color: var(--indigo);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(99,102,241,0.20);
   color: var(--text);
 }
 

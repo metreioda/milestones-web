@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ma Timeline de vie — MilestoneMe</title>
+  <meta name="description" content="Visualise toute ta vie en une seule timeline : chaque milestone passé et futur, de ta naissance à l'infini.">
+  <link rel="canonical" href="https://statsme.org/timeline.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ma Timeline de vie — MilestoneMe">
+  <meta property="og:description" content="Chaque seconde, minute, heure, jour et semaine de ta vie sur une seule timeline chronologique.">
+  <meta property="og:url" content="https://statsme.org/timeline.html">
+  <meta property="og:image" content="https://statsme.org/og-image.png">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="MilestoneMe">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ma Timeline de vie — MilestoneMe">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="theme-color" content="#6366f1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════════════
+       TIMELINE.HTML — Design System "Cosmic Observatory"
+       ═══════════════════════════════════════════════════════════════════ */
+
+    /* ── TOKENS ── */
+    :root {
+      --bg:  #030711;
+      --bg2: #0A0818;
+      --surface:  rgba(255,255,255,0.03);
+      --surface2: rgba(255,255,255,0.06);
+      --surface3: rgba(255,255,255,0.10);
+      --border:  rgba(255,255,255,0.06);
+      --border2: rgba(255,255,255,0.12);
+      --border3: rgba(255,255,255,0.22);
+      --text:  #F1F5F9;
+      --text2: #CBD5E1;
+      --muted: rgba(203,213,225,0.5);
+      --indigo:  #6366F1;
+      --violet:  #8B5CF6;
+      --amber:   #F59E0B;
+      --emerald: #10B981;
+      --rose:    #F43F5E;
+      --cyan:    #06B6D4;
+      --indigo-dim:  rgba(99,102,241,0.12);
+      --violet-dim:  rgba(139,92,246,0.12);
+      --amber-dim:   rgba(245,158,11,0.12);
+      --emerald-dim: rgba(16,185,129,0.10);
+      --rose-dim:    rgba(244,63,94,0.10);
+      --cyan-dim:    rgba(6,182,212,0.10);
+      --radius-card: 18px;
+      --radius-pill: 100px;
+
+      /* Timeline specific */
+      --spine-w: 2px;
+      --dot-size: 14px;
+      --card-gap: 32px;
+      --spine-color: linear-gradient(180deg, var(--indigo) 0%, var(--violet) 50%, var(--cyan) 100%);
+    }
+
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── BASE ── */
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── COSMIC BACKGROUND ── */
+    #cosmic-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .cosmic-stars { position: absolute; inset: 0; }
+    .cstar {
+      position: absolute;
+      border-radius: 50%;
+      animation: starTwinkle ease-in-out infinite alternate;
+    }
+    @keyframes starTwinkle {
+      0%   { opacity: var(--star-min, 0.08); transform: scale(0.85); }
+      50%  { opacity: 1; transform: scale(1.05); }
+      100% { opacity: var(--star-min, 0.10); transform: scale(0.80); }
+    }
+    .cnebula {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(var(--nebula-blur, 80px));
+      animation: nebulaDrift ease-in-out infinite alternate;
+    }
+    @keyframes nebulaDrift {
+      0%   { transform: translate(0, 0) scale(1); opacity: var(--nebula-opacity, 0.15); }
+      50%  { transform: translate(var(--ndx, 20px), var(--ndy, -10px)) scale(1.05); opacity: calc(var(--nebula-opacity, 0.15) * 1.3); }
+      100% { transform: translate(var(--ndx, -10px), var(--ndy, 20px)) scale(0.97); opacity: calc(var(--nebula-opacity, 0.15) * 0.75); }
+    }
+
+    /* ── LAYOUT ── */
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 120px;
+    }
+
+    /* ── TOP NAV ── */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0 0;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .top-nav-left { display: flex; align-items: center; gap: 12px; }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text2);
+      text-decoration: none;
+      padding: 8px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-pill);
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .btn-back:hover {
+      color: var(--text);
+      border-color: var(--indigo);
+      background: var(--indigo-dim);
+    }
+    .site-badge {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .btn-share-page {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--indigo);
+      padding: 8px 16px;
+      background: var(--indigo-dim);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-share-page:hover {
+      background: rgba(99,102,241,0.20);
+      border-color: var(--indigo);
+      transform: translateY(-1px);
+    }
+    .btn-share-page svg { width: 15px; height: 15px; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      text-align: center;
+      padding: 56px 0 48px;
+    }
+    .page-header-kicker {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      margin-bottom: 16px;
+    }
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      background: linear-gradient(135deg, var(--text) 0%, var(--indigo) 50%, var(--violet) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+    .page-header-sub {
+      font-size: 1rem;
+      color: var(--text2);
+      line-height: 1.6;
+      max-width: 520px;
+      margin: 0 auto 28px;
+    }
+    .header-stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .header-stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+    .header-stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* ── FLOATING QUICK-NAV ── */
+    .quick-nav {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(3,7,17,0.85);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-pill);
+      padding: 6px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      transition: opacity 0.3s;
+    }
+    .quick-nav-btn {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text2);
+      background: transparent;
+      border: none;
+      padding: 8px 16px;
+      border-radius: calc(var(--radius-pill) - 4px);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .quick-nav-btn:hover,
+    .quick-nav-btn.active {
+      color: var(--text);
+      background: var(--surface3);
+    }
+    .quick-nav-btn.now-btn {
+      background: var(--indigo);
+      color: #fff;
+    }
+    .quick-nav-btn.now-btn:hover {
+      background: var(--violet);
+    }
+
+    /* ── LOADING STATE ── */
+    #loading-state {
+      text-align: center;
+      padding: 80px 24px;
+    }
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 2px solid var(--border2);
+      border-top-color: var(--indigo);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 24px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* ── ERROR STATE ── */
+    #error-state {
+      display: none;
+      text-align: center;
+      padding: 80px 24px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .error-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+    .error-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--rose);
+      margin-bottom: 12px;
+    }
+    .error-desc {
+      color: var(--text2);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .btn-go-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--indigo);
+      border: none;
+      padding: 12px 24px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-go-home:hover { background: var(--violet); transform: translateY(-2px); }
+
+    /* ── TIMELINE CONTAINER ── */
+    #timeline-wrap { display: none; }
+
+    /* Year label rows */
+    .tl-year-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 48px 0 8px;
+    }
+    .tl-year-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--bg);
+      padding: 4px 14px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── THE TIMELINE TRACK ── */
+    .tl-track {
+      position: relative;
+      padding: 0 0 40px;
+    }
+
+    /* Vertical spine */
+    .tl-spine {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: var(--spine-w);
+      transform: translateX(-50%);
+      background: var(--spine-color);
+      opacity: 0.35;
+      border-radius: 2px;
+    }
+
+    /* ── MILESTONE ROWS ── */
+    .tl-row {
+      display: grid;
+      grid-template-columns: 1fr 40px 1fr;
+      align-items: start;
+      gap: 0;
+      position: relative;
+      margin-bottom: 24px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .tl-row.tl-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Dot in center column */
+    .tl-dot-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      padding-top: 14px;
+    }
+    .tl-dot {
+      width: var(--dot-size);
+      height: var(--dot-size);
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      flex-shrink: 0;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .tl-dot::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .tl-row:hover .tl-dot::after { opacity: 0.15; }
+    .tl-dot.u-s { background: var(--rose);    color: var(--rose); }
+    .tl-dot.u-m { background: var(--cyan);    color: var(--cyan); }
+    .tl-dot.u-h { background: var(--amber);   color: var(--amber); }
+    .tl-dot.u-d { background: var(--emerald); color: var(--emerald); }
+    .tl-dot.u-w { background: var(--violet);  color: var(--violet); }
+
+    /* Card cell — left or right */
+    .tl-left  { padding-right: 20px; }
+    .tl-right { padding-left: 20px; }
+    .tl-empty { /* spacer */ }
+
+    /* ── MILESTONE CARD ── */
+    .tl-card {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-card);
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .tl-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: 0 2px 2px 0;
+      left: 0;
+    }
+    .tl-card.past::before   { background: var(--amber); }
+    .tl-card.future::before { background: var(--indigo); }
+    .tl-card.next::before   { background: var(--emerald); }
+
+    .tl-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border3);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+
+    /* Past: slightly dimmer */
+    .tl-card.past {
+      background: rgba(255,255,255,0.025);
+    }
+    /* Future: indigo shimmer */
+    .tl-card.future,
+    .tl-card.next {
+      background: rgba(99,102,241,0.04);
+    }
+    .tl-card.next {
+      border-color: rgba(16,185,129,0.30);
+      box-shadow: 0 0 24px rgba(16,185,129,0.08);
+    }
+
+    /* Card arrow connector pointing to spine */
+    .tl-left .tl-card::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      right: -7px;
+      width: 13px;
+      height: 13px;
+      background: var(--surface2);
+      border-top: 1px solid var(--border2);
+      border-right: 1px solid var(--border2);
+      transform: rotate(45deg);
+    }
+    .tl-left .tl-card.past::after   { background: rgba(255,255,255,0.025); }
+    .tl-left .tl-card.future::after,
+    .tl-left .tl-card.next::after   { background: rgba(99,102,241,0.04); }
+
+    .tl-right .tl-card::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: -7px;
+      width: 13px;
+      height: 13px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border2);
+      border-left: 1px solid var(--border2);
+      transform: rotate(45deg);
+    }
+    .tl-right .tl-card.past::after   { background: rgba(255,255,255,0.025); }
+    .tl-right .tl-card.future::after,
+    .tl-right .tl-card.next::after   { background: rgba(99,102,241,0.04); }
+
+    /* Card internals */
+    .tl-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .tl-card-emoji {
+      font-size: 1.5rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .tl-card-badge {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      flex-shrink: 0;
+    }
+    .tl-card-badge.past   { color: var(--amber);   background: var(--amber-dim); }
+    .tl-card-badge.future { color: var(--indigo);  background: var(--indigo-dim); }
+    .tl-card-badge.next   { color: var(--emerald); background: var(--emerald-dim); }
+
+    .tl-card-unit {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .tl-card-unit.u-s { color: var(--rose);    background: var(--rose-dim); }
+    .tl-card-unit.u-m { color: var(--cyan);    background: var(--cyan-dim); }
+    .tl-card-unit.u-h { color: var(--amber);   background: var(--amber-dim); }
+    .tl-card-unit.u-d { color: var(--emerald); background: var(--emerald-dim); }
+    .tl-card-unit.u-w { color: var(--violet);  background: var(--violet-dim); }
+
+    .tl-card-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+    .tl-card-tagline {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+    .tl-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tl-card-date {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      color: var(--text2);
+    }
+    .tl-card-countdown {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--indigo);
+      background: var(--indigo-dim);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .tl-card-countdown.hot {
+      color: var(--rose);
+      background: var(--rose-dim);
+      animation: hotPulse 1.5s ease-in-out infinite;
+    }
+    @keyframes hotPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .tl-card-done {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      color: var(--amber);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .tl-card-done svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+
+    /* Progress bar on future cards */
+    .tl-prog {
+      margin-top: 10px;
+    }
+    .tl-prog-track {
+      height: 3px;
+      background: var(--border2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .tl-prog-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--indigo), var(--violet));
+      transition: width 0.8s ease;
+    }
+    .tl-card.next .tl-prog-fill {
+      background: linear-gradient(90deg, var(--emerald), var(--cyan));
+    }
+
+    /* ── NOW ROW ── */
+    .tl-now-row {
+      display: grid;
+      grid-template-columns: 1fr 40px 1fr;
+      align-items: center;
+      position: relative;
+      margin: 16px 0;
+      opacity: 1;
+    }
+    .tl-now-dot-col {
+      display: flex;
+      justify-content: center;
+      z-index: 3;
+    }
+    .tl-now-ring {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--indigo);
+      border: 3px solid var(--bg);
+      box-shadow:
+        0 0 0 4px rgba(99,102,241,0.25),
+        0 0 20px rgba(99,102,241,0.5);
+      animation: nowPulse 2s ease-in-out infinite;
+      position: relative;
+      z-index: 3;
+    }
+    @keyframes nowPulse {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(99,102,241,0.25), 0 0 20px rgba(99,102,241,0.5); }
+      50%       { box-shadow: 0 0 0 8px rgba(99,102,241,0.10), 0 0 40px rgba(99,102,241,0.7); }
+    }
+    .tl-now-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      padding: 8px 0 8px 20px;
+    }
+
+    /* ── BIRTH ROW ── */
+    .tl-birth-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: 8px 0 32px;
+      position: relative;
+      z-index: 2;
+    }
+    .tl-birth-marker {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--amber);
+      border: 3px solid var(--bg);
+      box-shadow: 0 0 16px rgba(245,158,11,0.5);
+      flex-shrink: 0;
+    }
+    .tl-birth-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--amber);
+    }
+
+    /* ── EXPAND BUTTON ── */
+    .tl-expand-wrap {
+      text-align: center;
+      padding: 32px 0 16px;
+    }
+    .btn-expand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text2);
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-pill);
+      padding: 10px 22px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-expand:hover {
+      color: var(--text);
+      border-color: var(--indigo);
+      background: var(--indigo-dim);
+      transform: translateY(-1px);
+    }
+    .btn-expand svg { width: 16px; height: 16px; }
+
+    /* ── LEGEND ── */
+    .tl-legend {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* ── MOBILE — single column ── */
+    @media (max-width: 700px) {
+      /* 3-col → 2-col: dot | card */
+      .tl-row {
+        grid-template-columns: 28px 1fr;
+        grid-template-rows: auto;
+        margin-bottom: 20px;
+      }
+      /* Dot always in column 1, row 1 */
+      .tl-dot-col {
+        grid-column: 1;
+        grid-row: 1;
+        padding-top: 18px;
+        justify-content: flex-start;
+      }
+      /* All cards always in column 2, row 1 */
+      .tl-left, .tl-right {
+        grid-column: 2;
+        grid-row: 1;
+        padding-left: 12px;
+        padding-right: 0;
+      }
+      /* Empty spacers hidden — they pushed dot to wrong position */
+      .tl-row > .tl-empty,
+      .tl-row > .tl-empty-right {
+        display: none;
+      }
+      /* Spine on left edge */
+      .tl-spine { left: 14px; transform: none; opacity: 0.5; }
+      /* Arrow connector: all cards show left-side arrow */
+      .tl-left .tl-card::after,
+      .tl-right .tl-card::after {
+        top: 18px;
+        left: -7px;
+        right: auto;
+        border-bottom: 1px solid var(--border2);
+        border-left: 1px solid var(--border2);
+        border-top: none;
+        border-right: none;
+        transform: rotate(45deg);
+      }
+      /* "Now" row */
+      .tl-now-row {
+        grid-template-columns: 28px 1fr;
+      }
+      .tl-now-row > .tl-empty { display: none; }
+      .tl-now-dot-col { grid-column: 1; }
+      .tl-now-label { grid-column: 2; padding-left: 12px; font-size: 0.75rem; }
+      .tl-year-row { justify-content: flex-start; padding-left: 44px; }
+      .page-header h1 { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+      .quick-nav { bottom: 16px; width: calc(100% - 32px); justify-content: center; }
+      .quick-nav-btn { padding: 7px 12px; font-size: 0.78rem; }
+    }
+
+    /* ── REDUCED MOTION ── */
+    @media (prefers-reduced-motion: reduce) {
+      .tl-row { transition: none; opacity: 1; transform: none; }
+      .cstar  { animation: none; opacity: 0.15; }
+      .cnebula { animation: none; }
+      .tl-now-ring { animation: none; }
+      .tl-card-countdown.hot { animation: none; }
+      .loading-spinner { animation: none; }
+    }
+
+    /* Shared toast for copy confirmation */
+    #copy-toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #fff;
+      background: rgba(16,185,129,0.90);
+      backdrop-filter: blur(12px);
+      padding: 10px 20px;
+      border-radius: var(--radius-pill);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 200;
+    }
+    #copy-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Cosmic background -->
+<div id="cosmic-bg" aria-hidden="true">
+  <div class="cosmic-stars" id="cosmic-stars"></div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- TOP NAV -->
+  <nav class="top-nav" aria-label="Navigation">
+    <div class="top-nav-left">
+      <a href="index.html" class="btn-back" id="back-link">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="15" height="15"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+        Retour
+      </a>
+      <span class="site-badge">MilestoneMe</span>
+    </div>
+    <button class="btn-share-page" onclick="sharePage()" aria-label="Partager cette page">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+      Partager
+    </button>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <header class="page-header" id="section-top">
+    <p class="page-header-kicker">Chronologie de vie</p>
+    <h1 id="page-title">Ma Timeline</h1>
+    <p class="page-header-sub" id="page-sub">Tous tes milestones de vie en une seule vue chronologique.</p>
+    <div class="header-stats" id="header-stats" aria-live="polite"></div>
+  </header>
+
+  <!-- LEGEND -->
+  <div class="tl-legend" id="tl-legend" aria-label="Légende">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--rose)"></div>
+      Secondes
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--cyan)"></div>
+      Minutes
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--amber)"></div>
+      Heures
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--emerald)"></div>
+      Jours
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--violet)"></div>
+      Semaines
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--amber);box-shadow:0 0 6px rgba(245,158,11,0.6)"></div>
+      Passé
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--indigo)"></div>
+      Futur
+    </div>
+  </div>
+
+  <!-- LOADING STATE -->
+  <div id="loading-state">
+    <div class="loading-spinner" aria-hidden="true"></div>
+    <p class="loading-text">Calcul de ta timeline…</p>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div id="error-state" role="alert">
+    <div class="error-icon" aria-hidden="true">🌌</div>
+    <h2 class="error-title">Date de naissance manquante</h2>
+    <p class="error-desc">Pour générer ta timeline, retourne sur la page principale et entre ta date de naissance.</p>
+    <a href="index.html" class="btn-go-home">
+      <svg viewBox="0 0 20 20" fill="currentColor" width="15" height="15"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+      Aller sur MilestoneMe
+    </a>
+  </div>
+
+  <!-- TIMELINE OUTPUT -->
+  <div id="timeline-wrap">
+    <div class="tl-track" id="tl-track">
+      <div class="tl-spine" aria-hidden="true"></div>
+      <div id="tl-items"></div>
+    </div>
+    <div class="tl-expand-wrap" id="tl-expand-wrap" style="display:none">
+      <button class="btn-expand" onclick="expandAll()" aria-label="Afficher tous les milestones">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        Voir tous les milestones
+      </button>
+    </div>
+  </div>
+
+</div><!-- /.page-wrap -->
+
+<!-- FLOATING QUICK-NAV -->
+<nav class="quick-nav" id="quick-nav" aria-label="Navigation rapide" style="display:none">
+  <button class="quick-nav-btn" onclick="scrollToSection('section-top')" aria-label="Aller au début">Naissance</button>
+  <button class="quick-nav-btn now-btn" onclick="scrollToNow()" aria-label="Aller à maintenant">Maintenant</button>
+  <button class="quick-nav-btn" onclick="scrollToSection('section-future')" aria-label="Aller au futur">Futur</button>
+</nav>
+
+<!-- COPY TOAST -->
+<div id="copy-toast" role="status" aria-live="polite">Lien copié !</div>
+
+<!-- DATA + LOGIC -->
+<script src="js/data.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   TIMELINE PAGE — Logic
+   ═══════════════════════════════════════════════════════════════════ */
+
+// ── CONSTANTS ──
+const MS_UNIT = { s: 1e3, m: 6e4, h: 36e5, d: 864e5, w: 6048e5 };
+const UNIT_LABELS_TL = { s: 'sec', m: 'min', h: 'heure', d: 'jour', w: 'sem.' };
+
+// Max items shown before "expand" button
+const INITIAL_LIMIT = 60;
+
+// ── STATE ──
+let allItems = [];
+let futureItems = [];
+let countdownIntervals = [];
+let birthDate = null;
+let userName = '';
+let showAll = false;
+
+// ── URL PARAMS ──
+function getParams() {
+  const p = new URLSearchParams(location.search);
+  return {
+    d: p.get('d') || '',     // YYYY-MM-DD
+    t: p.get('t') || '12:00',
+    name: p.get('name') || '',
+    l: p.get('l') || '',
+  };
+}
+
+// ── DATE HELPERS ──
+function fmtDateFr(dt, showTime = false) {
+  const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const datePart = dt.toLocaleDateString('fr-FR', opts);
+  if (!showTime) return datePart;
+  const h = String(dt.getHours()).padStart(2,'0');
+  const m = String(dt.getMinutes()).padStart(2,'0');
+  return `${datePart} à ${h}h${m}`;
+}
+
+function fmtCountdown(ms) {
+  if (ms <= 0) return 'Aujourd\'hui !';
+  const d = Math.floor(ms / 864e5);
+  const h = Math.floor((ms % 864e5) / 36e5);
+  const m = Math.floor((ms % 36e5) / 6e4);
+  const s = Math.floor((ms % 6e4) / 1e3);
+  if (d > 365) return `${Math.floor(d/365)}a ${d%365}j ${h}h`;
+  if (d > 0)   return `${d}j ${h}h ${m}m ${s}s`;
+  if (h > 0)   return `${h}h ${m}m ${s}s`;
+  if (m > 0)   return `${m}m ${s}s`;
+  return `${s}s`;
+}
+
+function fmtAgo(ms) {
+  const a = Math.abs(ms);
+  const d = Math.floor(a / 864e5);
+  if (d > 365) {
+    const y = Math.floor(d / 365);
+    return `il y a ${y} an${y>1?'s':''}`;
+  }
+  if (d > 0) return `il y a ${d} jour${d>1?'s':''}`;
+  const h = Math.floor(a / 36e5);
+  if (h > 0) return `il y a ${h}h`;
+  return `il y a quelques minutes`;
+}
+
+function fmtShortDate(dt) {
+  return dt.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+// ── COMPUTE MILESTONES ──
+function computeMilestones(birth) {
+  const now = Date.now();
+  const items = MILESTONES.map(m => {
+    const ms = MS_UNIT[m.u] * m.v;
+    const date = new Date(birth.getTime() + ms);
+    const diff = date.getTime() - now;
+    return { m, date, diff };
+  });
+  // Sort chronologically
+  items.sort((a, b) => a.date - b.date);
+  return items;
+}
+
+// ── CARD HTML ──
+function cardHTML(item, side, fIdx) {
+  const { m, date, diff } = item;
+  const isPast   = diff < 0;
+  const isNext   = !isPast && fIdx === 0;
+  const typeClass = isPast ? 'past' : isNext ? 'next' : 'future';
+  const badgeLabel = isPast ? 'Accompli' : isNext ? 'Prochain !' : 'À venir';
+  const total = MS_UNIT[m.u] * m.v;
+  const elapsed = total - diff;
+  const pct = Math.min(99, Math.max(1, Math.round(elapsed / total * 100)));
+
+  let metaHTML = '';
+  if (isPast) {
+    metaHTML = `
+      <div class="tl-card-done">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+        ${fmtAgo(diff)}
+      </div>`;
+  } else {
+    const cdId = `tl-cd-${fIdx}`;
+    const isHot = diff < 864e5 * 7;
+    metaHTML = `
+      <div class="tl-card-countdown${isHot ? ' hot' : ''}" id="${cdId}">${fmtCountdown(diff)}</div>
+      <div class="tl-prog">
+        <div class="tl-prog-track"><div class="tl-prog-fill" style="width:${pct}%"></div></div>
+      </div>`;
+  }
+
+  return `
+    <div class="tl-card ${typeClass}" role="article" aria-label="${m.n}">
+      <div class="tl-card-header">
+        <span class="tl-card-emoji" aria-hidden="true">${m.e}</span>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <span class="tl-card-unit ${m.u}">${UNIT_LABELS_TL[m.u]}</span>
+          <span class="tl-card-badge ${typeClass}">${badgeLabel}</span>
+        </div>
+      </div>
+      <div class="tl-card-name">${m.n}</div>
+      <div class="tl-card-tagline">${m.t}</div>
+      <div class="tl-card-meta">
+        <span class="tl-card-date">${fmtShortDate(date)}</span>
+        ${metaHTML}
+      </div>
+    </div>`;
+}
+
+// ── ROW HTML — alternating left/right ──
+function rowHTML(item, rowIdx, fIdx) {
+  const { m } = item;
+  const dotClass = `u-${m.u}`;
+  const side = rowIdx % 2 === 0 ? 'left' : 'right';
+
+  if (side === 'left') {
+    return `
+      <div class="tl-row" data-tl-item>
+        <div class="tl-left">${cardHTML(item, 'left', fIdx)}</div>
+        <div class="tl-dot-col" aria-hidden="true">
+          <div class="tl-dot ${dotClass}"></div>
+        </div>
+        <div class="tl-empty tl-empty-right"></div>
+      </div>`;
+  } else {
+    return `
+      <div class="tl-row" data-tl-item>
+        <div class="tl-empty"></div>
+        <div class="tl-dot-col" aria-hidden="true">
+          <div class="tl-dot ${dotClass}"></div>
+        </div>
+        <div class="tl-right">${cardHTML(item, 'right', fIdx)}</div>
+      </div>`;
+  }
+}
+
+// ── NOW ROW ──
+function nowRowHTML() {
+  return `
+    <div class="tl-now-row" id="section-now" aria-label="Maintenant" data-tl-now>
+      <div class="tl-empty"></div>
+      <div class="tl-now-dot-col" aria-hidden="true">
+        <div class="tl-now-ring"></div>
+      </div>
+      <div class="tl-now-label">Vous êtes ici</div>
+    </div>`;
+}
+
+// ── BIRTH ROW ──
+function birthRowHTML(birth) {
+  return `
+    <div class="tl-birth-row" id="section-birth" aria-label="Naissance">
+      <div class="tl-birth-marker" aria-hidden="true"></div>
+      <div class="tl-birth-label">Naissance · ${fmtShortDate(birth)}</div>
+    </div>`;
+}
+
+// ── YEAR LABEL ──
+function yearRowHTML(year) {
+  return `
+    <div class="tl-year-row" aria-hidden="true">
+      <div class="tl-year-label">${year}</div>
+    </div>`;
+}
+
+// ── RENDER ──
+function renderTimeline(items, limit) {
+  const container = document.getElementById('tl-items');
+  let html = '';
+  let rowIdx = 0;
+  let fIdx = 0;
+  let nowInserted = false;
+  let lastYear = null;
+
+  // Birth row at top
+  html += birthRowHTML(birthDate);
+
+  const subset = limit ? items.slice(0, limit) : items;
+
+  for (let i = 0; i < subset.length; i++) {
+    const item = subset[i];
+    const isPast = item.diff < 0;
+
+    // Insert "now" marker between last past and first future
+    if (!nowInserted && !isPast) {
+      html += nowRowHTML();
+      nowInserted = true;
+    }
+
+    // Year header (group by year)
+    const itemYear = item.date.getFullYear();
+    if (itemYear !== lastYear) {
+      html += yearRowHTML(itemYear);
+      lastYear = itemYear;
+    }
+
+    // Assign future index only for future items
+    const currentFIdx = isPast ? -1 : fIdx;
+    if (!isPast) fIdx++;
+
+    html += rowHTML(item, rowIdx, currentFIdx);
+    rowIdx++;
+  }
+
+  // If all shown are past, still insert "now" at the end
+  if (!nowInserted) {
+    html += nowRowHTML();
+  }
+
+  // Future section anchor
+  html = html.replace('id="section-now"', 'id="section-now" data-now-anchor');
+
+  container.innerHTML = html;
+}
+
+// ── COUNTDOWN TICKER ──
+function startCountdowns() {
+  countdownIntervals.forEach(clearInterval);
+  countdownIntervals = [];
+
+  const tick = () => {
+    const now = Date.now();
+    futureItems.forEach((item, fIdx) => {
+      const el = document.getElementById(`tl-cd-${fIdx}`);
+      if (!el) return;
+      const diff = item.date.getTime() - now;
+      el.textContent = fmtCountdown(diff);
+      const isHot = diff < 864e5 * 7;
+      el.classList.toggle('hot', isHot);
+    });
+  };
+
+  const id = setInterval(tick, 1000);
+  countdownIntervals.push(id);
+}
+
+// ── INTERSECTION OBSERVER — reveal on scroll ──
+function observeItems() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('tl-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('[data-tl-item]').forEach(el => observer.observe(el));
+}
+
+// ── BACK LINK ── preserve params
+function buildBackURL() {
+  const params = new URLSearchParams(location.search);
+  const base = 'index.html';
+  const str = params.toString();
+  return str ? `${base}?${str}` : base;
+}
+
+// ── SCROLL HELPERS ──
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function scrollToNow() {
+  const el = document.getElementById('section-now');
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ── EXPAND ALL ──
+function expandAll() {
+  showAll = true;
+  renderTimeline(allItems, null);
+  startCountdowns();
+  observeItems();
+  document.getElementById('tl-expand-wrap').style.display = 'none';
+  // Kick visible state for newly inserted items
+  requestAnimationFrame(() => {
+    document.querySelectorAll('[data-tl-item]:not(.tl-visible)').forEach(el => {
+      el.classList.add('tl-visible');
+    });
+  });
+}
+
+// ── SHARE PAGE ──
+function sharePage() {
+  const url = location.href;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => showToast('Lien copié !'));
+  } else {
+    showToast('Lien : ' + url);
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('copy-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ── HEADER STATS ──
+function renderHeaderStats(past, future, name) {
+  const el = document.getElementById('header-stats');
+  const title = document.getElementById('page-title');
+  const sub   = document.getElementById('page-sub');
+
+  if (name) title.textContent = `La Timeline de ${name}`;
+
+  sub.textContent = `${past} milestones accomplis · ${future} milestones à venir`;
+
+  el.innerHTML = `
+    <div class="header-stat">
+      <div class="header-stat-dot" style="background:var(--amber)"></div>
+      <span>${past} accomplis</span>
+    </div>
+    <div class="header-stat">
+      <div class="header-stat-dot" style="background:var(--indigo)"></div>
+      <span>${future} à venir</span>
+    </div>
+    <div class="header-stat">
+      <div class="header-stat-dot" style="background:var(--indigo);box-shadow:0 0 8px var(--indigo)"></div>
+      <span>${past + future} au total</span>
+    </div>`;
+}
+
+// ── COSMIC STARS (lightweight, no WebGL) ──
+function spawnStars() {
+  const container = document.getElementById('cosmic-stars');
+  if (!container) return;
+  const count = Math.min(120, Math.floor(window.innerWidth / 8));
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement('div');
+    s.className = 'cstar';
+    const size = Math.random() < 0.15 ? (Math.random() * 2.5 + 1.5) : (Math.random() * 1.5 + 0.5);
+    const minOp = (0.04 + Math.random() * 0.10).toFixed(2);
+    Object.assign(s.style, {
+      width: size + 'px', height: size + 'px',
+      left: (Math.random() * 100) + '%',
+      top:  (Math.random() * 100) + '%',
+      '--star-min': minOp,
+      animationDuration: (3 + Math.random() * 6) + 's',
+      animationDelay: (Math.random() * 5) + 's',
+    });
+    frag.appendChild(s);
+  }
+  container.appendChild(frag);
+
+  // Nebulae
+  const nebulaData = [
+    { color: 'rgba(99,102,241,0.5)',   size: '55vw', left: '-20%', top: '5%',  blur: '90px', opacity: '0.12', ndx: '30px', ndy: '-15px', dur: '22s' },
+    { color: 'rgba(139,92,246,0.5)',   size: '45vw', left: '65%',  top: '20%', blur: '80px', opacity: '0.10', ndx: '-20px', ndy: '20px', dur: '28s' },
+    { color: 'rgba(6,182,212,0.4)',    size: '40vw', left: '30%',  top: '60%', blur: '100px',opacity: '0.08', ndx: '15px',  ndy: '25px', dur: '35s' },
+    { color: 'rgba(245,158,11,0.35)',  size: '30vw', left: '10%',  top: '75%', blur: '70px', opacity: '0.07', ndx: '-10px', ndy: '-20px',dur: '18s' },
+  ];
+  nebulaData.forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'cnebula';
+    Object.assign(el.style, {
+      width: n.size, height: n.size, left: n.left, top: n.top,
+      background: `radial-gradient(circle, ${n.color} 0%, transparent 70%)`,
+      '--nebula-blur': n.blur,
+      '--nebula-opacity': n.opacity,
+      '--ndx': n.ndx,
+      '--ndy': n.ndy,
+      animationDuration: n.dur,
+      animationDelay: (Math.random() * 8) + 's',
+    });
+    container.appendChild(el);
+  });
+}
+
+// ── INIT ──
+function init() {
+  const params = getParams();
+
+  // Fix back link
+  document.getElementById('back-link').href = buildBackURL();
+
+  if (!params.d) {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('error-state').style.display = 'block';
+    return;
+  }
+
+  // Parse birth
+  const [y, mo, d] = params.d.split('-').map(Number);
+  const [h, mi] = (params.t || '12:00').split(':').map(Number);
+  birthDate = new Date(y, mo - 1, d, h || 12, mi || 0, 0, 0);
+
+  if (isNaN(birthDate.getTime())) {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('error-state').style.display = 'block';
+    return;
+  }
+
+  userName = params.name || '';
+
+  // Compute
+  allItems = computeMilestones(birthDate);
+  futureItems = allItems.filter(it => it.diff >= 0);
+  const pastItems = allItems.filter(it => it.diff < 0);
+
+  // Update header
+  renderHeaderStats(pastItems.length, futureItems.length, userName);
+
+  // Render initial batch
+  const needsExpand = allItems.length > INITIAL_LIMIT;
+  renderTimeline(allItems, needsExpand ? INITIAL_LIMIT : null);
+
+  // Show expand button if needed
+  if (needsExpand) {
+    const expWrap = document.getElementById('tl-expand-wrap');
+    expWrap.style.display = 'block';
+    // Update label with count
+    const btn = expWrap.querySelector('.btn-expand');
+    const remaining = allItems.length - INITIAL_LIMIT;
+    btn.innerHTML = `
+      <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      Voir ${remaining} milestones supplémentaires`;
+  }
+
+  // Show page elements
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('timeline-wrap').style.display = 'block';
+  document.getElementById('quick-nav').style.display = 'flex';
+
+  // Add "section-future" anchor for quick-nav
+  const nowEl = document.getElementById('section-now');
+  if (nowEl) {
+    const futureAnchor = document.createElement('div');
+    futureAnchor.id = 'section-future';
+    futureAnchor.style.cssText = 'position:absolute;top:-20px;left:0;pointer-events:none';
+    nowEl.style.position = 'relative';
+    nowEl.appendChild(futureAnchor);
+  }
+
+  // Countdowns
+  startCountdowns();
+
+  // Intersection observer
+  observeItems();
+
+  // Scroll to "now" automatically (with a small delay to allow paint)
+  setTimeout(() => {
+    const nowEl = document.getElementById('section-now');
+    if (nowEl) nowEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 400);
+}
+
+// ── BOOT ──
+document.addEventListener('DOMContentLoaded', () => {
+  spawnStars();
+  init();
+});
+</script>
+</body>
+</html>

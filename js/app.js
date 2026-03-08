@@ -618,6 +618,15 @@ function calculate() {
   }
 
   updateURL();
+
+  // Update "Ma Timeline" link with current URL params
+  const tlLink = document.getElementById('btn-timeline-page');
+  if (tlLink) {
+    const currentParams = new URLSearchParams(location.search);
+    tlLink.href = 'timeline.html?' + currentParams.toString();
+    tlLink.style.display = 'inline-flex';
+  }
+
   confetti();
 }
 

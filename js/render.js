@@ -611,3 +611,188 @@ function toggleAstralProfile() {
   btn.classList.toggle('open', !isOpen);
   label.textContent = isOpen ? '🔮 En savoir plus sur mon profil astral' : '✨ Masquer mon profil astral';
 }
+
+// ── ILS SONT NÉS COMME TOI ────────────────────────────────────────────────────
+// Dépend de : CELEBRITIES_BY_DAY, BIRTH_YEAR_EVENTS, PAST_LIVES,
+//             WORLD_POP_BY_YEAR (data.js)
+function renderBornLikeYou(birth) {
+  const month = birth.getMonth() + 1;  // 1-12
+  const day   = birth.getDate();       // 1-31
+  const year  = birth.getFullYear();
+
+  // ── 1. Naissances du même jour ───────────────────────────────────────────────
+  // Trouver la population de la décennie la plus proche
+  function getWorldPop(y) {
+    const decades = Object.keys(WORLD_POP_BY_YEAR).map(Number).sort((a, b) => a - b);
+    let best = decades[0];
+    for (const d of decades) { if (d <= y) best = d; }
+    return WORLD_POP_BY_YEAR[best];
+  }
+  const popMillions  = getWorldPop(year);
+  const twinEstimate = Math.round((popMillions * 1e6) / 365);
+  const twinFmt      = twinEstimate.toLocaleString('fr-FR');
+
+  // ── 2. Célébrités du même jour/mois ──────────────────────────────────────────
+  const sameDayCelebs = (CELEBRITIES_BY_DAY || []).filter(
+    c => c.month === month && c.day === day
+  );
+
+  // ── 3. Événement historique de l'année ───────────────────────────────────────
+  const yearEvent = BIRTH_YEAR_EVENTS && BIRTH_YEAR_EVENTS[year]
+    ? BIRTH_YEAR_EVENTS[year]
+    : null;
+
+  // ── 4. Score de rareté (ludique) ─────────────────────────────────────────────
+  function rarityScore(d) {
+    let score = 50; // base neutre
+
+    // Saison (hémisphère nord) — été et printemps = plus de naissances
+    const m = d.getMonth() + 1;
+    if (m >= 3 && m <= 5)       score -= 5;  // printemps : commun
+    else if (m >= 6 && m <= 8)  score -= 10; // été : très commun
+    else if (m >= 9 && m <= 11) score += 8;  // automne : un peu plus rare
+    else                         score += 15; // hiver : plus rare
+
+    // Jour de la semaine (0=dim, 6=sam)
+    const dow = d.getDay();
+    if (dow === 0 || dow === 6) score += 12; // week-end : moins de naissances programmées
+    else if (dow === 1)         score -= 5;  // lundi : commun post-weekend
+
+    // Jour rond dans le mois
+    const da = d.getDate();
+    if (da === 1)           score += 8;  // 1er du mois : plutôt rare naturellement
+    else if (da === 15)     score += 5;
+    else if (da === 10 || da === 20 || da === 25) score += 3;
+
+    // Année bissextile
+    const birthYear = d.getFullYear();
+    const isLeap = (birthYear % 4 === 0 && birthYear % 100 !== 0) || birthYear % 400 === 0;
+    if (isLeap) score += 6;
+
+    // Le 29 février c'est évidemment rarissime
+    if (m === 2 && da === 29) score += 35;
+
+    return Math.min(100, Math.max(1, score));
+  }
+  const rarity = rarityScore(birth);
+
+  // Libellé du score
+  let rarityLabel, rarityColor;
+  if (rarity >= 85)      { rarityLabel = 'Exceptionnel';  rarityColor = 'var(--amber)';   }
+  else if (rarity >= 70) { rarityLabel = 'Très rare';     rarityColor = 'var(--violet)';  }
+  else if (rarity >= 55) { rarityLabel = 'Assez rare';    rarityColor = 'var(--indigo)';  }
+  else if (rarity >= 40) { rarityLabel = 'Dans la norme'; rarityColor = 'var(--cyan)';    }
+  else                   { rarityLabel = 'Très commun';   rarityColor = 'var(--emerald)'; }
+
+  // ── 5. Vie passée — hash déterministe ────────────────────────────────────────
+  function dateHash(d) {
+    // Fonction de hash simple (djb2-like) sur la chaîne ISO de la date
+    const s = d.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) {
+      h = ((h << 5) + h) + s.charCodeAt(i);
+      h = h & h; // convert to 32bit int
+    }
+    return Math.abs(h);
+  }
+  const pastLifeIdx  = dateHash(birth) % PAST_LIVES.length;
+  const pastLife     = PAST_LIVES[pastLifeIdx];
+
+  // ── Célébrités chips ──────────────────────────────────────────────────────────
+  const celebChips = sameDayCelebs.length > 0
+    ? sameDayCelebs.map((c, i) => `
+        <div class="bly-celeb-chip" style="animation-delay:${i * 55}ms">
+          <span class="bly-celeb-emoji" aria-hidden="true">${c.emoji}</span>
+          <span class="bly-celeb-name">${c.name}</span>
+          <span class="bly-celeb-domain">${c.domain}</span>
+          ${c.year > 0 ? `<span class="bly-celeb-year">${c.year}</span>` : ''}
+        </div>`).join('')
+    : `<p class="bly-no-celeb">Personne de célèbre répertorié ce jour-là — peut-être toi demain ?</p>`;
+
+  // ── Événement historique ─────────────────────────────────────────────────────
+  const yearEventHTML = yearEvent
+    ? `<div class="bly-card bly-card--event" aria-label="Événement de ton année de naissance">
+        <div class="bly-card-icon" aria-hidden="true">${yearEvent.icon}</div>
+        <div class="bly-card-body">
+          <div class="bly-card-label">L'année de ta naissance, le monde…</div>
+          <div class="bly-card-value bly-event-text">${yearEvent.text}.</div>
+        </div>
+      </div>`
+    : '';
+
+  // ── Rendu principal ──────────────────────────────────────────────────────────
+  return `
+    <h2 class="section-head">Ils sont nés comme toi</h2>
+
+    <div class="bly-grid">
+
+      <!-- Jumeaux de date -->
+      <div class="bly-card bly-card--twins">
+        <div class="bly-card-icon" aria-hidden="true">👥</div>
+        <div class="bly-card-body">
+          <div class="bly-card-label">Jumeaux de naissance</div>
+          <div class="bly-card-value bly-twins-count">${twinFmt}</div>
+          <div class="bly-card-sub">
+            personnes dans le monde partagent exactement ta date de naissance
+            <span class="bly-card-note">(estimation basée sur la population de ${year})</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score de rareté -->
+      <div class="bly-card bly-card--rarity">
+        <div class="bly-card-icon" aria-hidden="true">💎</div>
+        <div class="bly-card-body">
+          <div class="bly-card-label">Score de rareté de ta date</div>
+          <div class="bly-rarity-bar-wrap" role="progressbar" aria-valuenow="${rarity}" aria-valuemin="0" aria-valuemax="100" aria-label="Score de rareté : ${rarity} sur 100">
+            <div class="bly-rarity-bar-track">
+              <div class="bly-rarity-bar-fill" style="width:${rarity}%; background:${rarityColor}"></div>
+            </div>
+            <div class="bly-rarity-meta">
+              <span class="bly-rarity-label" style="color:${rarityColor}">${rarityLabel}</span>
+              <span class="bly-rarity-score">${rarity}/100</span>
+            </div>
+          </div>
+          <div class="bly-card-sub bly-rarity-factors">
+            ${birth.getDay() === 0 || birth.getDay() === 6 ? '<span class="bly-factor-chip">Week-end</span>' : ''}
+            ${(birth.getMonth() + 1) === 2 && birth.getDate() === 29 ? '<span class="bly-factor-chip bly-factor-chip--gold">29 février</span>' : ''}
+            ${((birth.getFullYear() % 4 === 0 && birth.getFullYear() % 100 !== 0) || birth.getFullYear() % 400 === 0) ? '<span class="bly-factor-chip">Année bissextile</span>' : ''}
+            ${birth.getDate() === 1 ? '<span class="bly-factor-chip">1er du mois</span>' : ''}
+            ${birth.getDate() === 15 ? '<span class="bly-factor-chip">15 du mois</span>' : ''}
+          </div>
+        </div>
+      </div>
+
+      <!-- Événement de l'année -->
+      ${yearEventHTML}
+
+    </div>
+
+    <!-- Célébrités -->
+    <div class="bly-celebs-section">
+      <div class="bly-celebs-header">
+        <div class="bly-celebs-title">
+          <span aria-hidden="true">✨</span>
+          Nés un ${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')} comme toi
+        </div>
+        ${sameDayCelebs.length > 0 ? `<div class="bly-celebs-count">${sameDayCelebs.length} personnage${sameDayCelebs.length > 1 ? 's' : ''}</div>` : ''}
+      </div>
+      <div class="bly-celebs-chips">
+        ${celebChips}
+      </div>
+    </div>
+
+    <!-- Vie passée -->
+    <div class="bly-pastlife-card">
+      <div class="bly-pastlife-header">
+        <span class="bly-pastlife-icon" aria-hidden="true">${pastLife.icon}</span>
+        <div>
+          <div class="bly-pastlife-title">Dans ta vie passée…</div>
+          <div class="bly-pastlife-era">${pastLife.era}</div>
+        </div>
+      </div>
+      <div class="bly-pastlife-job">tu étais <strong>${pastLife.job}</strong></div>
+      <div class="bly-pastlife-desc">${pastLife.desc}</div>
+    </div>
+  `;
+}

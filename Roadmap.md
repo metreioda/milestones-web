@@ -1,6 +1,6 @@
 # Roadmap -- MilestoneMe (milestones-web)
 
-> Derniere mise a jour : 2026-03-09
+> Derniere mise a jour : 2026-03-08 (ajout backlog 2026-03-09)
 
 ## Complete
 
@@ -43,6 +43,7 @@
 
 ## Idees / Backlog
 
+- **Ils sont nés comme toi** -- Stats anniversaire enrichies (priorité moyenne) : nombre de personnes dans le monde partageant la même date de naissance, célébrités/personnages historiques nés le même jour, événements historiques majeurs survenus le même jour (expansion des 118 événements existants), statistiques astrales (% de Scorpions dans le monde, etc.), journée mondiale/fête associée à la date
 - **Biorhythmes** -- Cycles physique (23j), emotionnel (28j), intellectuel (33j) avec graphique
 - **Carte du ciel a la naissance** -- Representation visuelle simplifiee des positions planetaires
 - **Notifications push** -- Rappel le jour d'un milestone (necessite PWA + permission)

@@ -216,6 +216,20 @@ function calculate() {
   const future = all.filter(x => !x.isPast).map((x,i) => ({ ...x, idx: i }));
   futureItems = future;
 
+  // ── Top 3 milestones ──
+  const topSection = document.getElementById('top-milestones-section');
+  if (topSection && future.length > 0) {
+    const top3 = future.slice(0, 3);
+    topSection.innerHTML = `
+      <h2 class="section-head">Tes prochains rendez-vous</h2>
+      <div class="top-milestones-grid">
+        ${top3.map((item, i) => renderTopMilestone(item, i)).join('')}
+      </div>
+    `;
+  } else if (topSection) {
+    topSection.innerHTML = '';
+  }
+
   // ── Age ──
   document.getElementById('age-val').textContent = fmtAge(ageMs);
   const ageLbl = document.querySelector('.age-box .lbl');
@@ -310,6 +324,9 @@ function calculate() {
     </div>
   `;
 
+  // ── Saisons & Événements ──
+  document.getElementById('season-events-section').innerHTML = renderSeasonAndEvents(birth, genre);
+
   // ── Calendriers alternatifs ──
   const y = birth.getFullYear(), mo = birth.getMonth() + 1, da = birth.getDate();
   const hijri    = jdToHijri(gregorianToJD(y, mo, da));
@@ -391,14 +408,22 @@ function calculate() {
   res.classList.add('show');
   setTimeout(() => res.scrollIntoView({ behavior:'smooth', block:'start' }), 80);
 
-  // ── Live countdowns ──
+  // ── Live countdowns (cards + top 3) ──
   future.forEach(item => {
-    const el = document.getElementById(`cd-${item.idx}`);
-    if (!el) return;
+    const el    = document.getElementById(`cd-${item.idx}`);
+    const elTop = document.getElementById(`cd-top-${item.idx}`);
     const tick = () => {
       const d = item.date - new Date();
-      el.textContent = fmtCountdown(d);
-      el.classList.toggle('hot', d > 0 && d < 864e5 * 7);
+      const str = fmtCountdown(d);
+      const isHot = d > 0 && d < 864e5 * 7;
+      if (el) {
+        el.textContent = str;
+        el.classList.toggle('hot', isHot);
+      }
+      if (elTop) {
+        elTop.textContent = str;
+        elTop.classList.toggle('hot', isHot);
+      }
     };
     tick();
     intervals.push(setInterval(tick, 1000));
@@ -410,6 +435,30 @@ function calculate() {
     if (!el) return;
     el.textContent = fmt(Math.floor((new Date() - birth) / 1e3));
   }, 1000));
+
+  // ── Masquer le canvas WebGL hero ──
+  if (typeof window._hideHeroCanvas === 'function') {
+    window._hideHeroCanvas();
+  }
+
+  // ── Scroll reveal — stagger animé des sections ──
+  setTimeout(() => {
+    document.querySelectorAll('#results > div').forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = `opacity 0.5s ease ${i * 0.08}s, transform 0.5s ease ${i * 0.08}s`;
+      // Forcer le reflow pour que la transition soit effective
+      void el.offsetHeight;
+      setTimeout(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 50);
+    });
+    // Activer les sections IntersectionObserver
+    if (typeof window.observeRevealSections === 'function') {
+      window.observeRevealSections();
+    }
+  }, 10);
 
   updateURL();
   confetti();

@@ -5,20 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MilestoneMe – Célèbre chaque instant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+<!-- Aurora CSS fallback layer — visible partout, intensité variable -->
+<div class="aurora-layer" aria-hidden="true"></div>
+
+<!-- WebGL canvas Three.js — hero only, disparaît au show results -->
+<canvas id="hero-canvas" aria-hidden="true"></canvas>
+
+<!-- SVG filter pour liquid glass button -->
+<svg class="hidden-svg" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <filter id="glass-filter" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="1" seed="1" result="turbulence"/>
+      <feGaussianBlur in="turbulence" stdDeviation="2" result="blurredNoise"/>
+      <feDisplacementMap in="SourceGraphic" in2="blurredNoise" scale="40" xChannelSelector="R" yChannelSelector="B" result="displaced"/>
+      <feGaussianBlur in="displaced" stdDeviation="3" result="finalBlur"/>
+      <feComposite in="finalBlur" in2="finalBlur" operator="over"/>
+    </filter>
+  </defs>
+</svg>
 
 <div class="wrap">
 
   <!-- HERO -->
   <div class="hero">
-    <div class="badge">✨ Tes milestones de vie</div>
-    <h1>Chaque seconde<br>mérite d'être <em>célébrée</em></h1>
-    <p>Entre ta date de naissance et découvre tous tes anniversaires secrets — 10 000 jours, 1 milliard de secondes, et des dizaines d'autres.</p>
+    <div class="hero-badge">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" fill="currentColor"/>
+      </svg>
+      Tes milestones de vie
+    </div>
 
+    <h1 class="hero-title">
+      Chaque seconde<br>
+      mérite d'être <em>célébrée</em>
+    </h1>
+
+    <p class="hero-sub">Entre ta date de naissance et découvre tous tes anniversaires secrets — 10 000 jours, 1 milliard de secondes, et des dizaines d'autres.</p>
+
+    <!-- Form card glassmorphism -->
     <div class="form-card">
+
       <div class="form-row">
         <div class="field-group field-group--date">
           <label class="field-label" for="bd">Ta date de naissance</label>
@@ -29,6 +61,7 @@
           <input type="time" id="bt" class="inp-time">
         </div>
       </div>
+
       <div class="field-group field-group--place" style="margin-bottom: 18px;">
         <label class="field-label" for="bplace">
           Lieu de naissance <span class="field-optional">(optionnel)</span>
@@ -37,9 +70,15 @@
                placeholder="Paris, Montréal, Dakar…" autocomplete="off" spellcheck="false">
         <datalist id="cities-list"></datalist>
       </div>
+
       <div class="personalize-wrap">
         <button class="personalize-toggle" id="personalize-toggle" onclick="togglePersonalize()" type="button" aria-expanded="false" aria-controls="personalize-panel">
-          <span>✨ Personnalise ton expérience</span>
+          <span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="vertical-align:-2px;margin-right:6px;opacity:0.7">
+              <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" fill="currentColor"/>
+            </svg>
+            Personnalise ton expérience
+          </span>
           <span class="personalize-chevron" aria-hidden="true">▾</span>
         </button>
         <div class="personalize-panel" id="personalize-panel" role="region" aria-labelledby="personalize-toggle">
@@ -77,36 +116,168 @@
           </div>
         </div>
       </div>
-      <button class="btn-go" onclick="calculate()">🚀 Voir mes milestones</button>
+
+      <!-- Liquid Glass Button -->
+      <button class="btn-go liquid-btn" onclick="calculate()">
+        <div class="liquid-glass-layer"></div>
+        <div class="liquid-content">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+          Voir mes milestones
+        </div>
+      </button>
+
     </div>
   </div>
 
   <!-- RESULTS -->
   <div id="results">
+
+    <!-- 1. Age hero display -->
     <div class="age-box">
       <div class="lbl">Tu as vécu</div>
       <div class="val" id="age-val"></div>
     </div>
 
+    <!-- 2. Stats bento -->
     <div class="stats-row" id="stats-row"></div>
 
+    <!-- 3. TOP 3 MILESTONES -->
+    <div id="top-milestones-section" class="top-milestones-wrap"></div>
+
+    <!-- 4. Astro profile — remonté -->
+    <div id="astro-section"></div>
+
+    <!-- 5. ICS button -->
+    <div class="ics-all-wrap">
+      <button class="btn-ics-all" id="ics-all-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Ajouter mes prochains milestones au calendrier
+      </button>
+    </div>
+
+    <!-- 6. Tous les milestones futurs -->
+    <div id="future-section"></div>
+
+    <!-- 7. Milestones passés -->
+    <div id="past-section"></div>
+
+    <!-- 8. Life stats & geo -->
     <div id="lifestats-section"></div>
     <div id="planet-section"></div>
 
-    <div id="astro-section"></div>
+    <!-- 9. Saisons -->
+    <div id="season-events-section"></div>
+
+    <!-- 10. Calendriers -->
     <div id="calendars-section"></div>
 
-    <div class="ics-all-wrap">
-      <button class="btn-ics-all" id="ics-all-btn">📅 Ajouter mes prochains milestones au calendrier</button>
-    </div>
-
-    <div id="future-section"></div>
-    <div id="past-section"></div>
   </div>
 
 </div>
 
-<footer>MilestoneMe — Célèbre chaque instant de ta vie 🎉</footer>
+<footer>MilestoneMe — Célèbre chaque instant de ta vie<br><small>© 2026 MilestoneMe — Tous droits réservés</small></footer>
+
+<!-- Three.js via CDN — chargé en premier pour le shader WebGL -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<!-- Initialisation WebGL Three.js inline — avant les scripts app -->
+<script>
+(function initHeroCanvas() {
+  // Respecter prefers-reduced-motion
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const canvas = document.getElementById('hero-canvas');
+
+  if (prefersReduced || typeof THREE === 'undefined') {
+    canvas.style.display = 'none';
+    return;
+  }
+
+  // Scene minimaliste : plein écran shader via ShaderMaterial sur un plane
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+  const vertexShader = `
+    void main() {
+      gl_Position = vec4(position, 1.0);
+    }
+  `;
+
+  const fragmentShader = `
+    precision highp float;
+    uniform vec2 resolution;
+    uniform float time;
+
+    void main() {
+      vec2 p = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
+      float d = length(p) * 0.05;
+      float rx = p.x * (1.0 + d);
+      float gx = p.x;
+      float bx = p.x * (1.0 - d);
+      float r = 0.05 / abs(p.y + sin((rx + time) * 1.0) * 0.5);
+      float g = 0.05 / abs(p.y + sin((gx + time) * 1.0) * 0.5);
+      float b = 0.05 / abs(p.y + sin((bx + time) * 1.0) * 0.5);
+      gl_FragColor = vec4(r * 0.4, g * 0.2, b * 0.8, 1.0);
+    }
+  `;
+
+  const uniforms = {
+    resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+    time:       { value: 0.0 }
+  };
+
+  const geometry = new THREE.PlaneGeometry(2, 2);
+  const material = new THREE.ShaderMaterial({ vertexShader, fragmentShader, uniforms });
+  scene.add(new THREE.Mesh(geometry, material));
+
+  let animId = null;
+  let startTime = performance.now();
+  let running = true;
+
+  function animate() {
+    if (!running) return;
+    animId = requestAnimationFrame(animate);
+    uniforms.time.value = (performance.now() - startTime) * 0.001;
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  // Resize
+  window.addEventListener('resize', () => {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    uniforms.resolution.value.set(window.innerWidth, window.innerHeight);
+  });
+
+  // Masquer le canvas quand #results est visible
+  // On expose une fonction globale appelée par calculate() dans app.js
+  window._hideHeroCanvas = function() {
+    canvas.style.opacity = '0';
+    // Stopper l'animation après la transition pour économiser les ressources
+    setTimeout(() => {
+      running = false;
+      if (animId) cancelAnimationFrame(animId);
+    }, 1100);
+  };
+
+  window._showHeroCanvas = function() {
+    running = true;
+    startTime = performance.now() - uniforms.time.value * 1000;
+    animate();
+    canvas.style.opacity = '1';
+  };
+})();
+</script>
 
 <!-- Scripts dans l'ordre de dépendance :
      data.js  → fournit MS, CITIES, MILESTONES, PASSION_FACTS, PLANETS,
@@ -118,6 +289,27 @@
 <script src="js/calendars.js"></script>
 <script src="js/render.js"></script>
 <script src="js/app.js"></script>
+
+<!-- Scroll reveal via IntersectionObserver — après app.js -->
+<script>
+(function initScrollReveal() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  // Exposé globalement pour que calculate() puisse l'appeler
+  window.observeRevealSections = function() {
+    document.querySelectorAll('.reveal-section').forEach(el => observer.observe(el));
+  };
+})();
+</script>
 
 </body>
 </html>

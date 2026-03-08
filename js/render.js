@@ -4,6 +4,32 @@ function unitBand(u) {
   return `<div class="card-unit-band"><span class="unit-tag ${u}">${UNIT_LABELS[u]}</span></div>`;
 }
 
+// ── TOP 3 MILESTONE CARD ──────────────────────────────────────────────────────
+// Utilisé par calculate() dans app.js pour la section vedette
+// Dépend de : MS (data.js), fmtDate, fmtCountdown (app.js)
+function renderTopMilestone(item, rank) {
+  const { m, date, diff, idx } = item;
+  const total   = MS[m.u] * m.v;
+  const elapsed = total - diff;
+  const pct     = Math.min(99, Math.max(1, Math.round(elapsed / total * 100)));
+
+  const rankLabels = ['Prochain', '2e', '3e'];
+
+  return `
+    <div class="top-milestone-card" style="animation-delay:${rank * 80}ms">
+      <div class="top-milestone-rank">${rankLabels[rank]}</div>
+      <div class="top-milestone-emoji">${m.e}</div>
+      <div class="top-milestone-label">${m.n}</div>
+      <div class="top-milestone-tagline">${m.t}</div>
+      <div class="top-milestone-date">${fmtDate(date, true)}</div>
+      <div class="top-milestone-countdown${diff < 864e5 * 7 ? ' hot' : ''}" id="cd-top-${idx}">${fmtCountdown(diff)}</div>
+      <div class="prog-wrap">
+        <div class="prog-meta"><span>Progression</span><span>${pct}%</span></div>
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>`;
+}
+
 // ── MILESTONE CARDS ───────────────────────────────────────────────────────────
 // Dépend de : MS (data.js), fmtDate, fmtCountdown, fmtAgo (app.js)
 // futureItems est une variable globale de app.js, accessible via les onclick inline
@@ -241,6 +267,87 @@ function renderNumerologyProfileBlock(lifePathNum, expressionNum, firstName) {
       </div>
       ${expressionHTML}
     </div>`;
+}
+
+// ── SAISONS & ÉVÉNEMENTS ──────────────────────────────────────────────────────
+// Dépend de : SEASONS_NORTH, getSeasonNorth, WEEKDAYS, HISTORICAL_EVENTS (data.js)
+function renderSeasonAndEvents(birthDate, genre) {
+  const month = birthDate.getMonth();   // 0-11
+  const day   = birthDate.getDate();    // 1-31
+  const dow   = birthDate.getDay();     // 0=dim, 6=sam
+
+  const seasonIdx = getSeasonNorth(month, day);
+  const season    = SEASONS_NORTH[seasonIdx];
+  const weekday   = WEEKDAYS[dow];
+
+  // Catégories emoji map
+  const catEmoji = {
+    science:   '🔬',
+    art:       '🎨',
+    politics:  '🏛️',
+    discovery: '🧭',
+    sport:     '🏆',
+    culture:   '🎭',
+    history:   '📜',
+  };
+
+  // Filter events matching birth month/day, shuffle deterministically, take max 5
+  const events = HISTORICAL_EVENTS
+    .filter(e => e.month === month && e.day === day)
+    .sort((a, b) => Math.abs(a.year) - Math.abs(b.year))
+    .slice(0, 5);
+
+  const eventsHTML = events.length > 0
+    ? events.map(ev => {
+        const yearDisplay = ev.year < 0 ? `${Math.abs(ev.year)} av. J.-C.` : `${ev.year}`;
+        return `
+          <div class="event-item">
+            <div class="event-year">${yearDisplay}</div>
+            <div class="event-cat-emoji">${catEmoji[ev.category] || '📌'}</div>
+            <div class="event-content">
+              <div class="event-title">${ev.title}</div>
+              <div class="event-desc">${ev.description}</div>
+            </div>
+          </div>`;
+      }).join('')
+    : `<div class="events-empty">Aucun grand événement historique recensé pour ce jour — peut-être que ta naissance est le plus grand événement de cette date !</div>`;
+
+  return `
+    <div class="season-events-wrap">
+      <h2 class="section-head">🌿 Ta naissance dans le temps</h2>
+      <div class="season-events-grid">
+
+        <div class="season-card">
+          <div class="season-emoji">${season.emoji}</div>
+          <div class="season-body">
+            <div class="season-label">Saison de naissance</div>
+            <div class="season-name">${season.name}</div>
+            <div class="season-desc">${season.desc}</div>
+          </div>
+        </div>
+
+        <div class="weekday-card">
+          <div class="weekday-emoji">${weekday.emoji}</div>
+          <div class="weekday-body">
+            <div class="weekday-label">Jour de naissance</div>
+            <div class="weekday-name">${weekday.name}</div>
+            <div class="weekday-desc">${weekday.desc}</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="events-box">
+        <div class="events-box-header">
+          <span class="events-box-title">📜 Ce jour dans l'histoire</span>
+          <span class="events-box-date">${day} ${birthDate.toLocaleDateString('fr-FR', { month: 'long' })}</span>
+        </div>
+        <div class="events-list">
+          ${eventsHTML}
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 // ── TOGGLE ASTRAL PROFILE ─────────────────────────────────────────────────────

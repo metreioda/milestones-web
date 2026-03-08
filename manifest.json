@@ -1,0 +1,31 @@
+{
+  "name": "MilestoneMe",
+  "short_name": "MilestoneMe",
+  "description": "Découvre tes anniversaires secrets : 10 000 jours, 1 milliard de secondes et des dizaines d'autres milestones de vie. Célèbre chaque instant.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#6366f1",
+  "background_color": "#030711",
+  "categories": ["lifestyle", "entertainment"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

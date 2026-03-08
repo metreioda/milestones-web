@@ -27,6 +27,8 @@
 - [2026-03-08] **Collapsible milestones** -- Bouton "découvrir plus" pour révéler les détails de chaque milestone. Améliore l'UX sans surcharger l'interface.
 - [2026-03-08] **Cosmic background** -- Animation background avec étoiles, planètes, étoiles filantes, et nébuleuses. Design immersif et thématique.
 - [2026-03-08] **Timeline view (toggle grille/frise)** -- Visualisation chronologique avec bouton toggle entre vue grille et frise temporelle. Navigation des milestones plus fluide.
+- [2026-03-08] **Sous-page "Ma Timeline"** -- Page dédiée timeline.html avec frise chronologique verticale, cards alternées gauche/droite, marqueur "Vous êtes ici", compteurs live, navigation flottante, fond cosmique. Accessible via CTA depuis la page principale.
+- [2026-03-08] **PWA / mode hors-ligne** -- manifest.json + service-worker.js (cache-first static, network-first fonts), bannière "Installer l'app" dismissible, registration dans index.html et timeline.html. Dégradation gracieuse sur file://.
 
 ## En cours
 
@@ -35,14 +37,8 @@
 ## A faire (priorise)
 
 ### Priorite haute
-1. **Sous-page "Ma timeline"** -- Vue chronologique verticale de tous les milestones (passes et futurs) sur une frise temporelle visuelle
-
-### Priorite moyenne
-2. **PWA / mode hors-ligne** -- Manifest + service worker pour installer l'app sur mobile et l'utiliser offline
-
-### Priorite basse
-3. **Animations milestone atteint** -- Animation speciale quand un milestone est atteint en temps reel (le compteur passe a zero)
-4. **Comparaison avec un ami** -- Entrer deux dates de naissance et voir les milestones communs ou proches
+1. **Animations milestone atteint** -- Animation speciale quand un milestone est atteint en temps reel (le compteur passe a zero)
+3. **Comparaison avec un ami** -- Entrer deux dates de naissance et voir les milestones communs ou proches
 
 ## Idees / Backlog
 

@@ -38,6 +38,13 @@
 <!-- Aurora CSS fallback layer — visible partout, intensité variable -->
 <div class="aurora-layer" aria-hidden="true"></div>
 
+<!-- Cosmic background — stars, planets, shooting stars (pure CSS+JS, no libs) -->
+<div id="cosmic-bg" aria-hidden="true">
+  <div class="cosmic-stars" id="cosmic-stars"></div>
+  <div class="cosmic-planets" id="cosmic-planets"></div>
+  <div class="cosmic-shooters" id="cosmic-shooters"></div>
+</div>
+
 <!-- WebGL canvas Three.js — hero only, disparaît au show results -->
 <canvas id="hero-canvas" aria-hidden="true"></canvas>
 
@@ -391,6 +398,158 @@
   window.observeRevealSections = function() {
     document.querySelectorAll('.reveal-section').forEach(el => observer.observe(el));
   };
+})();
+</script>
+
+<!-- Cosmic background — twinkling stars, floating planets, shooting stars -->
+<script>
+(function initCosmicBg() {
+  // Respect prefers-reduced-motion: skip all animations, render nothing
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const starsEl   = document.getElementById('cosmic-stars');
+  const planetsEl = document.getElementById('cosmic-planets');
+  const shootEl   = document.getElementById('cosmic-shooters');
+  if (!starsEl || !planetsEl || !shootEl) return;
+
+  // ── Seeded pseudo-random so layout is deterministic per session ──────────
+  let seed = 0x9e3779b9;
+  function rand() {
+    seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5;
+    return (seed >>> 0) / 0xffffffff;
+  }
+
+  // ── STARS ────────────────────────────────────────────────────────────────
+  // Three size tiers: micro (1px), small (1.5px), medium (2px)
+  const STAR_COUNT = 180;
+  const starFrag = document.createDocumentFragment();
+
+  for (let i = 0; i < STAR_COUNT; i++) {
+    const s = document.createElement('span');
+    const x = rand() * 100;         // vw %
+    const y = rand() * 100;         // vh %
+    const tier = rand();
+    // Size + opacity by tier
+    let size, baseOpacity;
+    if (tier < 0.60) {
+      size = 1;   baseOpacity = 0.25 + rand() * 0.20;  // micro, faint
+    } else if (tier < 0.88) {
+      size = 1.5; baseOpacity = 0.35 + rand() * 0.25;  // small
+    } else {
+      size = 2;   baseOpacity = 0.45 + rand() * 0.30;  // medium, brighter
+    }
+
+    // Twinkle: random duration 2–6s, random delay 0–4s, random easing via class
+    const dur  = (2 + rand() * 4).toFixed(2);
+    const del  = (rand() * 4).toFixed(2);
+    // Slight warm/cool tint variety
+    const tints = ['255,255,255', '220,230,255', '255,245,220', '200,220,255'];
+    const tint  = tints[Math.floor(rand() * tints.length)];
+
+    s.className = 'cstar';
+    s.style.cssText = [
+      `left:${x.toFixed(2)}vw`,
+      `top:${y.toFixed(2)}vh`,
+      `width:${size}px`,
+      `height:${size}px`,
+      `background:rgba(${tint},${baseOpacity.toFixed(2)})`,
+      `animation-duration:${dur}s`,
+      `animation-delay:-${del}s`,   // negative delay = starts mid-cycle
+    ].join(';');
+
+    starFrag.appendChild(s);
+  }
+  starsEl.appendChild(starFrag);
+
+  // ── PLANETS ──────────────────────────────────────────────────────────────
+  // 5 subtle drifting orbs, each with unique color + size + path
+  const PLANET_DEFS = [
+    { size: 28, color: '99,102,241',  opacity: 0.18, x: 8,  y: 18, dur: 22, del: 0  },  // indigo
+    { size: 18, color: '139,92,246',  opacity: 0.14, x: 78, y: 12, dur: 28, del: 6  },  // violet
+    { size: 22, color: '6,182,212',   opacity: 0.12, x: 88, y: 62, dur: 25, del: 3  },  // cyan
+    { size: 14, color: '245,158,11',  opacity: 0.16, x: 22, y: 74, dur: 30, del: 12 },  // amber
+    { size: 10, color: '244,63,94',   opacity: 0.12, x: 60, y: 85, dur: 20, del: 8  },  // rose
+  ];
+
+  PLANET_DEFS.forEach((p, i) => {
+    const el = document.createElement('div');
+    el.className = 'cplanet';
+
+    // Drift amplitude: each planet moves a small amount (set via CSS custom props)
+    const driftX = 10 + Math.floor(rand() * 14);   // px
+    const driftY = 8  + Math.floor(rand() * 10);
+    const driftDur = p.dur;
+
+    el.style.cssText = [
+      `left:${p.x}vw`,
+      `top:${p.y}vh`,
+      `width:${p.size}px`,
+      `height:${p.size}px`,
+      // Layered: solid core glow + outer halo via box-shadow
+      `background:radial-gradient(circle at 35% 35%, rgba(${p.color},${(p.opacity * 1.8).toFixed(2)}), rgba(${p.color},${p.opacity.toFixed(2)}) 60%, transparent 100%)`,
+      `box-shadow:0 0 ${p.size * 1.8}px ${p.size * 0.6}px rgba(${p.color},${(p.opacity * 0.5).toFixed(2)})`,
+      `--dx:${driftX}px`,
+      `--dy:${driftY}px`,
+      `animation-duration:${driftDur}s`,
+      `animation-delay:-${p.del}s`,
+    ].join(';');
+
+    planetsEl.appendChild(el);
+  });
+
+  // ── SHOOTING STARS ───────────────────────────────────────────────────────
+  // Spawn one shooting star every 5-9s; remove it after animation ends
+  function spawnShooter() {
+    const el = document.createElement('div');
+    el.className = 'cshooter';
+
+    // Random start position along top/left edges
+    const side = rand() < 0.7 ? 'top' : 'left';   // mostly from top
+    let startX, startY;
+    if (side === 'top') {
+      startX = 10 + rand() * 60;   // 10–70vw
+      startY = -2;
+    } else {
+      startX = -2;
+      startY = 5 + rand() * 40;    // 5–45vh
+    }
+
+    // Angle: diagonal downward-right, slight variation ±15deg
+    const angle = 25 + rand() * 30;   // 25–55deg below horizontal
+    const length = 80 + rand() * 120; // px tail length
+    const dur = (0.5 + rand() * 0.4).toFixed(2);  // 0.5–0.9s
+
+    // Bright white/blue-white head, fading tail
+    const brightness = 0.7 + rand() * 0.3;
+
+    el.style.cssText = [
+      `left:${startX}vw`,
+      `top:${startY}vh`,
+      `width:${length}px`,
+      `--angle:${angle}deg`,
+      `--shoot-opacity:${brightness.toFixed(2)}`,
+      `animation-duration:${dur}s`,
+    ].join(';');
+
+    shootEl.appendChild(el);
+
+    // Clean up after animation completes
+    el.addEventListener('animationend', () => el.remove(), { once: true });
+  }
+
+  // Initial burst: 2 shooters at load
+  setTimeout(spawnShooter, 2000);
+  setTimeout(spawnShooter, 4500);
+
+  // Recurring: every 5–9s
+  function scheduleNext() {
+    const wait = 5000 + rand() * 4000;
+    setTimeout(() => {
+      spawnShooter();
+      scheduleNext();
+    }, wait);
+  }
+  scheduleNext();
 })();
 </script>
 

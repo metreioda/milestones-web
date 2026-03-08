@@ -117,6 +117,106 @@ body.results-visible #hero-canvas {
   #hero-canvas  { display: none; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   COSMIC BACKGROUND — stars, planets, shooting stars
+   Positioned behind all content (z-index: 0), pointer-events: none
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#cosmic-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ── Twinkling stars ──────────────────────────────────────────────────────── */
+.cosmic-stars { position: absolute; inset: 0; }
+
+.cstar {
+  position: absolute;
+  border-radius: 50%;
+  animation: starTwinkle ease-in-out infinite alternate;
+  /* will-change avoids repaints — only opacity changes */
+  will-change: opacity;
+}
+
+@keyframes starTwinkle {
+  0%   { opacity: 0.08; }
+  40%  { opacity: 1;    }
+  70%  { opacity: 0.55; }
+  100% { opacity: 0.10; }
+}
+
+/* Light mode: stars are very faint so they don't pollute the white bg */
+:root[data-theme="light"] .cstar {
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+}
+
+/* ── Floating planets ─────────────────────────────────────────────────────── */
+.cosmic-planets { position: absolute; inset: 0; }
+
+.cplanet {
+  position: absolute;
+  border-radius: 50%;
+  /* Drift: translate in a lazy figure-8-like path */
+  animation: planetDrift ease-in-out infinite alternate;
+  will-change: transform;
+  /* CSS custom props set per-element by JS: --dx, --dy */
+}
+
+@keyframes planetDrift {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(var(--dx), calc(var(--dy) * 0.4)); }
+  50%  { transform: translate(calc(var(--dx) * 0.6), var(--dy)); }
+  75%  { transform: translate(calc(var(--dx) * -0.3), calc(var(--dy) * 0.7)); }
+  100% { transform: translate(calc(var(--dx) * -0.1), calc(var(--dy) * -0.2)); }
+}
+
+/* Light mode: hide planets almost entirely — they'd be dark blobs on white */
+:root[data-theme="light"] .cplanet {
+  opacity: 0.06;
+}
+
+/* ── Shooting stars ───────────────────────────────────────────────────────── */
+.cosmic-shooters { position: absolute; inset: 0; }
+
+.cshooter {
+  position: absolute;
+  height: 1.5px;
+  /* Gradient: bright white head → transparent tail */
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255, var(--shoot-opacity, 0.85)) 40%,
+    rgba(200,220,255, var(--shoot-opacity, 0.85)) 60%,
+    transparent 100%
+  );
+  border-radius: 1px;
+  animation: shooterFly linear forwards;
+  will-change: transform, opacity;
+  /* Small glow on the head */
+  filter: drop-shadow(0 0 3px rgba(200,220,255,0.6));
+}
+
+@keyframes shooterFly {
+  0%   { transform: rotate(var(--angle, 35deg)) translateX(-30px);           opacity: 0; }
+  8%   { transform: rotate(var(--angle, 35deg)) translateX(10px);            opacity: 1; }
+  88%  { transform: rotate(var(--angle, 35deg)) translateX(calc(90vw));      opacity: 0.9; }
+  100% { transform: rotate(var(--angle, 35deg)) translateX(calc(100vw + 200px)); opacity: 0; }
+}
+
+/* Light mode: shooting stars also barely visible */
+:root[data-theme="light"] .cshooter {
+  opacity: 0.12;
+}
+
+/* Entirely disable cosmic bg animations when user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  #cosmic-bg { display: none; }
+}
+
 /* ─── ANIMATED NEBULA BACKGROUND ─────────────────────────────────────────── */
 body::before {
   content: '';

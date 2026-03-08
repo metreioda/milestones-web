@@ -396,6 +396,168 @@ function renderSeasonAndEvents(birthDate, genre) {
   `;
 }
 
+// ── TIMELINE ──────────────────────────────────────────────────────────────────
+// Dépend de : MS (data.js), UNIT_LABELS (data.js), fmtDate, fmtCountdown, fmtAgo (app.js)
+// Génère une frise chronologique verticale de tous les milestones (passés + futurs)
+// triés par date, espacés de manière égale.
+//
+// @param {Array}  items          — tableau "all" de { m, date, diff, isPast }
+// @param {Date}   birth          — date de naissance
+// @param {Date}   now            — moment présent
+// @param {Array}  futureItemsRef — référence à futureItems[] pour les countdowns
+function renderTimeline(items, birth, now, futureItemsRef, maxItems) {
+  const MAX_ITEMS = maxItems || 50;
+
+  // S'assurer d'être triés par date croissante
+  const sorted = [...items].sort((a, b) => a.date - b.date);
+
+  const hasMore = sorted.length > MAX_ITEMS;
+  const shown   = hasMore ? sorted.slice(0, MAX_ITEMS) : sorted;
+
+  // ── Position du marqueur "Tu es ici" ──────────────────────────────────────
+  // Index du premier item futur (transition passé → futur)
+  let nowInsertIdx = shown.findIndex(x => !x.isPast);
+  if (nowInsertIdx === -1) nowInsertIdx = shown.length;
+
+  // ── Map date → index futur (pour retrouver l'id countdown) ───────────────
+  const futureIdxMap = new Map();
+  (futureItemsRef || []).forEach((fi, i) => {
+    futureIdxMap.set(fi.date.getTime(), i);
+  });
+
+  // ── Labels d'affichage des unités ─────────────────────────────────────────
+  const UNIT_DISPLAY = { s: 'Secondes', m: 'Minutes', h: 'Heures', d: 'Jours', w: 'Semaines' };
+
+  // ── Construire la liste de rows (year markers + now marker + items) ────────
+  const yearsSeen = new Set();
+  const rows = [];
+
+  shown.forEach((item, idx) => {
+    const yr = item.date.getFullYear();
+
+    // Marqueur "Tu es ici" avant le premier futur
+    if (idx === nowInsertIdx) {
+      rows.push({ type: 'now' });
+    }
+
+    // Marqueur d'année si nouvelle année
+    if (!yearsSeen.has(yr)) {
+      yearsSeen.add(yr);
+      rows.push({ type: 'year', year: yr });
+    }
+
+    rows.push({ type: 'item', item, idx });
+  });
+
+  // Si tout est passé, "now" va en fin
+  if (nowInsertIdx === shown.length) {
+    rows.push({ type: 'now' });
+  }
+
+  // ── Générer le HTML de chaque row ─────────────────────────────────────────
+  let itemCounter = 0;
+  let rowsHTML = '';
+
+  rows.forEach(row => {
+    if (row.type === 'now') {
+      rowsHTML += `
+        <div class="timeline-item is-now-row" aria-label="Position actuelle">
+          <div></div>
+          <div class="timeline-dot-wrap">
+            <div class="timeline-now-ring"></div>
+          </div>
+          <div style="padding-left:12px;display:flex;align-items:center;">
+            <span class="timeline-now-label">Tu es ici</span>
+          </div>
+        </div>`;
+      return;
+    }
+
+    if (row.type === 'year') {
+      rowsHTML += `
+        <div class="timeline-item tl-year-row tl-visible" aria-hidden="true">
+          <div></div>
+          <div class="timeline-dot-wrap">
+            <div style="width:1px;height:24px;background:var(--border2);margin:auto;"></div>
+          </div>
+          <div style="padding-left:10px;display:flex;align-items:center;">
+            <span class="timeline-year-label">${row.year}</span>
+          </div>
+        </div>`;
+      return;
+    }
+
+    // Item normal
+    const { item } = row;
+    const { m, date, diff, isPast } = item;
+    const unitClass = `u-${m.u}`;
+    const cardClass = isPast ? 'past' : 'future';
+
+    // Contenu d'état : countdown pour futur, "accompli" pour passé
+    let statusHTML;
+    if (isPast) {
+      statusHTML = `<div class="tl-past-done">Accompli — <span style="font-weight:400;color:var(--muted)">${fmtAgo(diff)}</span></div>`;
+    } else {
+      const fIdx = futureIdxMap.get(date.getTime());
+      const cdId = fIdx !== undefined ? `tl-cd-${fIdx}` : '';
+      const hotClass = diff > 0 && diff < 864e5 * 7 ? ' hot' : '';
+      statusHTML = `<div class="tl-countdown${hotClass}"${cdId ? ` id="${cdId}"` : ''}>${fmtCountdown(diff)}</div>`;
+    }
+
+    // Alternance gauche / droite selon l'index parmi les items (pas les rows)
+    const isLeft = (itemCounter % 2 === 0);
+    itemCounter++;
+
+    const cardHTML = `
+      <div class="timeline-card ${cardClass}">
+        <div class="tl-unit-tag ${unitClass}">${UNIT_DISPLAY[m.u]}</div>
+        <div class="tl-card-top">
+          <span class="tl-emoji" aria-hidden="true">${m.e}</span>
+          <div class="tl-card-titles">
+            <div class="tl-name">${m.n}</div>
+            <div class="tl-tagline">${m.t}</div>
+          </div>
+        </div>
+        <div class="tl-date"><strong>${fmtDate(date)}</strong></div>
+        ${statusHTML}
+      </div>`;
+
+    rowsHTML += `
+      <div class="timeline-item" data-tl-item>
+        <div class="timeline-card-left">${isLeft  ? cardHTML : ''}</div>
+        <div class="timeline-dot-wrap">
+          <div class="timeline-dot ${unitClass}"></div>
+        </div>
+        <div class="timeline-card-right">${!isLeft ? cardHTML : ''}</div>
+      </div>`;
+  });
+
+  // ── "Voir plus" si tronqué ─────────────────────────────────────────────────
+  // Si tronqué, stocker tous les items dans une variable globale pour l'expansion
+  if (hasMore) {
+    window._tlAllItems = sorted;
+    window._tlBirth    = birth;
+    window._tlNow      = now;
+    window._tlFuture   = futureItemsRef;
+  }
+
+  const voirPlusHTML = hasMore ? `
+    <div class="timeline-voir-plus">
+      <button class="btn-tl-voir-plus" id="btn-tl-voir-plus" onclick="expandTimeline()">
+        + ${sorted.length - MAX_ITEMS} milestones supplémentaires
+      </button>
+    </div>` : '';
+
+  return `
+    <h2 class="section-head">Ma frise chronologique</h2>
+    <div class="timeline-wrap">
+      <div class="timeline-spine" aria-hidden="true"></div>
+      ${rowsHTML}
+    </div>
+    ${voirPlusHTML}
+  `;
+}
+
 // ── TOGGLE ASTRAL PROFILE ─────────────────────────────────────────────────────
 function toggleAstralProfile() {
   const btn   = document.getElementById('astro-profile-btn');

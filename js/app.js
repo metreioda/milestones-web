@@ -1,6 +1,8 @@
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let futureItems = [];
 let intervals = [];
+let allMilestones = [];       // référence globale pour la timeline
+let currentView = 'grid';     // 'grid' | 'timeline'
 
 // ── CITIES ────────────────────────────────────────────────────────────────────
 function buildCitiesDatalist() {
@@ -139,6 +141,69 @@ function toggleMilestoneSection(section) {
   }
 }
 
+// ── TOGGLE MILESTONE VIEW — grid ↔ timeline ───────────────────────────────────
+function toggleMilestoneView(view) {
+  currentView = view;
+
+  const btnGrid     = document.getElementById('btn-view-grid');
+  const btnTimeline = document.getElementById('btn-view-timeline');
+  const futSec      = document.getElementById('future-section');
+  const pastSec     = document.getElementById('past-section');
+  const tlSec       = document.getElementById('timeline-section');
+
+  if (!btnGrid || !btnTimeline || !futSec || !pastSec || !tlSec) return;
+
+  if (view === 'grid') {
+    // Activer grille
+    btnGrid.classList.add('active');
+    btnGrid.setAttribute('aria-pressed', 'true');
+    btnTimeline.classList.remove('active');
+    btnTimeline.setAttribute('aria-pressed', 'false');
+
+    futSec.style.display = '';
+    pastSec.style.display = '';
+    tlSec.style.display = 'none';
+
+  } else {
+    // Activer timeline
+    btnTimeline.classList.add('active');
+    btnTimeline.setAttribute('aria-pressed', 'true');
+    btnGrid.classList.remove('active');
+    btnGrid.setAttribute('aria-pressed', 'false');
+
+    futSec.style.display = 'none';
+    pastSec.style.display = 'none';
+    tlSec.style.display = '';
+
+    // Déclencher le scroll reveal des items de la timeline
+    _observeTimelineItems();
+  }
+}
+
+// IntersectionObserver pour les items de la timeline
+function _observeTimelineItems() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // Pas d'animation : tout visible immédiatement
+    document.querySelectorAll('#timeline-section .timeline-item[data-tl-item]').forEach(el => {
+      el.classList.add('tl-visible');
+    });
+    return;
+  }
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('tl-visible');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.10, rootMargin: '0px 0px -20px 0px' });
+
+  document.querySelectorAll('#timeline-section .timeline-item[data-tl-item]').forEach(el => {
+    obs.observe(el);
+  });
+}
+
 // ── SHARE ─────────────────────────────────────────────────────────────────────
 function shareIdx(idx) {
   const item = futureItems[idx];
@@ -227,7 +292,8 @@ function calculate() {
 
   const past   = all.filter(x =>  x.isPast).reverse();
   const future = all.filter(x => !x.isPast).map((x,i) => ({ ...x, idx: i }));
-  futureItems = future;
+  futureItems  = future;
+  allMilestones = all;  // stocké globalement pour la timeline
 
   // ── Top 3 milestones ──
   const topSection = document.getElementById('top-milestones-section');
@@ -458,15 +524,39 @@ function calculate() {
     pSec.innerHTML = '';
   }
 
+  // ── Timeline ──
+  const tlSec = document.getElementById('timeline-section');
+  if (tlSec && typeof renderTimeline === 'function') {
+    tlSec.innerHTML = renderTimeline(all, birth, now, future);
+  }
+
+  // ── Afficher / masquer les sections selon la vue actuelle ──
+  // Reset la vue sur 'grid' à chaque nouveau calcul
+  currentView = 'grid';
+  const vToggle = document.getElementById('view-toggle-wrap');
+  if (vToggle) vToggle.style.display = 'flex';
+
+  // S'assurer que la vue grille est l'état par défaut
+  const btnG = document.getElementById('btn-view-grid');
+  const btnT = document.getElementById('btn-view-timeline');
+  if (btnG) { btnG.classList.add('active'); btnG.setAttribute('aria-pressed', 'true'); }
+  if (btnT) { btnT.classList.remove('active'); btnT.setAttribute('aria-pressed', 'false'); }
+  if (tlSec) tlSec.style.display = 'none';
+  const fSec2 = document.getElementById('future-section');
+  const pSec2 = document.getElementById('past-section');
+  if (fSec2) fSec2.style.display = '';
+  if (pSec2) pSec2.style.display = '';
+
   // show
   const res = document.getElementById('results');
   res.classList.add('show');
   setTimeout(() => res.scrollIntoView({ behavior:'smooth', block:'start' }), 80);
 
-  // ── Live countdowns (cards + top 3) ──
+  // ── Live countdowns (cards + top 3 + timeline) ──
   future.forEach(item => {
     const el    = document.getElementById(`cd-${item.idx}`);
     const elTop = document.getElementById(`cd-top-${item.idx}`);
+    const elTl  = document.getElementById(`tl-cd-${item.idx}`);
     const tick = () => {
       const d = item.date - new Date();
       const str = fmtCountdown(d);
@@ -478,6 +568,10 @@ function calculate() {
       if (elTop) {
         elTop.textContent = str;
         elTop.classList.toggle('hot', isHot);
+      }
+      if (elTl) {
+        elTl.textContent = str;
+        elTl.classList.toggle('hot', isHot);
       }
     };
     tick();
@@ -499,6 +593,9 @@ function calculate() {
   // ── Scroll reveal — stagger animé des sections ──
   setTimeout(() => {
     document.querySelectorAll('#results > div').forEach((el, i) => {
+      // Exclure la timeline (hidden par défaut) et le toggle wrapper
+      // pour éviter de perturber l'animation au moment du switch de vue
+      if (el.id === 'timeline-section' || el.id === 'view-toggle-wrap') return;
       el.style.opacity = '0';
       el.style.transform = 'translateY(20px)';
       el.style.transition = `opacity 0.5s ease ${i * 0.08}s, transform 0.5s ease ${i * 0.08}s`;
@@ -522,6 +619,25 @@ function calculate() {
 
   updateURL();
   confetti();
+}
+
+// ── EXPAND TIMELINE (voir plus) ────────────────────────────────────────────────
+function expandTimeline() {
+  if (!window._tlAllItems) return;
+  const tlSec = document.getElementById('timeline-section');
+  if (!tlSec) return;
+
+  // Régénérer sans limite (9999 = tout afficher)
+  tlSec.innerHTML = renderTimeline(
+    window._tlAllItems,
+    window._tlBirth,
+    window._tlNow,
+    window._tlFuture,
+    9999
+  );
+
+  // Re-déclencher le scroll reveal des nouveaux items
+  _observeTimelineItems();
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────

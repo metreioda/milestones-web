@@ -118,7 +118,7 @@ body.results-visible #hero-canvas {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   COSMIC BACKGROUND — stars, planets, shooting stars
+   COSMIC BACKGROUND — stars, nebulae, constellations, planets, shooting stars
    Positioned behind all content (z-index: 0), pointer-events: none
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -130,40 +130,153 @@ body.results-visible #hero-canvas {
   overflow: hidden;
 }
 
-/* ── Twinkling stars ──────────────────────────────────────────────────────── */
-.cosmic-stars { position: absolute; inset: 0; }
+/* ── Parallax containers — translateY driven by JS scroll listener ─────── */
+/* Each layer moves at a different speed for depth illusion               */
+.cosmic-stars  { position: absolute; inset: 0; will-change: transform; }
+.cosmic-nebulae { position: absolute; inset: 0; will-change: transform; }
+.cosmic-constellations { position: absolute; inset: 0; }
+.cosmic-planets { position: absolute; inset: 0; }
+.cosmic-shooters { position: absolute; inset: 0; }
 
+/* ────────────────────────────────────────────────────────────────────────
+   STARS — base + modifier classes
+   ──────────────────────────────────────────────────────────────────────── */
 .cstar {
   position: absolute;
   border-radius: 50%;
   animation: starTwinkle ease-in-out infinite alternate;
-  /* will-change avoids repaints — only opacity changes */
-  will-change: opacity;
+  will-change: opacity, transform;
 }
 
+/* ── Glowing star: soft pulsing halo around brighter stars ─────────────── */
+.cstar--glow {
+  /* box-shadow set inline by JS with star's own color */
+  animation: starGlow ease-in-out infinite alternate;
+}
+
+/* ── Sparkle star: 4-point cross via box-shadow — renders a cross shape ── */
+/* The inline box-shadow is set by JS; CSS class adds the second animation  */
+.cstar--sparkle {
+  border-radius: 1px; /* slightly square core looks better for cross shape */
+  animation: starSparkle ease-in-out infinite alternate;
+}
+
+/* ── Drift stars: float slowly while also twinkling ───────────────────── */
+.cstar--drift {
+  animation: starDrift ease-in-out infinite alternate;
+}
+
+/* Twinkle: opacity + imperceptible scale pulse for "breathing" feel */
 @keyframes starTwinkle {
-  0%   { opacity: 0.08; }
-  40%  { opacity: 1;    }
-  70%  { opacity: 0.55; }
-  100% { opacity: 0.10; }
+  0%   { opacity: var(--star-min, 0.08); transform: scale(0.85); }
+  35%  { opacity: 1;                     transform: scale(1.05); }
+  65%  { opacity: var(--star-mid, 0.55); transform: scale(0.95); }
+  100% { opacity: var(--star-min, 0.10); transform: scale(0.80); }
+}
+
+/* Glow star: opacity + box-shadow spread pulse */
+@keyframes starGlow {
+  0%   { opacity: 0.25; transform: scale(0.9); filter: blur(0px); }
+  40%  { opacity: 1;    transform: scale(1.15); filter: blur(0.4px); }
+  70%  { opacity: 0.70; transform: scale(1.05); filter: blur(0px); }
+  100% { opacity: 0.20; transform: scale(0.85); filter: blur(0.2px); }
+}
+
+/* Sparkle star: rotates slightly so the cross "glints" */
+@keyframes starSparkle {
+  0%   { opacity: 0.10; transform: scale(0.8)  rotate(0deg); }
+  30%  { opacity: 1;    transform: scale(1.20) rotate(15deg); }
+  60%  { opacity: 0.65; transform: scale(1.05) rotate(5deg); }
+  100% { opacity: 0.15; transform: scale(0.75) rotate(-10deg); }
+}
+
+/* Drift star: gentle float on top of twinkle (added via translateY) */
+@keyframes starDrift {
+  0%   { opacity: 0.12; transform: translateY(0px)   scale(0.9); }
+  45%  { opacity: 0.90; transform: translateY(-4px)  scale(1.05); }
+  100% { opacity: 0.15; transform: translateY(2px)   scale(0.88); }
 }
 
 /* Light mode: stars are very faint so they don't pollute the white bg */
-:root[data-theme="light"] .cstar {
+:root[data-theme="light"] .cstar,
+:root[data-theme="light"] .cstar--glow,
+:root[data-theme="light"] .cstar--sparkle,
+:root[data-theme="light"] .cstar--drift {
   opacity: 0.07;
   mix-blend-mode: multiply;
 }
 
-/* ── Floating planets ─────────────────────────────────────────────────────── */
-.cosmic-planets { position: absolute; inset: 0; }
+/* ────────────────────────────────────────────────────────────────────────
+   NEBULA CLOUDS — large, softly drifting colored blobs
+   Very low opacity; use radial-gradient + blur for an astronomical feel
+   ──────────────────────────────────────────────────────────────────────── */
+.cnebula {
+  position: absolute;
+  border-radius: 50%;
+  /* blur turns a flat circle into a gossamer cloud */
+  filter: blur(var(--nebula-blur, 60px));
+  animation: nebulaDrift ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
 
+@keyframes nebulaDrift {
+  0%   { transform: translate(0, 0)              scale(1);    opacity: var(--nebula-opacity, 0.18); }
+  30%  { transform: translate(var(--ndx), 0)     scale(1.04); opacity: calc(var(--nebula-opacity, 0.18) * 1.25); }
+  65%  { transform: translate(var(--ndx), var(--ndy)) scale(0.97); opacity: var(--nebula-opacity, 0.18); }
+  100% { transform: translate(0, var(--ndy))     scale(1.03); opacity: calc(var(--nebula-opacity, 0.18) * 0.80); }
+}
+
+/* Light mode: nebulae invisible (they'd muddy a light background) */
+:root[data-theme="light"] .cnebula {
+  display: none;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   CONSTELLATION LINES — SVG overlay, fades in and out slowly
+   ──────────────────────────────────────────────────────────────────────── */
+.cconstellation {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: constellationBreathe ease-in-out infinite alternate;
+  will-change: opacity;
+}
+
+.cconstellation line {
+  stroke: rgba(160,180,255,0.20);
+  stroke-width: 0.6;
+  stroke-linecap: round;
+  /* Each line gets its own staggered delay so they don't all blink at once */
+  animation: lineFade ease-in-out infinite alternate;
+  will-change: opacity;
+}
+
+@keyframes constellationBreathe {
+  0%   { opacity: 0.5; }
+  100% { opacity: 1;   }
+}
+
+@keyframes lineFade {
+  0%   { opacity: 0; }
+  30%  { opacity: 1; }
+  70%  { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* Light mode: constellation lines invisible */
+:root[data-theme="light"] .cconstellation {
+  display: none;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   FLOATING PLANETS — unchanged structure, slightly richer glow
+   ──────────────────────────────────────────────────────────────────────── */
 .cplanet {
   position: absolute;
   border-radius: 50%;
-  /* Drift: translate in a lazy figure-8-like path */
   animation: planetDrift ease-in-out infinite alternate;
   will-change: transform;
-  /* CSS custom props set per-element by JS: --dx, --dy */
 }
 
 @keyframes planetDrift {
@@ -174,45 +287,74 @@ body.results-visible #hero-canvas {
   100% { transform: translate(calc(var(--dx) * -0.1), calc(var(--dy) * -0.2)); }
 }
 
-/* Light mode: hide planets almost entirely — they'd be dark blobs on white */
-:root[data-theme="light"] .cplanet {
-  opacity: 0.06;
-}
+:root[data-theme="light"] .cplanet { opacity: 0.06; }
 
-/* ── Shooting stars ───────────────────────────────────────────────────────── */
-.cosmic-shooters { position: absolute; inset: 0; }
-
+/* ────────────────────────────────────────────────────────────────────────
+   SHOOTING STARS — longer, glowier, more dramatic
+   ──────────────────────────────────────────────────────────────────────── */
 .cshooter {
   position: absolute;
-  height: 1.5px;
-  /* Gradient: bright white head → transparent tail */
+  /* Head dot sits at right edge; tail gradient trails behind */
+  height: 2px;
+  border-radius: 2px;
   background: linear-gradient(
     90deg,
-    transparent 0%,
-    rgba(255,255,255, var(--shoot-opacity, 0.85)) 40%,
-    rgba(200,220,255, var(--shoot-opacity, 0.85)) 60%,
-    transparent 100%
+    transparent             0%,
+    rgba(160,200,255, 0.05) 20%,
+    rgba(200,220,255, calc(var(--shoot-opacity, 0.85) * 0.55)) 55%,
+    rgba(255,255,255, var(--shoot-opacity, 0.90))               82%,
+    rgba(255,255,255, var(--shoot-opacity, 0.95))               90%,
+    rgba(255,255,255, 1.00)                                      100%
   );
-  border-radius: 1px;
   animation: shooterFly linear forwards;
   will-change: transform, opacity;
-  /* Small glow on the head */
-  filter: drop-shadow(0 0 3px rgba(200,220,255,0.6));
+  /* Multi-layer glow: tight hot core + wide blue bloom */
+  filter:
+    drop-shadow(0 0 2px rgba(255,255,255,0.95))
+    drop-shadow(0 0 6px rgba(160,200,255,0.70))
+    drop-shadow(0 0 14px rgba(120,160,255,0.35));
+}
+
+/* Grand shooter variant — used occasionally by JS */
+.cshooter--grand {
+  height: 3px;
+  filter:
+    drop-shadow(0 0 3px rgba(255,255,255,1))
+    drop-shadow(0 0 10px rgba(180,210,255,0.85))
+    drop-shadow(0 0 28px rgba(100,140,255,0.50))
+    drop-shadow(0 0 50px rgba(80,120,255,0.25));
 }
 
 @keyframes shooterFly {
-  0%   { transform: rotate(var(--angle, 35deg)) translateX(-30px);           opacity: 0; }
-  8%   { transform: rotate(var(--angle, 35deg)) translateX(10px);            opacity: 1; }
-  88%  { transform: rotate(var(--angle, 35deg)) translateX(calc(90vw));      opacity: 0.9; }
-  100% { transform: rotate(var(--angle, 35deg)) translateX(calc(100vw + 200px)); opacity: 0; }
+  0%   {
+    transform: rotate(var(--angle, 35deg)) translateX(calc(-1 * var(--tail-len, 120px)));
+    opacity: 0;
+  }
+  5%   {
+    transform: rotate(var(--angle, 35deg)) translateX(0px);
+    opacity: 0;
+  }
+  10%  {
+    transform: rotate(var(--angle, 35deg)) translateX(20px);
+    opacity: 1;
+  }
+  85%  {
+    transform: rotate(var(--angle, 35deg)) translateX(85vw);
+    opacity: var(--shoot-opacity, 0.90);
+  }
+  100% {
+    transform: rotate(var(--angle, 35deg)) translateX(calc(100vw + 300px));
+    opacity: 0;
+  }
 }
 
-/* Light mode: shooting stars also barely visible */
-:root[data-theme="light"] .cshooter {
-  opacity: 0.12;
+/* Light mode: shooting stars barely visible */
+:root[data-theme="light"] .cshooter,
+:root[data-theme="light"] .cshooter--grand {
+  opacity: 0.10;
 }
 
-/* Entirely disable cosmic bg animations when user prefers reduced motion */
+/* Entirely disable all cosmic bg animations when user prefers reduced motion */
 @media (prefers-reduced-motion: reduce) {
   #cosmic-bg { display: none; }
 }
@@ -2352,4 +2494,514 @@ body.theme-seasons::after {
 /* Passion card span 2 columns responsively */
 @media (max-width: 500px) {
   .passion-card { grid-column: span 1 !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VIEW TOGGLE — segmented control pill above milestone sections
+   ═══════════════════════════════════════════════════════════════════════════ */
+.view-toggle-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.view-toggle-segmented {
+  display: inline-flex;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  gap: 2px;
+}
+
+.view-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 20px;
+  border-radius: calc(var(--radius-pill) - 2px);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.20s ease, border-color 0.20s ease, color 0.20s ease;
+  white-space: nowrap;
+}
+
+.view-toggle-btn svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: opacity 0.20s ease;
+}
+
+.view-toggle-btn:hover {
+  color: var(--text2);
+  background: var(--surface3);
+}
+
+.view-toggle-btn:hover svg {
+  opacity: 0.85;
+}
+
+.view-toggle-btn.active {
+  background: var(--surface3);
+  border-color: var(--border2);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.view-toggle-btn.active svg {
+  opacity: 1;
+}
+
+/* Light mode adjustments */
+:root[data-theme="light"] .view-toggle-btn.active {
+  background: rgba(255,255,255,0.75);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.90);
+}
+
+@media (max-width: 440px) {
+  .view-toggle-btn { padding: 8px 14px; font-size: 0.78rem; }
+  .view-toggle-btn svg { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TIMELINE — Ma Frise Chronologique
+   Vertical spine with alternating cards; mobile becomes left-aligned
+   ═══════════════════════════════════════════════════════════════════════════ */
+#timeline-section {
+  margin-bottom: 80px;
+}
+
+/* ── Container ───────────────────────────────────────────────────────────── */
+.timeline-wrap {
+  position: relative;
+  /* Height is determined by content — each item gets ~130px */
+  padding: 20px 0 40px;
+}
+
+/* ── Vertical glowing spine ──────────────────────────────────────────────── */
+.timeline-spine {
+  position: absolute;
+  /* Centered on desktop */
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--indigo) 6%,
+    var(--violet) 50%,
+    var(--indigo) 94%,
+    transparent 100%
+  );
+  border-radius: 2px;
+  /* Glow effect via box-shadow */
+  box-shadow:
+    0 0 6px 1px rgba(99,102,241,0.35),
+    0 0 18px 4px rgba(139,92,246,0.15);
+  pointer-events: none;
+}
+
+/* ── "Tu es ici" marker ──────────────────────────────────────────────────── */
+.timeline-now-marker {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.timeline-now-ring {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--indigo);
+  box-shadow:
+    0 0 0 0 rgba(99,102,241,0.70),
+    0 0 8px 2px rgba(99,102,241,0.50);
+  animation: nowPulse 2.2s ease-out infinite;
+}
+
+@keyframes nowPulse {
+  0%   { box-shadow: 0 0 0 0px rgba(99,102,241,0.70), 0 0 8px 2px rgba(99,102,241,0.50); }
+  70%  { box-shadow: 0 0 0 12px rgba(99,102,241,0), 0 0 12px 4px rgba(99,102,241,0.25); }
+  100% { box-shadow: 0 0 0 0px rgba(99,102,241,0), 0 0 8px 2px rgba(99,102,241,0.50); }
+}
+
+.timeline-now-label {
+  margin-top: 6px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  white-space: nowrap;
+  background: var(--bg);
+  padding: 2px 7px;
+  border-radius: 20px;
+  border: 1px solid rgba(99,102,241,0.25);
+}
+
+/* ── Year band markers ───────────────────────────────────────────────────── */
+.timeline-year-band {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.timeline-year-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--bg);
+  padding: 2px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  white-space: nowrap;
+}
+
+/* ── Timeline item row ───────────────────────────────────────────────────── */
+.timeline-item {
+  display: grid;
+  /* Two halves around the centered spine */
+  grid-template-columns: 1fr 28px 1fr;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 0;
+  /* opacity/translateY set to 0 for scroll-reveal; JS adds .tl-visible */
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.timeline-item.tl-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* "Tu es ici" spacer row — keeps grid flow, spinner sits outside */
+.timeline-item.is-now-row {
+  grid-template-columns: 1fr 28px 1fr;
+  height: 48px;
+  margin-bottom: 8px;
+  opacity: 1;
+  transform: none;
+}
+
+/* Stagger delays for reveal — every 6th item resets */
+.timeline-item:nth-child(1)  { transition-delay: 0.00s; }
+.timeline-item:nth-child(2)  { transition-delay: 0.05s; }
+.timeline-item:nth-child(3)  { transition-delay: 0.10s; }
+.timeline-item:nth-child(4)  { transition-delay: 0.15s; }
+.timeline-item:nth-child(5)  { transition-delay: 0.20s; }
+.timeline-item:nth-child(6)  { transition-delay: 0.25s; }
+
+/* ── Dot on spine ────────────────────────────────────────────────────────── */
+.timeline-dot-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 3;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+  flex-shrink: 0;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* Unit color coding — matches existing unit-tag colors */
+.timeline-dot.u-s { background: var(--rose);    box-shadow: 0 0 6px 1px rgba(244,63,94,0.45); }
+.timeline-dot.u-m { background: var(--cyan);    box-shadow: 0 0 6px 1px rgba(6,182,212,0.45); }
+.timeline-dot.u-h { background: var(--amber);   box-shadow: 0 0 6px 1px rgba(245,158,11,0.45); }
+.timeline-dot.u-d { background: var(--emerald); box-shadow: 0 0 6px 1px rgba(16,185,129,0.45); }
+.timeline-dot.u-w { background: var(--violet);  box-shadow: 0 0 6px 1px rgba(139,92,246,0.45); }
+
+/* ── Connector line from dot to card ─────────────────────────────────────── */
+.timeline-connector {
+  height: 1px;
+  background: var(--border2);
+  flex: 1;
+  opacity: 0.5;
+  transition: opacity 0.18s;
+}
+
+/* ── Card side helpers ───────────────────────────────────────────────────── */
+/* "left" column = odd items go on the left, even on the right (alternating) */
+.timeline-card-left,
+.timeline-card-right {
+  padding: 10px 0;
+}
+
+/* Left card: right-aligned content so it reads toward the spine */
+.timeline-card-left {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.timeline-card-right {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* ── Timeline card itself ─────────────────────────────────────────────────── */
+.timeline-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  max-width: 340px;
+  width: calc(100% - 20px);
+  transition: transform 0.20s ease, border-color 0.20s ease, box-shadow 0.20s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Colored accent bar matching card type */
+.timeline-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 14px 14px 0 0;
+}
+
+.timeline-card.future::before { background: linear-gradient(90deg, var(--indigo), var(--violet)); }
+.timeline-card.past::before   { background: linear-gradient(90deg, var(--amber), #FBBF24); }
+
+.timeline-card.future {
+  border-color: rgba(99,102,241,0.18);
+  background: linear-gradient(135deg, rgba(99,102,241,0.05), var(--surface));
+}
+
+.timeline-card.past {
+  border-color: rgba(245,158,11,0.18);
+  background: linear-gradient(135deg, rgba(245,158,11,0.05), var(--surface));
+}
+
+.timeline-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border3);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.20);
+}
+
+.timeline-card:hover .timeline-dot {
+  transform: scale(1.35);
+}
+
+/* ── Card content ─────────────────────────────────────────────────────────── */
+.tl-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.tl-emoji {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.tl-card-titles { flex: 1; min-width: 0; }
+
+.tl-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tl-tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.4;
+  margin-top: 2px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.tl-date {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+
+.tl-date strong {
+  color: var(--text2);
+  font-weight: 600;
+}
+
+.tl-countdown {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--emerald);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.tl-countdown.hot {
+  color: var(--rose);
+  animation: blink 0.9s ease-in-out infinite;
+}
+
+.tl-past-done {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--amber);
+}
+
+.tl-unit-tag {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 2px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
+  margin-bottom: 7px;
+}
+
+/* Unit tag variants reuse existing color tokens */
+.tl-unit-tag.u-s { background: rgba(244,63,94,0.12);  color: #FB7185; border: 1px solid rgba(244,63,94,0.20); }
+.tl-unit-tag.u-m { background: rgba(6,182,212,0.12);  color: #38BDF8; border: 1px solid rgba(6,182,212,0.20); }
+.tl-unit-tag.u-h { background: rgba(245,158,11,0.12); color: #FBBF24; border: 1px solid rgba(245,158,11,0.20); }
+.tl-unit-tag.u-d { background: rgba(16,185,129,0.12); color: #34D399; border: 1px solid rgba(16,185,129,0.20); }
+.tl-unit-tag.u-w { background: rgba(139,92,246,0.12); color: #A78BFA; border: 1px solid rgba(139,92,246,0.20); }
+
+/* ── "Voir plus" button ──────────────────────────────────────────────────── */
+.timeline-voir-plus {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.btn-tl-voir-plus {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 13px 28px;
+  color: var(--text2);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: all 0.22s ease;
+}
+
+.btn-tl-voir-plus:hover {
+  background: var(--surface3);
+  border-color: var(--border3);
+  color: var(--text);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+/* ── MOBILE: left-aligned spine, cards all on right ─────────────────────── */
+@media (max-width: 700px) {
+  .timeline-spine {
+    left: 20px;
+    transform: none;
+  }
+
+  .timeline-now-marker {
+    left: 20px;
+    transform: translateX(-50%);
+  }
+
+  .timeline-year-band {
+    left: 20px;
+    transform: none;
+  }
+
+  .timeline-year-label { margin-left: 12px; }
+
+  /* Collapse the two-column grid into single column after the dot */
+  .timeline-item {
+    grid-template-columns: 40px 16px 1fr;
+  }
+
+  .timeline-item.is-now-row {
+    grid-template-columns: 40px 16px 1fr;
+  }
+
+  /* Left column disappears — card always on right */
+  .timeline-card-left {
+    display: none;
+  }
+
+  /* Right column fills remaining space */
+  .timeline-card-right {
+    grid-column: 3;
+    justify-content: flex-start;
+  }
+
+  .timeline-card {
+    max-width: 100%;
+    width: 100%;
+    padding: 12px 14px;
+  }
+
+  .tl-name { font-size: 0.82rem; }
+
+  /* Dot sized up for touch target */
+  .timeline-dot {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .timeline-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .timeline-now-ring {
+    animation: none;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.35);
+  }
+
+  .timeline-card:hover { transform: none; }
 }

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ta date de naissance dans 5 calendriers que tu ne connais pas — MilestoneMe Blog</title>
+  <meta name="description" content="Le calendrier gregorien est une convention parmi d'autres. En calendrier republicain tu nais un Brumaire, en ethiopien tu as 7 ans de moins, et en persan tu vis dans l'annee la plus precise jamais inventee.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script>
+  (function initTheme() {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var initial = saved || (prefersDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', initial);
+    window.toggleTheme = function() {
+      var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      var next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      var btn = document.getElementById('theme-toggle-btn');
+      if (btn) btn.setAttribute('aria-pressed', next === 'light');
+    };
+    document.addEventListener('DOMContentLoaded', function() {
+      var btn = document.getElementById('theme-toggle-btn');
+      if (btn) btn.setAttribute('aria-pressed', initial === 'light');
+    });
+  })();
+  </script>
+</head>
+<body>
+
+<div class="aurora-layer" aria-hidden="true"></div>
+
+<div class="theme-toggle-wrap">
+  <button id="theme-toggle-btn" class="btn-theme-toggle" onclick="toggleTheme()" type="button"
+          aria-label="Basculer le mode clair/sombre" aria-pressed="false">
+    <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>
+    <svg class="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+</div>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="site-header-inner">
+      <a href="../index.html" class="site-logo" aria-label="MilestoneMe — retour a l'accueil">
+        <div class="site-logo-mark" aria-hidden="true">✦</div>
+        <div class="site-logo-text">MilestoneMe <span>/ Blog</span></div>
+      </a>
+      <nav class="site-nav" aria-label="Navigation">
+        <a href="index.html" class="nav-link">Blog</a>
+        <a href="../index.html" class="nav-link nav-link--cta">Calcule tes milestones</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="article-hero">
+    <div class="article-back-row">
+      <a href="index.html" class="back-link">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Blog
+      </a>
+      <span class="back-sep" aria-hidden="true"></span>
+      <a href="../index.html" class="back-link">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        </svg>
+        Retour a l'app
+      </a>
+    </div>
+
+    <div class="article-tag" style="background:rgba(245,158,11,0.10);border-color:rgba(245,158,11,0.30);color:var(--amber);">📅 Calendriers</div>
+
+    <h1 class="article-title">
+      Ta date de naissance dans 5 calendriers que tu ne connais pas
+    </h1>
+
+    <div class="article-meta">
+      <span class="article-meta-item">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        7 mars 2026
+      </span>
+      <span class="article-meta-sep" aria-hidden="true"></span>
+      <span class="article-meta-item">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        10 min de lecture
+      </span>
+      <span class="article-meta-sep" aria-hidden="true"></span>
+      <span class="article-meta-item">MilestoneMe</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="article-divider" style="background:linear-gradient(90deg, var(--amber), var(--rose));"></div>
+  </div>
+
+  <article class="article-body">
+
+    <nav class="toc" aria-label="Sommaire">
+      <div class="toc-title">Sommaire</div>
+      <ol class="toc-list">
+        <li><a href="#gregorien"><span class="toc-num">00</span>Le calendrier gregorien — une introduction</a></li>
+        <li><a href="#hijri"><span class="toc-num">01</span>Le calendrier islamique Hijri</a></li>
+        <li><a href="#republicain"><span class="toc-num">02</span>Le calendrier republicain francais</a></li>
+        <li><a href="#ethiopien"><span class="toc-num">03</span>Le calendrier ethiopien</a></li>
+        <li><a href="#persan"><span class="toc-num">04</span>Le calendrier persan Jalali</a></li>
+        <li><a href="#julien"><span class="toc-num">05</span>Le calendrier julien</a></li>
+        <li><a href="#pourquoi"><span class="toc-num">06</span>Pourquoi les calendriers alternatifs comptent</a></li>
+      </ol>
+    </nav>
+
+    <p>
+      Le 15 octobre 1582, quelque chose d'etrange s'est produit dans une grande partie de l'Europe. Le lendemain du 4 octobre... etait le 15 octobre. Dix jours avaient simplement disparu du calendrier. Ce saut etait la correction imposee par le pape Gregoire XIII pour synchroniser le calendrier avec les saisons. Le calendrier gregorien etait ne.
+    </p>
+
+    <p>
+      Depuis, nous traitons ce systeme comme une verite absolue. Mais c'est une convention humaine, parmi des dizaines d'autres. En ce moment meme, des milliards de personnes sur Terre utilisent un calendrier different pour mesurer leur vie. Elles sont en 1447, ou en 2017, ou en 234 selon leur tradition. Voyons ce que ta date de naissance devient quand on change de systeme.
+    </p>
+
+    <blockquote class="pull-quote">
+      Chaque calendrier est une declaration philosophique sur la nature du temps : est-il solaire ou lunaire ? Sacre ou civil ? Commence-t-il a la creation du monde, a la fuite d'un prophete, ou a une revolution politique ?
+    </blockquote>
+
+    <h2 id="gregorien">Le calendrier gregorien — un rappel</h2>
+
+    <p>
+      Notre calendrier quotidien est dit "solaire" : il est base sur le temps que la Terre met a orbiter autour du Soleil — 365,2422 jours. Pour gerer ce 0,2422 jour residuel, on ajoute un jour tous les 4 ans (annee bissextile), sauf pour les annees divisibles par 100 mais pas par 400.
+    </p>
+
+    <p>
+      Il est aussi base sur une reference chretienne : l'an 1 correspond a la naissance presumee de Jesus-Christ, selon un calcul effectue au VIe siecle par le moine Denys le Petit — un calcul qui, soit dit en passant, comportait une erreur de quelques annees selon les historiens modernes.
+    </p>
+
+    <div class="fun-fact">
+      <div class="fun-fact-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        La precision gregorienne
+      </div>
+      <p>Le calendrier gregorien a une erreur d'un jour tous les 3 030 ans. C'est excellent — mais pas parfait. Il faudra attendre l'an 4900 environ pour qu'une correction soit necessaire. D'ici la, pas d'inquietude.</p>
+    </div>
+
+    <h2 id="hijri">Le calendrier islamique Hijri</h2>
+
+    <p>
+      Le calendrier islamique est lunaire pur. Il est base exclusivement sur les cycles de la Lune, sans ajustement pour suivre les saisons. Une annee hijri dure 354 ou 355 jours — environ 11 jours de moins qu'une annee gregorienne. Le mois commence a la nouvelle lune visible.
+    </p>
+
+    <p>
+      Le point zero du calendrier hijri est l'hegire — la migration du prophete Muhammad de La Mecque a Medine, en 622 de notre ere. En mars 2026 (date de cet article), le calendrier islamique indique 1447 AH (Anno Hegirae).
+    </p>
+
+    <p>
+      Parce qu'il est purement lunaire, le calendrier islamique "glisse" par rapport aux saisons. Le Ramadan, par exemple, tombe 11 jours plus tot chaque annee gregorienne. Sur un cycle de 33 ans, il traverse l'integralite des saisons. Un musulman pratiquant vivra le Ramadan en hiver, au printemps, en ete et en automne — progressivement, sur plusieurs decennies.
+    </p>
+
+    <div class="fun-fact fun-fact--rose">
+      <div class="fun-fact-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        La glissade du Ramadan
+      </div>
+      <p>En 2026, le Ramadan a commence fin fevrier. En 2030, il commencera en janvier. En 2060 environ, il sera revenu en fevrier. Ce "voyage" du Ramadan a travers toutes les saisons dure 33 ans exactement — un cycle complet de calage lunaire-gregorien.</p>
+    </div>
+
+    <p>
+      Pour convertir une date gregorienne en date hijri, on utilise des algorithmes astronomiques bases sur le nombre de jours ecoules depuis l'hegire. MilestoneMe calcule ton age en annees hijri — en general, tu as environ 3 ans de plus dans ce systeme qu'en annees gregoriennes, puisque les annees y sont plus courtes.
+    </p>
+
+    <h2 id="republicain">Le calendrier republicain francais</h2>
+
+    <p>
+      C'est peut-etre le calendrier le plus poetically subversif de cette liste. Il est ne d'une decision deliberee et radicale : effacer tout le systeme de mesure du temps herite de la monarchie et de l'Eglise, et repartir de zero.
+    </p>
+
+    <p>
+      Il a ete adopte par la Convention nationale francaise le 5 octobre 1793. L'an I commence le 22 septembre 1792 — jour de la proclamation de la Republique. Les 12 mois sont entierement renommes selon les saisons et les elements naturels : Vendemiaire (vendanges), Brumaire (brumes), Frimaire (givre), Nivose (neige), Pluviose (pluie), Ventose (vent), Germinal (germination), Floreal (fleurs), Prairial (prairies), Messidor (moissons), Thermidor (chaleur), Fructidor (fruits).
+    </p>
+
+    <div class="fun-fact fun-fact--indigo">
+      <div class="fun-fact-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        Les sans-culottides
+      </div>
+      <p>Pour arriver a 365 jours, chaque mois republicain durait 30 jours exactement (10 jours par decade, 3 decades par mois). Les 5 ou 6 jours restants etaient appeles "jours complementaires" ou "sans-culottides" — des fetes republicaines en l'honneur de la Vertu, du Genie, du Travail, de l'Opinion et des Recompenses.</p>
+    </div>
+
+    <p>
+      Chaque jour avait aussi un nom remplacant le saint chretien : le 18 Brumaire etait le jour du "Cochon" (en novembre 1799, c'est ce jour-la que Napoleon fit son coup d'Etat — d'ou l'expression "coup du 18 Brumaire"). Le calendrier republicain a ete abolit par Napoleon le 1er janvier 1806, apres 13 ans d'utilisation.
+    </p>
+
+    <p>
+      Aujourd'hui en mars 2026, nous sommes en l'an 234 du calendrier republicain. Si tu es ne en 1990, tu es ne en l'an 198 ou 199 — en Pluviose ou Ventose, probablement, si c'etait en hiver ou au printemps.
+    </p>
+
+    <h2 id="ethiopien">Le calendrier ethiopien</h2>
+
+    <p>
+      L'Ethiopie utilise encore officiellement son propre calendrier, base sur une ancienne version du calendrier copte. La difference la plus surprenante : en calendrier ethiopien, nous sommes actuellement en 2018 ou 2019 — soit environ 7 a 8 ans de "retard" par rapport au calendrier gregorien.
+    </p>
+
+    <p>
+      Cette difference vient d'une divergence dans le calcul de l'ere chretienne. Les theologiens ethiopiens ont calcule la naissance du Christ en l'an 7 ou 8 avant notre ere gregorienne — une difference de 7 ou 8 ans qui s'est propagee jusqu'a aujourd'hui. Le Nouvel An ethiopien, appele "Enkutatash", tombe le 11 septembre (ou le 12 en annee bissextile) dans notre calendrier.
+    </p>
+
+    <div class="fun-fact fun-fact--emerald">
+      <div class="fun-fact-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        13 mois de soleil
+      </div>
+      <p>"13 mois de soleil" est le slogan touristique officiel de l'Ethiopie — et il est litteralement vrai. Le calendrier ethiopien compte 12 mois de 30 jours plus un 13eme mois, "Pagume", de 5 ou 6 jours. Ce dernier mois est une periode hors du temps ordinaire, consideree comme propice a la celebration.</p>
+    </div>
+
+    <p>
+      Le calendrier ethiopien illustre un point fondamental : meme entre communautes chretiennes partageant la meme reference religieuse, les calculs peuvent diverger de plusieurs annees. La "verite" d'une annee n'est pas une donnee astronomique — c'est un consensus historique.
+    </p>
+
+    <h2 id="persan">Le calendrier persan Jalali</h2>
+
+    <p>
+      Le calendrier persan (ou calendrier iranien, ou Jalali, du nom du sultan Jalal al-Din qui le fit reforme en 1079) est souvent decrit par les astronomes comme le calendrier solaire le plus precis jamais invente. Son erreur est d'un jour tous les 141 000 ans — soit environ 47 fois plus precis que le calendrier gregorien.
+    </p>
+
+    <p>
+      Il est base sur les observations astronomiques directes du Soleil. Le Nouvel An perse, "Nowruz" (le "nouveau jour"), tombe exactement a l'equinoxe de printemps — defini astronomiquement, pas par une regle de calendrier. Si l'equinoxe tombe a 14h37, le Nouvel An est a 14h37. Aucune approximation.
+    </p>
+
+    <div class="fun-fact fun-fact--violet">
+      <div class="fun-fact-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        Le mathematicien derriere le calendrier
+      </div>
+      <p>Le calendrier jalali a ete concu par une commission de mathematiciens, dont faisait partie Omar Khayyam — oui, le meme Khayyam qui a ecrit les Rubaiyat, ces poemes celebrant le vin, l'amour et la fugacite du temps. L'homme qui ruminait sur la vanite de l'existence a aussi calcule l'une des mesures les plus precises jamais faites de cette meme existence.</p>
+    </div>
+
+    <p>
+      En mars 2026, le calendrier persan indique l'an 1404 ou 1405. Le point zero est la meme Hegire que pour le calendrier islamique — mais contrairement au calendrier hijri purement lunaire, le calendrier persan est solaire et reste donc synchronise avec les saisons.
+    </p>
+
+    <h2 id="julien">Le calendrier julien</h2>
+
+    <p>
+      Introduit par Jules Cesar en 46 avant notre ere, le calendrier julien a ete le systeme dominant en Europe pendant plus de 16 siecles. Sa regle de bisextile est simple : une annee sur quatre est bissextile, sans exception. Cela donne une annee moyenne de 365,25 jours — tres proche de la realite astronomique, mais pas assez.
+    </p>
+
+    <p>
+      Cette imprecision de 11 minutes et 14 secondes par an a fini par creer un decalage. En 1582, quand le pape Gregoire XIII a adopte le nouveau calendrier, le decalage atteignait 10 jours. Aujourd'hui, le calendrier julien a 13 jours de retard sur le calendrier gregorien.
+    </p>
+
+    <p>
+      Certaines Eglises orthodoxes — notamment l'Eglise orthodoxe russe, l'Eglise orthodoxe serbe et quelques autres — continuent d'utiliser le calendrier julien pour leurs fetes religieuses. C'est pourquoi Noel orthodoxe est celebre le 7 janvier en calendrier gregorien (le 25 decembre julien) et pourquoi le Nouvel An orthodoxe russe traditionnel tombe le 14 janvier gregorien.
+    </p>
+
+    <div class="fun-fact">
+      <div class="fun-fact-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        L'accord de 2800
+      </div>
+      <p>Le decalage entre le calendrier julien et le calendrier gregorien s'accroit avec le temps : il atteindra 14 jours en 2100, 15 jours en 2200, etc. En l'an 2800 environ, ce decalage atteindra 14 jours. Les Eglises qui utilisent le calendrier julien devront alors decider si elles continuent — ou si elles adoptent le systeme gregorien 1 200 ans apres leur refus initial.</p>
+    </div>
+
+    <h2 id="pourquoi">Pourquoi les calendriers alternatifs comptent</h2>
+
+    <p>
+      Ces cinq systemes ne sont pas que des curiosites historiques. Ils sont le reflet de visions du monde profondement differentes. Le calendrier lunaire islamique dit que le temps est rythme par la Lune — par les marees, les eclipses, les mois visibles. Le calendrier persan dit que le temps est astronomique, precis, base sur les phenomenes physiques. Le calendrier republicain dit que le temps est politique, que meme les annees peuvent etre un geste de rupture.
+    </p>
+
+    <p>
+      Savoir que tu es ne "le 18 Brumaire an 201" ou "le 5 Rabi' al-Awwal 1412" ou "le 2 Tir 1369", ce n'est pas une anecdote. C'est une autre facon de te situer dans l'histoire de l'humanite — pas par rapport a la naissance presumee d'un homme il y a deux millenniaires en Palestine, mais par rapport a une revolution, une migration, un equinoxe.
+    </p>
+
+    <p>
+      MilestoneMe calcule ta date dans cinq de ces systemes en temps reel. Parce que tu ne merites pas seulement d'etre un point dans un calendrier — tu peux etre simultanement plusieurs points dans plusieurs histoires du temps.
+    </p>
+
+    <!-- CTA -->
+    <div class="article-cta">
+      <div class="article-cta-title">Decouvre ta date dans 5 calendriers</div>
+      <p class="article-cta-sub">
+        Entre ta date de naissance et vois immediatement qui tu es en calendrier islamique, republicain francais, ethiopien, persan et bien d'autres.
+      </p>
+      <a href="../index.html" class="btn-cta" style="background:linear-gradient(135deg, var(--amber), var(--rose));">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+        Voir mes dates alternatives
+      </a>
+    </div>
+
+    <!-- Related articles -->
+    <div class="related-articles">
+      <div class="related-title">A lire aussi</div>
+      <div class="related-links">
+        <a href="milliardieme-seconde.html" class="related-link">
+          <span class="related-link-icon" aria-hidden="true">⏱️</span>
+          <span>Pourquoi ton milliardieme seconde est plus important que ton anniversaire</span>
+        </a>
+        <a href="profil-astral.html" class="related-link">
+          <span class="related-link-icon" aria-hidden="true">✨</span>
+          <span>Ton profil astral decrypte : signe solaire, lunaire et chemin de vie</span>
+        </a>
+        <a href="30-milliards-km.html" class="related-link">
+          <span class="related-link-icon" aria-hidden="true">🚀</span>
+          <span>Tu as parcouru 30 milliards de km sans bouger de ton canape</span>
+        </a>
+      </div>
+    </div>
+
+  </article>
+</main>
+
+<footer>
+  <a href="../index.html">MilestoneMe</a> — Celebre chaque instant de ta vie<br>
+  <small>© 2026 MilestoneMe — Tous droits reserves &nbsp;·&nbsp; <a href="index.html">Blog</a> &nbsp;·&nbsp; <a href="../index.html">Retour a l'app</a></small>
+</footer>
+
+</body>
+</html>

@@ -30,6 +30,7 @@
 - [2026-03-08] **Sous-page "Ma Timeline"** -- Page dédiée timeline.html avec frise chronologique verticale, cards alternées gauche/droite, marqueur "Vous êtes ici", compteurs live, navigation flottante, fond cosmique. Accessible via CTA depuis la page principale.
 - [2026-03-08] **PWA / mode hors-ligne** -- manifest.json + service-worker.js (cache-first static, network-first fonts), bannière "Installer l'app" dismissible, registration dans index.html et timeline.html. Dégradation gracieuse sur file://.
 - [2026-03-09] **Animations milestone atteint** -- Célébration en temps réel quand un compteur atteint zéro : flash écran or/indigo, confetti burst doré (120 pièces, palette or+indigo), toast glassmorphism avec barre de progression auto-dismiss 6.5s, transformation visuelle de la card (glow pulsé or/indigo, badge "Atteint !"). Gestion `prefers-reduced-motion`, compatible dark/light mode.
+- [2026-03-09] **Comparaison avec un ami** -- Section en bas des résultats : input date/heure/prénom de l'ami, calcul des milestones proches (≤30j) et simultanés (≤7j), cards triées, bouton "voir plus", URL partageable avec `?friend_d=&friend_t=&friend_name=`, compatible dark/light mode.
 
 ## En cours
 
@@ -38,7 +39,7 @@
 ## A faire (priorise)
 
 ### Priorite haute
-1. **Comparaison avec un ami** -- Entrer deux dates de naissance et voir les milestones communs ou proches
+(rien de prioritaire — voir backlog)
 
 ## Idees / Backlog
 
@@ -47,6 +48,7 @@
 - **Notifications push** -- Rappel le jour d'un milestone (necessite PWA + permission)
 - **Export image/story** -- Generer une belle image (canvas) d'un milestone pour Instagram/stories
 - **Soundtrack personnalisee** -- Jouer la chanson numero 1 le jour de ta naissance (via API externe)
+- **Hit du jour de naissance** -- Afficher le titre #1 au Top 50 le jour de la naissance de l'utilisateur, selon son pays (France / Monde), données hardcodées ou via API Charts
 - **Multi-langue** -- Support anglais/espagnol en plus du francais
 
 ## Abandonne / Deprioritise

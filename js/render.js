@@ -146,43 +146,86 @@ function renderGeoSection(city, ageMs, genre = '') {
 
 // ── LIFE STATS ────────────────────────────────────────────────────────────────
 // Dépend de : fmt (data.js), accord (app.js), PASSION_FACTS (data.js)
+//
+// Taux par phase de vie (par jour sauf heartbeats/breaths en /seconde)
+// Sources : pédiatrie, moyennes OMS, études comportementales
+const LIFE_PHASES = [
+  //        âge max  heart/s  breath/s  blinks/j  meals/j  sleep h/j  dream h/j  words/j   coffee/j  laughs/j  hair cm/j
+  { maxY:1,  heart:2.0, breath:0.5, blinks:4800,  meals:6, sleep:16, dream:8,  words:0,     coffee:0,   laughs:50,  hair:0.02 },  // bébé
+  { maxY:3,  heart:1.7, breath:0.4, blinks:7200,  meals:5, sleep:13, dream:5,  words:300,   coffee:0,   laughs:40,  hair:0.25 },  // bambin
+  { maxY:6,  heart:1.5, breath:0.35,blinks:10000, meals:4, sleep:11, dream:3.5,words:5000,  coffee:0,   laughs:30,  hair:0.30 },  // petit enfant
+  { maxY:12, heart:1.3, breath:0.3, blinks:12000, meals:3, sleep:10, dream:2.5,words:10000, coffee:0,   laughs:20,  hair:0.33 },  // enfant
+  { maxY:16, heart:1.2, breath:0.27,blinks:14000, meals:3, sleep:9,  dream:2,  words:14000, coffee:0.2, laughs:17,  hair:0.35 },  // ado
+  { maxY:999,heart:1.1, breath:0.25,blinks:14400, meals:3, sleep:7.5,dream:1.5,words:16000, coffee:2.5, laughs:15,  hair:0.35 },  // adulte
+];
+
 function computeLifeStats(ageMs) {
-  const ageS = ageMs / 1000;
   const ageDays = ageMs / 864e5;
   const ageYears = ageDays / 365.25;
+
+  // Accumulateurs
+  let heartbeats = 0, breaths = 0, blinks = 0, meals = 0;
+  let sleepHours = 0, dreamHours = 0, wordsSpoken = 0;
+  let coffeeEquiv = 0, laughsLived = 0, hairGrown_cm = 0;
+
+  let prevMaxY = 0;
+  for (const p of LIFE_PHASES) {
+    const startY = prevMaxY;
+    const endY = Math.min(p.maxY, ageYears);
+    if (startY >= ageYears) break;
+    const days = (endY - startY) * 365.25;
+    const secs = days * 86400;
+
+    heartbeats  += secs * p.heart;
+    breaths     += secs * p.breath;
+    blinks      += days * p.blinks;
+    meals       += days * p.meals;
+    sleepHours  += days * p.sleep;
+    dreamHours  += days * p.dream;
+    wordsSpoken += days * p.words;
+    coffeeEquiv += days * p.coffee;
+    laughsLived += days * p.laughs;
+    hairGrown_cm+= days * p.hair;
+
+    prevMaxY = p.maxY;
+  }
+
   return {
-    heartbeats:    Math.round(ageS * 1.1),
-    breaths:       Math.round(ageS * 0.25),
-    blinks:        Math.round(ageDays * 14400),
-    meals:         Math.round(ageDays * 3),
-    sleepHours:    Math.round(ageDays * 8),
-    dreamHours:    Math.round(ageDays * 2),
+    heartbeats:    Math.round(heartbeats),
+    breaths:       Math.round(breaths),
+    blinks:        Math.round(blinks),
+    meals:         Math.round(meals),
+    sleepHours:    Math.round(sleepHours),
+    dreamHours:    Math.round(dreamHours),
     kmSun:         Math.round(ageYears * 940e6),
     sunrisesLived: Math.round(ageDays),
-    hairGrown_cm:  Math.round(ageDays * 0.35),
-    wordsSpoken:   Math.round(ageDays * 16000),
-    coffeeEquiv:   Math.round(ageDays * 1.5),
-    laughsLived:   Math.round(ageDays * 15),
+    hairGrown_cm:  Math.round(hairGrown_cm),
+    wordsSpoken:   Math.round(wordsSpoken),
+    coffeeEquiv:   Math.round(coffeeEquiv),
+    laughsLived:   Math.round(laughsLived),
     ageDays:       Math.round(ageDays),
   };
 }
 
 function renderLifeStats(stats, persona = {}) {
   const { name, genre, passion } = persona;
+  const ageY = stats.ageDays / 365.25;
   const items = [
-    { e: '❤️', v: fmt(stats.heartbeats),            l: 'battements de cœur' },
+    { e: '❤️', v: fmt(stats.heartbeats),            l: ageY < 1 ? 'petits battements de cœur' : 'battements de cœur' },
     { e: '🌬️', v: fmt(stats.breaths),               l: 'respirations' },
-    { e: '👁️', v: fmt(stats.blinks),               l: 'clignements de paupières' },
-    { e: '🍽️', v: fmt(stats.meals),                l: 'repas avalés' },
-    { e: '😴', v: fmt(stats.sleepHours) + ' h',     l: 'de sommeil' },
-    { e: '💭', v: fmt(stats.dreamHours) + ' h',     l: 'de rêves' },
+    { e: '👁️', v: fmt(stats.blinks),               l: ageY < 1 ? 'clignements de petites paupières' : 'clignements de paupières' },
+    { e: '🍼', v: fmt(stats.meals),                  l: ageY < 1 ? 'tétées et biberons' : ageY < 3 ? 'repas et biberons' : 'repas avalés', e2: ageY >= 3 ? '🍽️' : '🍼' },
+    { e: '😴', v: fmt(stats.sleepHours) + ' h',     l: ageY < 1 ? 'de sommeil (les bébés dorment beaucoup !)' : 'de sommeil' },
+    { e: '💭', v: fmt(stats.dreamHours) + ' h',     l: ageY < 3 ? 'de rêves (les bébés rêvent énormément !)' : 'de rêves' },
     { e: '☀️', v: fmt(stats.sunrisesLived),         l: 'levers de soleil vécus' },
     { e: '💇', v: fmt(stats.hairGrown_cm) + ' cm',  l: 'de cheveux poussés' },
     { e: '🌍', v: fmt(stats.kmSun) + ' km',         l: 'parcourus autour du Soleil' },
-    { e: '💬', v: fmt(stats.wordsSpoken),            l: 'mots prononcés (estimation)' },
-    { e: '☕', v: fmt(stats.coffeeEquiv),             l: 'cafés équivalents bus' },
-    { e: '😂', v: fmt(stats.laughsLived),            l: 'éclats de rire vécus' },
+    ...(ageY >= 1 ? [{ e: '💬', v: fmt(stats.wordsSpoken), l: ageY < 3 ? 'premiers mots balbutiés' : 'mots prononcés (estimation)' }] : []),
+    ...(stats.coffeeEquiv > 0 ? [{ e: '☕', v: fmt(stats.coffeeEquiv), l: 'cafés bus (depuis l\'adolescence)' }] : []),
+    { e: '😂', v: fmt(stats.laughsLived),            l: ageY < 3 ? 'éclats de rire (les bébés rient ~50x/jour !)' : 'éclats de rire vécus' },
   ];
+  // Override emoji for meals based on age
+  items.forEach(item => { if (item.e2) { item.e = item.e2; delete item.e2; } });
 
   let passionCard = '';
   if (passion && PASSION_FACTS[passion]) {

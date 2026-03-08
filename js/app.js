@@ -374,6 +374,17 @@ function updateURL() {
   if (n) params.set('name', n);
   const pas = document.getElementById('passion').value;
   if (pas) params.set('passion', pas);
+
+  // Paramètres ami (optionnels)
+  const fd = document.getElementById('friend-bd');
+  const ft = document.getElementById('friend-bt');
+  const fn = document.getElementById('friend-name');
+  if (fd && fd.value) {
+    params.set('friend_d', fd.value);
+    if (ft && ft.value) params.set('friend_t', ft.value);
+    if (fn && fn.value.trim()) params.set('friend_name', fn.value.trim());
+  }
+
   history.replaceState(null, '', '?' + params.toString());
 }
 
@@ -732,7 +743,7 @@ function calculate() {
     document.querySelectorAll('#results > div').forEach((el, i) => {
       // Exclure la timeline (hidden par défaut) et le toggle wrapper
       // pour éviter de perturber l'animation au moment du switch de vue
-      if (el.id === 'timeline-section' || el.id === 'view-toggle-wrap') return;
+      if (el.id === 'timeline-section' || el.id === 'view-toggle-wrap' || el.id === 'friend-compare-section') return;
       el.style.opacity = '0';
       el.style.transform = 'translateY(20px)';
       el.style.transition = `opacity 0.5s ease ${i * 0.08}s, transform 0.5s ease ${i * 0.08}s`;
@@ -765,6 +776,217 @@ function calculate() {
   }
 
   confetti();
+
+  // ── Section "Comparer avec un ami" ──
+  // On ne réinitialise le formulaire que s'il n'a jamais été injecté
+  // pour ne pas effacer une comparaison déjà en cours.
+  const fcs = document.getElementById('friend-compare-section');
+  if (fcs && !document.getElementById('friend-bd')) {
+    fcs.innerHTML = `
+      <h2 class="section-head">Comparer avec un ami</h2>
+      <p style="font-size:0.88rem;color:var(--muted);margin-bottom:18px;line-height:1.6;">
+        Entre la date de naissance d'un ami pour voir vos milestones communs.
+        Les milestones distants de moins de 30 jours sont mis en valeur.
+      </p>
+      <div class="friend-form-card">
+        <div class="friend-form-field">
+          <label for="friend-bd">Date de naissance de ton ami</label>
+          <input type="date" id="friend-bd" max="${new Date().toISOString().split('T')[0]}">
+        </div>
+        <div class="friend-form-field friend-form-field--time">
+          <label for="friend-bt">Heure <span class="field-optional">(optionnel)</span></label>
+          <input type="time" id="friend-bt">
+        </div>
+        <div class="friend-form-field friend-form-field--name">
+          <label for="friend-name">Prenom <span class="field-optional">(optionnel)</span></label>
+          <input type="text" id="friend-name" placeholder="Alex, Sarah…" maxlength="30" autocomplete="off" spellcheck="false">
+        </div>
+        <button class="btn-compare" onclick="compareFriend(false)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4"/>
+            <circle cx="17" cy="11" r="3"/><path d="M21 21v-1.5a3 3 0 0 0-3-3h-2a3 3 0 0 0-3 3V21"/>
+          </svg>
+          Comparer
+        </button>
+      </div>
+      <div id="friend-compare-result" class="friend-compare-result"></div>
+    `;
+  }
+}
+
+// ── COMPARAISON AMI ───────────────────────────────────────────────────────────
+
+// Calcule les milestones futurs pour une date de naissance donnée
+// (même logique que calculate(), mais sans rendu — renvoie un tableau)
+function _computeFutureMilestones(birth) {
+  const now = new Date();
+  return MILESTONES.map(m => {
+    const date = new Date(birth.getTime() + m.v * MS[m.u]);
+    const diff  = date - now;
+    return { m, date, diff };
+  }).filter(x => x.diff > 0).sort((a, b) => a.date - b.date);
+}
+
+// Formate une date en forme courte pour les cards de comparaison
+function _fmtShortDate(dt) {
+  return dt.toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' });
+}
+
+// Rendu d'une card de comparaison
+function _renderFriendCard(pair, userName, friendName, cardIdx) {
+  const { userItem, friendItem, deltaDays, isSimultaneous } = pair;
+  const cardClass = isSimultaneous ? 'friend-compare-card is-simultaneous' : 'friend-compare-card';
+  const badgeClass = isSimultaneous ? 'fcard-badge fcard-badge--simultaneous' : 'fcard-badge fcard-badge--close';
+  const badgeLabel = isSimultaneous ? 'Simultané !' : 'Proches';
+  const deltaText  = deltaDays === 0
+    ? 'Le même jour !'
+    : `${deltaDays} jour${deltaDays > 1 ? 's' : ''} d\'écart`;
+
+  const uName = userName  || 'Toi';
+  const fName = friendName || 'Ton ami·e';
+
+  return `
+    <div class="${cardClass}" style="animation-delay:${Math.min(cardIdx * 60, 360)}ms">
+      <div class="${badgeClass}">${badgeLabel}</div>
+      <div class="fcard-emoji">${userItem.m.e}</div>
+      <div class="fcard-label">${userItem.m.n}</div>
+      <div class="fcard-tagline">${userItem.m.t}</div>
+      <div class="fcard-rows">
+        <div class="fcard-row is-user">
+          <span class="fcard-row-who">${uName}</span>
+          <span class="fcard-row-date">${_fmtShortDate(userItem.date)}</span>
+        </div>
+        <div class="fcard-row is-friend">
+          <span class="fcard-row-who">${fName}</span>
+          <span class="fcard-row-date">${_fmtShortDate(friendItem.date)}</span>
+        </div>
+      </div>
+      <div class="fcard-delta">
+        <span>Ecart :</span>
+        <span class="fcard-delta-val">${deltaText}</span>
+      </div>
+    </div>`;
+}
+
+// Limite d'affichage avant "voir plus"
+const FRIEND_PREVIEW_MAX = 6;
+
+// Rendu de la section complète avec toutes les pairs (appelé par compareFriend et "voir plus")
+function _renderFriendResults(pairs, userName, friendName, showAll) {
+  if (pairs.length === 0) {
+    return `
+      <div class="friend-compare-empty">
+        <div class="empty-icon">🔭</div>
+        Aucun milestone commun dans les 30 prochains jours entre les deux dates.<br>
+        Vos milestones ne se croisent pas dans cette fenêtre de temps.
+      </div>`;
+  }
+
+  const simultaneous = pairs.filter(p => p.isSimultaneous);
+  const close        = pairs.filter(p => !p.isSimultaneous);
+  const total        = pairs.length;
+
+  const fName = friendName || 'ton ami·e';
+  const uName = userName  || 'toi';
+
+  // Libellé du résumé
+  const summaryParts = [];
+  if (simultaneous.length > 0)
+    summaryParts.push(`<strong>${simultaneous.length} simultané${simultaneous.length > 1 ? 's' : ''}</strong>`);
+  if (close.length > 0)
+    summaryParts.push(`<strong>${close.length} proche${close.length > 1 ? 's' : ''}</strong>`);
+  const summaryStr = summaryParts.join(' et ') + ` milestone${total > 1 ? 's' : ''} partagé${total > 1 ? 's' : ''}`;
+
+  // Trier : simultanés en premier, puis proches par delta croissant
+  const sorted = [
+    ...simultaneous.sort((a, b) => a.deltaDays - b.deltaDays),
+    ...close.sort((a, b) => a.deltaDays - b.deltaDays),
+  ];
+
+  const visible = showAll ? sorted : sorted.slice(0, FRIEND_PREVIEW_MAX);
+  const hasMore = !showAll && sorted.length > FRIEND_PREVIEW_MAX;
+
+  const cardsHTML = visible.map((p, i) => _renderFriendCard(p, uName, fName, i)).join('');
+  const moreBtn   = hasMore
+    ? `<button class="btn-show-all-pairs" onclick="compareFriend(true)">Voir les ${sorted.length - FRIEND_PREVIEW_MAX} autres milestones partagés</button>`
+    : '';
+
+  return `
+    <div class="friend-compare-summary">
+      <span class="friend-summary-icon">✨</span>
+      <span>${uName} et ${fName} partagent ${summaryStr} dans les 30 prochains jours.</span>
+    </div>
+    <div class="friend-compare-grid">${cardsHTML}</div>
+    ${moreBtn}`;
+}
+
+// Fonction principale — appelée par le bouton "Comparer"
+// showAll : true si l'utilisateur a cliqué sur "voir plus"
+function compareFriend(showAll) {
+  const fdVal  = document.getElementById('friend-bd').value;
+  const ftVal  = document.getElementById('friend-bt').value || '12:00';
+  const fnVal  = (document.getElementById('friend-name').value || '').trim();
+  const resultEl = document.getElementById('friend-compare-result');
+
+  if (!fdVal) {
+    document.getElementById('friend-bd').focus();
+    return;
+  }
+
+  const friendBirth = new Date(fdVal + 'T' + ftVal + ':00');
+  if (isNaN(friendBirth)) return;
+
+  const now = new Date();
+  if (friendBirth > now) {
+    alert('La date de l\'ami doit être dans le passé !');
+    return;
+  }
+
+  // Récupérer la date utilisateur depuis les futureItems déjà calculés
+  if (!futureItems || futureItems.length === 0) {
+    alert('Entre d\'abord ta propre date de naissance et calcule tes milestones.');
+    return;
+  }
+
+  const friendFuture = _computeFutureMilestones(friendBirth);
+
+  // Fenêtres de comparaison (en ms)
+  const WINDOW_CLOSE = 30 * 864e5;   // 30 jours
+  const WINDOW_SYNC  =  7 * 864e5;   //  7 jours => "simultané"
+
+  // Construire les paires de milestones proches
+  // On parcourt les futures de l'utilisateur et on cherche des correspondances
+  // sur le MÊME milestone (même m.v + m.u) chez l'ami.
+  const pairs = [];
+  const seen  = new Set(); // éviter les doublons (même clé milestone)
+
+  for (const userItem of futureItems) {
+    const key = `${userItem.m.u}-${userItem.m.v}`;
+    if (seen.has(key)) continue;
+
+    const friendMatch = friendFuture.find(fi => fi.m.u === userItem.m.u && fi.m.v === userItem.m.v);
+    if (!friendMatch) continue;
+
+    const delta = Math.abs(userItem.date - friendMatch.date);
+    if (delta > WINDOW_CLOSE) continue;
+
+    const deltaDays     = Math.round(delta / 864e5);
+    const isSimultaneous = delta <= WINDOW_SYNC;
+
+    seen.add(key);
+    pairs.push({ userItem, friendItem: friendMatch, deltaDays, isSimultaneous });
+  }
+
+  // Stocker pour le partage URL
+  const uName = (getPersonalization && getPersonalization().name) || '';
+  const fName = fnVal;
+
+  if (resultEl) {
+    resultEl.innerHTML = _renderFriendResults(pairs, uName, fName, !!showAll);
+  }
+
+  // Mettre à jour l'URL avec les paramètres ami
+  updateURL();
 }
 
 // ── EXPAND TIMELINE (voir plus) ────────────────────────────────────────────────
@@ -790,8 +1012,13 @@ function expandTimeline() {
 // Set max date to today
 document.getElementById('bd').max = new Date().toISOString().split('T')[0];
 
-// Allow Enter key
+// Allow Enter key on main date field
 document.getElementById('bd').addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+
+// Allow Enter key on friend date field (event delegation — l'input est injecté dynamiquement par calculate())
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target && e.target.id === 'friend-bd') compareFriend(false);
+});
 
 // ── URL DÉCODAGE AU CHARGEMENT ────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
@@ -804,5 +1031,18 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('bd').value = p.get('d');
     if (p.get('t')) document.getElementById('bt').value = p.get('t');
     calculate();
+
+    // Restaurer les paramètres ami et relancer la comparaison si présents
+    const fd = p.get('friend_d');
+    if (fd) {
+      const elFd = document.getElementById('friend-bd');
+      const elFt = document.getElementById('friend-bt');
+      const elFn = document.getElementById('friend-name');
+      if (elFd) elFd.value = fd;
+      if (elFt && p.get('friend_t')) elFt.value = p.get('friend_t');
+      if (elFn && p.get('friend_name')) elFn.value = p.get('friend_name');
+      // Lancer la comparaison après un court délai (calculate() est synchrone mais le scroll reveal peut interférer)
+      setTimeout(() => compareFriend(false), 120);
+    }
   }
 });

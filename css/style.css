@@ -3449,3 +3449,431 @@ body.theme-seasons::after {
   background: rgba(0,0,0,0.04);
   border-color: rgba(0,0,0,0.12);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPARAISON AVEC UN AMI
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.friend-compare-section {
+  margin-top: 56px;
+}
+
+/* ── En-tête de section ── */
+.friend-compare-section .section-head {
+  margin-bottom: 28px;
+}
+
+/* ── Formulaire compact ── */
+.friend-form-card {
+  background: linear-gradient(140deg, rgba(99,102,241,0.06), var(--surface));
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-card);
+  padding: 28px 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.friend-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 160px;
+}
+
+.friend-form-field label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+
+.friend-form-field input {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.95rem;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.18s ease, background 0.18s ease;
+  width: 100%;
+}
+
+.friend-form-field input:focus {
+  border-color: var(--indigo);
+  background: var(--surface3);
+}
+
+/* Narrower time field */
+.friend-form-field--time {
+  flex: 0 1 140px;
+  min-width: 120px;
+}
+
+/* Name field */
+.friend-form-field--name {
+  flex: 0 1 180px;
+  min-width: 140px;
+}
+
+/* ── Bouton Comparer ── */
+.btn-compare {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 24px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 4px 14px rgba(99,102,241,0.35);
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.btn-compare:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99,102,241,0.45);
+}
+
+.btn-compare:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+}
+
+/* ── Zone de résultat ── */
+.friend-compare-result {
+  margin-top: 28px;
+}
+
+/* Résumé — "N milestones partagés" */
+.friend-compare-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  background: var(--indigo-dim);
+  border: 1px solid rgba(99,102,241,0.20);
+  margin-bottom: 24px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text2);
+}
+
+.friend-compare-summary strong {
+  color: var(--indigo);
+  font-weight: 700;
+}
+
+.friend-compare-summary .friend-summary-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+/* ── Grille de cards de comparaison ── */
+.friend-compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 18px;
+}
+
+/* ── Card de comparaison ── */
+.friend-compare-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-card);
+  padding: 22px 22px 20px;
+  overflow: hidden;
+  transition: transform 0.22s ease, border-color 0.22s ease;
+  /* Entrée animée */
+  opacity: 0;
+  transform: translateY(14px);
+  animation: fcardReveal 0.40s ease forwards;
+}
+
+@keyframes fcardReveal {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.friend-compare-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border3);
+}
+
+/* Barre colorée gauche : simultané = violet, proche = indigo */
+.friend-compare-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 3px 0 0 3px;
+  background: var(--indigo);
+}
+
+.friend-compare-card.is-simultaneous::before {
+  background: linear-gradient(180deg, var(--violet), var(--indigo));
+}
+
+/* Badge simultané */
+.fcard-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  margin-bottom: 14px;
+}
+
+.fcard-badge--simultaneous {
+  background: rgba(139,92,246,0.14);
+  color: var(--violet);
+  border: 1px solid rgba(139,92,246,0.22);
+}
+
+.fcard-badge--close {
+  background: rgba(99,102,241,0.10);
+  color: var(--indigo);
+  border: 1px solid rgba(99,102,241,0.18);
+}
+
+/* Corps de la card */
+.fcard-emoji {
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.fcard-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.fcard-tagline {
+  font-size: 0.83rem;
+  color: var(--muted);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+/* Rangée user / ami */
+.fcard-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fcard-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: var(--surface2);
+}
+
+.fcard-row.is-user {
+  border-left: 2px solid var(--indigo);
+}
+
+.fcard-row.is-friend {
+  border-left: 2px solid var(--violet);
+}
+
+.fcard-row-who {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  min-width: 52px;
+  flex-shrink: 0;
+}
+
+.fcard-row.is-user .fcard-row-who {
+  color: var(--indigo);
+}
+
+.fcard-row.is-friend .fcard-row-who {
+  color: var(--violet);
+}
+
+.fcard-row-date {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text2);
+  flex: 1;
+  font-weight: 500;
+}
+
+/* Ecart en jours */
+.fcard-delta {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.fcard-delta-val {
+  font-weight: 700;
+  color: var(--text2);
+}
+
+/* ── État vide ── */
+.friend-compare-empty {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.friend-compare-empty .empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+/* ── Animation delay pour staggering ── */
+.friend-compare-card:nth-child(1)  { animation-delay: 0ms }
+.friend-compare-card:nth-child(2)  { animation-delay: 60ms }
+.friend-compare-card:nth-child(3)  { animation-delay: 120ms }
+.friend-compare-card:nth-child(4)  { animation-delay: 180ms }
+.friend-compare-card:nth-child(5)  { animation-delay: 240ms }
+.friend-compare-card:nth-child(6)  { animation-delay: 300ms }
+.friend-compare-card:nth-child(7)  { animation-delay: 360ms }
+.friend-compare-card:nth-child(8)  { animation-delay: 400ms }
+
+/* ── Bouton "voir tous" ── */
+.btn-show-all-pairs {
+  display: block;
+  margin: 22px auto 0;
+  padding: 11px 28px;
+  border-radius: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.btn-show-all-pairs:hover {
+  background: var(--surface3);
+  border-color: var(--border3);
+}
+
+/* ── Light mode overrides ── */
+[data-theme="light"] .friend-form-card {
+  background: linear-gradient(140deg, rgba(99,102,241,0.05), rgba(255,255,255,0.8));
+  border-color: rgba(0,0,0,0.08);
+}
+
+[data-theme="light"] .friend-form-field input {
+  background: rgba(255,255,255,0.9);
+  border-color: rgba(0,0,0,0.12);
+  color: #1E293B;
+}
+
+[data-theme="light"] .friend-form-field input:focus {
+  border-color: #4F46E5;
+  background: #ffffff;
+}
+
+[data-theme="light"] .friend-compare-summary {
+  background: rgba(99,102,241,0.06);
+  border-color: rgba(99,102,241,0.15);
+}
+
+[data-theme="light"] .friend-compare-card {
+  background: rgba(255,255,255,0.8);
+  border-color: rgba(0,0,0,0.08);
+}
+
+[data-theme="light"] .friend-compare-card:hover {
+  border-color: rgba(0,0,0,0.15);
+}
+
+[data-theme="light"] .fcard-row {
+  background: rgba(0,0,0,0.03);
+}
+
+[data-theme="light"] .btn-show-all-pairs {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.10);
+  color: #475569;
+}
+
+[data-theme="light"] .btn-show-all-pairs:hover {
+  background: rgba(0,0,0,0.07);
+  border-color: rgba(0,0,0,0.15);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .friend-form-card {
+    padding: 20px;
+    gap: 14px;
+  }
+  .friend-form-field--time,
+  .friend-form-field--name {
+    flex: 1 1 calc(50% - 7px);
+  }
+  .btn-compare {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .friend-form-field {
+    min-width: 100%;
+    flex: 1 1 100%;
+  }
+  .friend-form-field--time,
+  .friend-form-field--name {
+    flex: 1 1 100%;
+  }
+  .friend-compare-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .friend-compare-card {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

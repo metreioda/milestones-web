@@ -3,7 +3,7 @@
    Cache-first pour les assets statiques, network-first pour les polices.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME    = `milestoneme-${CACHE_VERSION}`;
 
 /* Assets précachés à l'installation — liste exhaustive des fichiers statiques */

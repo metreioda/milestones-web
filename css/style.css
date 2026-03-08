@@ -2246,20 +2246,58 @@ input[type="date"]:focus,
   .achieved-badge { animation: none; }
 }
 
-/* Light mode adjustments */
+/* Light mode adjustments — Toast & Flash solaires */
 :root[data-theme="light"] .milestone-toast {
-  background: rgba(250, 251, 255, 0.92);
-  border-color: rgba(217,119,6,0.40);
+  background: rgba(255, 252, 240, 0.96);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-color: rgba(194,105,10,0.38);
+  color: #1C1810;
   box-shadow:
-    0 0 0 1px rgba(79,70,229,0.12),
-    0 8px 32px rgba(0,0,0,0.18),
-    0 0 40px rgba(217,119,6,0.06);
+    0 0 0 1px rgba(194,105,10,0.12),
+    0 8px 32px rgba(180,120,20,0.18),
+    0 0 40px rgba(194,105,10,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.80);
+}
+
+/* Ligne supérieure — dégradé solaire */
+:root[data-theme="light"] .milestone-toast::before {
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(194,105,10,0.55) 30%,
+    rgba(224,80,32,0.50) 70%,
+    transparent
+  );
+}
+
+:root[data-theme="light"] .toast-title {
+  color: #A35608;
+}
+
+:root[data-theme="light"] .toast-name {
+  color: #1C1810;
+}
+
+:root[data-theme="light"] .toast-tagline {
+  color: rgba(90,75,50,0.65);
+}
+
+:root[data-theme="light"] .toast-close {
+  color: rgba(90,75,50,0.55);
+}
+
+:root[data-theme="light"] .toast-close:hover {
+  color: #1C1810;
+}
+
+:root[data-theme="light"] .toast-progress {
+  background: linear-gradient(90deg, #C2690A, #E05020);
 }
 
 :root[data-theme="light"] #milestone-flash {
   background: radial-gradient(ellipse at center,
-    rgba(217,119,6,0.18) 0%,
-    rgba(79,70,229,0.10) 50%,
+    rgba(194,105,10,0.16) 0%,
+    rgba(224,80,32,0.08) 50%,
     transparent 80%
   );
 }
@@ -2577,116 +2615,774 @@ footer {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LIGHT MODE — :root[data-theme="light"]
+   LIGHT MODE — "Jour céleste ensoleillé"
+   Palette : blancs chauds, crèmes dorées, azur ciel, touches de corail/safran
    ═══════════════════════════════════════════════════════════════════════════ */
 :root[data-theme="light"] {
-  /* Backgrounds */
-  --bg:  #FAFBFF;
-  --bg2: #F3F4FA;
+  /* ── Tokens propres au mode clair ── */
 
-  /* Surfaces */
-  --surface:  rgba(51,65,85,0.04);
-  --surface2: rgba(51,65,85,0.08);
-  --surface3: rgba(51,65,85,0.12);
+  /* Couleurs d'accent primaires (solaires) — utilisées dans les composants */
+  --solar-amber:  #C2690A;         /* amber foncé, contraste WCAG AA sur blanc */
+  --solar-coral:  #C2440A;         /* corail/safran chaud */
+  --solar-gold:   #B8850A;         /* or profond */
+  --solar-sky:    #0369A1;         /* ciel profond, contraste AA */
+  --solar-teal:   #0F766E;         /* teinte teal ensoleillée */
+  --solar-sage:   #4D7C0F;         /* vert sauge naturel */
 
-  /* Borders */
-  --border:  rgba(51,65,85,0.10);
-  --border2: rgba(51,65,85,0.18);
-  --border3: rgba(51,65,85,0.28);
+  /* Dim / backgrounds solaires */
+  --solar-amber-dim: rgba(194,105,10,0.09);
+  --solar-coral-dim: rgba(194,68,10,0.08);
+  --solar-sky-dim:   rgba(3,105,161,0.08);
+  --solar-gold-dim:  rgba(184,133,10,0.08);
 
-  /* Text */
-  --text:  #1E293B;
-  --text2: #475569;
-  --muted: rgba(71,85,105,0.65);
+  /* Backgrounds — dégradé de ciel blanc-crème (gradient via body::before) */
+  --bg:  #FFFEF9;   /* blanc crème chaud */
+  --bg2: #FEF9EE;   /* crème légèrement dorée */
 
-  /* Accents — slightly deeper for contrast on white */
-  --indigo:  #4F46E5;
-  --violet:  #7C3AED;
-  --amber:   #D97706;
-  --emerald: #059669;
-  --rose:    #E11D48;
-  --cyan:    #0891B2;
+  /* Surfaces — cartes blanches nettes avec chaleur subtile */
+  --surface:  rgba(255, 252, 245, 0.90);
+  --surface2: rgba(254, 249, 238, 0.85);
+  --surface3: rgba(252, 244, 225, 0.90);
+
+  /* Borders — beige doré, très subtil */
+  --border:  rgba(180,130,60,0.12);
+  --border2: rgba(160,110,40,0.20);
+  --border3: rgba(140,90,20,0.32);
+
+  /* Text — anthracite profond, jamais noir pur */
+  --text:  #1C1810;   /* brun-anthracite chaud */
+  --text2: #4A3F2E;   /* brun moyen lisible */
+  --muted: rgba(90,75,50,0.60);
+
+  /* Accents — réorientés vers palette solaire */
+  --indigo:  #7C5AF6;   /* conservé pour compatibilité render.js mais atténué */
+  --violet:  #9333EA;
+  --amber:   #C2690A;   /* amber solaire profond */
+  --emerald: #16803C;
+  --rose:    #D62E4A;
+  --cyan:    #0369A1;   /* ciel profond */
 
   /* Dim backgrounds */
-  --indigo-dim:  rgba(79,70,229,0.10);
-  --violet-dim:  rgba(124,58,237,0.10);
-  --amber-dim:   rgba(217,119,6,0.08);
-  --emerald-dim: rgba(5,150,105,0.08);
-  --rose-dim:    rgba(225,29,72,0.08);
-  --cyan-dim:    rgba(8,145,178,0.08);
+  --indigo-dim:  rgba(124,90,246,0.08);
+  --violet-dim:  rgba(147,51,234,0.08);
+  --amber-dim:   rgba(194,105,10,0.09);
+  --emerald-dim: rgba(22,128,60,0.08);
+  --rose-dim:    rgba(214,46,74,0.08);
+  --cyan-dim:    rgba(3,105,161,0.08);
 
   /* Legacy aliases */
-  --gold:        #D97706;
-  --gold-dim:    rgba(217,119,6,0.08);
-  --purple:      #7C3AED;
-  --purple-dim:  rgba(124,58,237,0.10);
-  --purple-glow: rgba(124,58,237,0.15);
-  --green:       #059669;
-  --green-dim:   rgba(5,150,105,0.08);
-  --pink:        #E11D48;
-  --pink-dim:    rgba(225,29,72,0.08);
+  --gold:        #C2690A;
+  --gold-dim:    rgba(194,105,10,0.09);
+  --purple:      #9333EA;
+  --purple-dim:  rgba(147,51,234,0.08);
+  --purple-glow: rgba(147,51,234,0.12);
+  --green:       #16803C;
+  --green-dim:   rgba(22,128,60,0.08);
+  --pink:        #D62E4A;
+  --pink-dim:    rgba(214,46,74,0.08);
 }
 
-/* Hide WebGL canvas — shader is incomprehensible on light bg */
+/* ── Fond ciel lumineux : masque le fond cosmique sombre ── */
+:root[data-theme="light"] body {
+  background: linear-gradient(
+    180deg,
+    #E8F4FE 0%,     /* bleu azur très pâle — ciel du matin */
+    #F5FBFF 12%,    /* transition douce vers blanc */
+    #FFFEF9 35%,    /* blanc crème chaud */
+    #FEF9EE 65%,    /* crème dorée */
+    #FFFCF0 100%    /* crème claire */
+  ) fixed;
+}
+
+/* ── Masquer entièrement le canvas WebGL ── */
 :root[data-theme="light"] #hero-canvas {
   display: none;
 }
 
-/* Reduce aurora and nebula intensities so they read as subtle tints, not dark blobs */
+/* ── Masquer tout le cosmic background (étoiles, planètes, nébuleuses) ── */
+:root[data-theme="light"] #cosmic-bg {
+  display: none;
+}
+
+/* ── Remplacer l'aurora par une ambiance solaire subtile ── */
 :root[data-theme="light"] .aurora-layer {
-  opacity: 0.25;
+  display: none;
 }
 
+/* ── Remplacer body::before (nébuleuses cosmiques) par un ciel solaire ── */
 :root[data-theme="light"] body::before {
-  opacity: 0.20;
+  background:
+    radial-gradient(ellipse 60% 45% at 8% 5%,   rgba(255,220,100,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 35% at 92% 8%,   rgba(255,180,80,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 40% at 50% 0%,   rgba(147,210,255,0.20) 0%, transparent 55%),
+    radial-gradient(ellipse 35% 30% at 18% 80%,  rgba(255,200,120,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 35% at 82% 75%,  rgba(255,240,180,0.12) 0%, transparent 60%);
+  opacity: 1;
+  animation: solarShift 16s ease-in-out infinite alternate;
 }
 
-/* Hero title — readable dark gradient on light background */
+@keyframes solarShift {
+  0%   { opacity: 0.80; }
+  50%  { opacity: 1.00; }
+  100% { opacity: 0.85; }
+}
+
+/* ── Hero title — dégradé doré-safran ensoleillé ── */
 :root[data-theme="light"] .hero-title {
-  background: linear-gradient(145deg, #1E293B 0%, #334155 100%);
+  background: linear-gradient(145deg, #1C1810 0%, #4A3F2E 60%, #7A5A20 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Input color-scheme so native date/time pickers render light */
+/* L'em italic dans le titre reçoit une teinte solaire */
+:root[data-theme="light"] .hero-title em {
+  background: linear-gradient(135deg, #C2690A 0%, #E05020 45%, #C2440A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Hero badge — doré solaire ── */
+:root[data-theme="light"] .hero-badge {
+  background: rgba(194,105,10,0.09);
+  border-color: rgba(194,105,10,0.28);
+  color: #A35608;
+}
+
+/* ── Hero sub — brun moyen lisible ── */
+:root[data-theme="light"] .hero-sub {
+  color: rgba(90,75,50,0.70);
+}
+
+/* ── Form card — verre blanc chaud avec ombre douce ── */
+:root[data-theme="light"] .form-card {
+  background: rgba(255, 254, 248, 0.92);
+  border-color: rgba(194,155,80,0.18);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 20px 60px rgba(180,120,20,0.10),
+    0 4px 16px rgba(180,120,20,0.06),
+    0 0 0 1px rgba(255,255,255,0.90) inset;
+}
+
+/* ── Inputs — fond blanc propre, bordure beige-dorée ── */
 :root[data-theme="light"] input[type="date"],
 :root[data-theme="light"] .inp-time,
 :root[data-theme="light"] .inp-place,
 :root[data-theme="light"] .inp-select {
   color-scheme: light;
-  background: rgba(51,65,85,0.05);
-  border-color: rgba(51,65,85,0.16);
+  background: rgba(255,255,255,0.95);
+  border-color: rgba(180,130,60,0.22);
+  color: #1C1810;
+  box-shadow: 0 1px 4px rgba(180,120,20,0.06);
 }
 
-/* Select option background — overrides the hardcoded dark value */
+:root[data-theme="light"] input[type="date"]:focus,
+:root[data-theme="light"] .inp-time:focus {
+  border-color: #C2690A;
+  box-shadow: 0 0 0 3px rgba(194,105,10,0.15);
+}
+
+:root[data-theme="light"] .inp-place:focus {
+  border-color: #0369A1;
+  box-shadow: 0 0 0 3px rgba(3,105,161,0.12);
+}
+
+:root[data-theme="light"] .inp-select:focus {
+  border-color: #C2690A;
+  box-shadow: 0 0 0 3px rgba(194,105,10,0.15);
+}
+
+/* Select option */
 :root[data-theme="light"] .inp-select option {
-  background: #FAFBFF;
-  color: #1E293B;
+  background: #FFFEF9;
+  color: #1C1810;
 }
 
-/* Form card — lighten the glass effect */
-:root[data-theme="light"] .form-card {
-  background: rgba(255,255,255,0.72);
-  border-color: rgba(51,65,85,0.12);
+/* Flèche du select en teinte brun */
+:root[data-theme="light"] .inp-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(90,75,50,0.55)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+
+/* ── Placeholder ── */
+:root[data-theme="light"] .inp-place::placeholder {
+  color: rgba(90,75,50,0.45);
+}
+
+/* ── Personnaliser toggle — look crème ── */
+:root[data-theme="light"] .personalize-toggle {
+  background: rgba(255,250,240,0.90);
+  border-color: rgba(194,155,80,0.20);
+}
+
+:root[data-theme="light"] .personalize-toggle:hover {
+  background: rgba(254,246,225,0.95);
+  border-color: rgba(194,105,10,0.28);
+}
+
+:root[data-theme="light"] .personalize-inner {
+  background: rgba(255,252,242,0.95);
+  border-color: rgba(194,155,80,0.16);
+}
+
+/* ── Genre buttons ── */
+:root[data-theme="light"] .genre-btn {
+  background: rgba(255,252,245,0.90);
+  border-color: rgba(180,130,60,0.20);
+  color: #4A3F2E;
+}
+
+:root[data-theme="light"] .genre-btn.selected {
+  background: rgba(194,105,10,0.12);
+  border-color: rgba(194,105,10,0.40);
+  color: #A35608;
+}
+
+/* ── CTA Button — dégradé solaire amber/corail ── */
+:root[data-theme="light"] .liquid-btn {
+  background: rgba(194,105,10,0.12);
+  border-color: rgba(194,105,10,0.30);
+  color: #7A3A06;
   box-shadow:
-    0 24px 48px rgba(0,0,0,0.08),
-    0 0 0 1px rgba(255,255,255,0.80) inset;
+    0 0 8px rgba(0,0,0,0.02),
+    0 4px 16px rgba(194,105,10,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.70),
+    inset 0 0 12px rgba(255,220,150,0.15),
+    0 0 20px rgba(194,105,10,0.08);
 }
 
-/* Progress track — light bg needs a visible track */
+:root[data-theme="light"] .liquid-btn::before {
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.50) 0%,
+    rgba(255,240,200,0.25) 30%,
+    transparent 60%,
+    rgba(255,180,80,0.10) 100%);
+}
+
+:root[data-theme="light"] .liquid-btn:hover {
+  box-shadow:
+    0 6px 24px rgba(194,105,10,0.20),
+    inset 0 1px 0 rgba(255,255,255,0.80),
+    0 0 36px rgba(194,105,10,0.12);
+  background: rgba(194,105,10,0.16);
+  border-color: rgba(194,105,10,0.45);
+  color: #5C2A04;
+}
+
+/* ── Cards milestones — blanc chaud, ombres dorées ── */
+:root[data-theme="light"] .card {
+  background: rgba(255, 254, 250, 0.95);
+  border-color: rgba(194,155,80,0.15);
+  box-shadow:
+    0 2px 12px rgba(180,120,20,0.07),
+    0 1px 3px rgba(180,120,20,0.04);
+}
+
+:root[data-theme="light"] .card:hover {
+  border-color: rgba(194,105,10,0.30);
+  box-shadow:
+    0 8px 28px rgba(180,120,20,0.13),
+    0 2px 8px rgba(180,120,20,0.07);
+}
+
+:root[data-theme="light"] .card.future {
+  border-color: rgba(3,105,161,0.18);
+  background: linear-gradient(140deg, rgba(3,105,161,0.05), rgba(255,254,250,0.95));
+}
+
+:root[data-theme="light"] .card.past {
+  border-color: rgba(194,105,10,0.20);
+  background: linear-gradient(140deg, rgba(194,105,10,0.06), rgba(255,254,250,0.95));
+}
+
+:root[data-theme="light"] .card.next {
+  border-color: rgba(22,128,60,0.28);
+  background: linear-gradient(140deg, rgba(22,128,60,0.07), rgba(255,254,250,0.95));
+  box-shadow:
+    0 4px 20px rgba(22,128,60,0.08),
+    0 1px 4px rgba(22,128,60,0.05);
+}
+
+/* Barres colorées des cards en mode clair */
+:root[data-theme="light"] .card.future::before { background: #0369A1; }
+:root[data-theme="light"] .card.past::before   { background: #C2690A; }
+:root[data-theme="light"] .card.next::before   { background: #16803C; }
+
+/* ── Stat pills — surfaces dorées subtiles ── */
+:root[data-theme="light"] .stat-pill {
+  background: rgba(255,254,250,0.95);
+  border-color: rgba(194,155,80,0.15);
+  box-shadow: 0 2px 10px rgba(180,120,20,0.07);
+}
+
+:root[data-theme="light"] .stat-pill:hover {
+  border-color: rgba(194,105,10,0.25);
+  box-shadow: 0 6px 20px rgba(180,120,20,0.12);
+}
+
+/* ── Progress track — fond beige visible ── */
 :root[data-theme="light"] .prog-track {
-  background: rgba(51,65,85,0.10);
+  background: rgba(180,130,60,0.12);
 }
 
-/* Numerology divider */
+:root[data-theme="light"] .prog-fill {
+  background: linear-gradient(90deg, #C2690A, #E05020);
+}
+
+/* ── Section heads — ligne dégradée ambrée ── */
+:root[data-theme="light"] .section-head::after {
+  background: linear-gradient(to right, rgba(194,105,10,0.25), transparent);
+}
+
+/* ── ICS button ── */
+:root[data-theme="light"] .btn-ics-all {
+  background: rgba(255,254,250,0.92);
+  border-color: rgba(194,155,80,0.20);
+  color: #4A3F2E;
+  box-shadow: 0 2px 10px rgba(180,120,20,0.07);
+}
+
+:root[data-theme="light"] .btn-ics-all:hover {
+  background: rgba(255,250,235,0.98);
+  border-color: rgba(194,105,10,0.35);
+  box-shadow: 0 6px 20px rgba(180,120,20,0.12);
+  color: #1C1810;
+}
+
+/* ── Timeline CTA ── */
+:root[data-theme="light"] .btn-timeline-cta {
+  color: #A35608;
+  background: rgba(194,105,10,0.09);
+  border-color: rgba(194,105,10,0.22);
+}
+
+:root[data-theme="light"] .btn-timeline-cta:hover {
+  background: rgba(194,105,10,0.15);
+  border-color: #C2690A;
+  box-shadow: 0 6px 24px rgba(194,105,10,0.15);
+  color: #7A3A06;
+}
+
+/* ── Show more button ── */
+:root[data-theme="light"] .btn-show-more {
+  background: rgba(255,254,250,0.92);
+  border-color: rgba(194,155,80,0.20);
+  color: #4A3F2E;
+}
+
+:root[data-theme="light"] .btn-show-more:hover {
+  background: rgba(255,250,235,0.98);
+  border-color: rgba(194,105,10,0.35);
+  color: #1C1810;
+  box-shadow: 0 6px 20px rgba(180,120,20,0.12);
+}
+
+/* ── Tags d'unité ── */
+:root[data-theme="light"] .unit-tag.s { background: rgba(214,46,74,0.08);  color: #C42040; border-color: rgba(214,46,74,0.18); }
+:root[data-theme="light"] .unit-tag.m { background: rgba(3,105,161,0.08);  color: #0369A1; border-color: rgba(3,105,161,0.18); }
+:root[data-theme="light"] .unit-tag.h { background: rgba(194,105,10,0.09); color: #A35608; border-color: rgba(194,105,10,0.20); }
+:root[data-theme="light"] .unit-tag.d { background: rgba(22,128,60,0.08);  color: #16803C; border-color: rgba(22,128,60,0.18); }
+:root[data-theme="light"] .unit-tag.w { background: rgba(147,51,234,0.07); color: #7C3AED; border-color: rgba(147,51,234,0.16); }
+
+/* ── Astro cards — verre crème ── */
+:root[data-theme="light"] .astro-card {
+  background: rgba(255,254,250,0.95);
+  border-color: rgba(194,155,80,0.15);
+  box-shadow: 0 2px 12px rgba(180,120,20,0.07);
+}
+
+:root[data-theme="light"] .astro-card.western {
+  border-color: rgba(194,105,10,0.20);
+  background: linear-gradient(140deg, rgba(194,105,10,0.05), rgba(255,254,250,0.95));
+}
+
+:root[data-theme="light"] .astro-card.moon {
+  border-color: rgba(147,51,234,0.16);
+  background: linear-gradient(140deg, rgba(147,51,234,0.05), rgba(255,254,250,0.95));
+}
+
+:root[data-theme="light"] .astro-card.chinese {
+  border-color: rgba(214,46,74,0.16);
+  background: linear-gradient(140deg, rgba(214,46,74,0.05), rgba(255,254,250,0.95));
+}
+
+:root[data-theme="light"] .astro-card.ascendant {
+  border-color: rgba(3,105,161,0.18);
+  background: linear-gradient(140deg, rgba(3,105,161,0.05), rgba(255,254,250,0.95));
+}
+
+:root[data-theme="light"] .astro-card.numerology {
+  border-color: rgba(194,105,10,0.22);
+  background: linear-gradient(135deg, rgba(194,105,10,0.07), rgba(255,254,250,0.95));
+}
+
+/* ── Astro profile btn ── */
+:root[data-theme="light"] .astro-profile-btn {
+  background: linear-gradient(135deg, rgba(194,105,10,0.08), rgba(214,46,74,0.05));
+  border-color: rgba(194,105,10,0.22);
+  color: #4A3F2E;
+}
+
+:root[data-theme="light"] .astro-profile-btn:hover {
+  background: linear-gradient(135deg, rgba(194,105,10,0.14), rgba(214,46,74,0.08));
+  border-color: rgba(194,105,10,0.38);
+  color: #1C1810;
+}
+
+/* ── Astro profile inner ── */
+:root[data-theme="light"] .astro-profile-inner {
+  background: linear-gradient(140deg, rgba(194,105,10,0.06), rgba(214,46,74,0.03), rgba(255,220,100,0.04));
+  border-color: rgba(194,105,10,0.16);
+}
+
+/* ── Astro body em ── */
+:root[data-theme="light"] .astro-profile-body em {
+  color: #A35608;
+}
+
+/* ── Numerology ── */
 :root[data-theme="light"] .numerology-divider {
-  border-bottom-color: rgba(51,65,85,0.10);
+  border-bottom-color: rgba(180,130,60,0.14);
 }
 
-/* Event item hover */
+:root[data-theme="light"] .numerology-trait {
+  background: rgba(194,105,10,0.08);
+  border-color: rgba(194,105,10,0.16);
+  color: #4A3F2E;
+}
+
+/* ── Calendar cards ── */
+:root[data-theme="light"] .cal-card {
+  background: rgba(255,254,250,0.95);
+  border-color: rgba(194,155,80,0.15);
+  box-shadow: 0 2px 10px rgba(180,120,20,0.07);
+}
+
+:root[data-theme="light"] .cal-card:hover {
+  border-color: rgba(194,105,10,0.28);
+  box-shadow: 0 6px 20px rgba(180,120,20,0.12);
+}
+
+/* ── Lifestats & planet cards ── */
+:root[data-theme="light"] .lifestats-card,
+:root[data-theme="light"] .planet-card {
+  background: rgba(255,254,250,0.95);
+  border-color: rgba(194,155,80,0.15);
+  box-shadow: 0 2px 10px rgba(180,120,20,0.06);
+}
+
+:root[data-theme="light"] .lifestats-card:hover,
+:root[data-theme="light"] .planet-card:hover {
+  border-color: rgba(194,105,10,0.25);
+  box-shadow: 0 6px 18px rgba(180,120,20,0.11);
+}
+
+/* ── Geo card ── */
+:root[data-theme="light"] .geo-card {
+  background: linear-gradient(140deg, rgba(3,105,161,0.06), rgba(255,254,250,0.95));
+  border-color: rgba(3,105,161,0.18);
+}
+
+:root[data-theme="light"] .geo-fact-item {
+  background: rgba(255,254,250,0.95);
+  border-color: rgba(194,155,80,0.14);
+}
+
+:root[data-theme="light"] .geo-hemisphere-note {
+  color: #0369A1;
+  background: rgba(3,105,161,0.07);
+  border-color: rgba(3,105,161,0.14);
+}
+
+/* ── Events box ── */
+:root[data-theme="light"] .events-box {
+  background: rgba(255,254,250,0.95);
+  border-color: rgba(194,155,80,0.16);
+}
+
+:root[data-theme="light"] .events-box-header {
+  background: rgba(255,252,240,0.90);
+  border-bottom-color: rgba(194,155,80,0.14);
+}
+
+:root[data-theme="light"] .event-item {
+  border-bottom-color: rgba(194,155,80,0.10);
+}
+
 :root[data-theme="light"] .event-item:hover {
-  background: rgba(51,65,85,0.04);
+  background: rgba(255,240,200,0.25);
+}
+
+:root[data-theme="light"] .events-box-date {
+  color: #A35608;
+  background: rgba(194,105,10,0.09);
+  border-color: rgba(194,105,10,0.18);
+}
+
+/* ── Season & weekday cards ── */
+:root[data-theme="light"] .season-card {
+  background: linear-gradient(135deg, rgba(22,128,60,0.06), rgba(3,105,161,0.03), rgba(255,254,250,0.95));
+  border-color: rgba(22,128,60,0.18);
+}
+
+:root[data-theme="light"] .weekday-card {
+  background: linear-gradient(135deg, rgba(147,51,234,0.06), rgba(214,46,74,0.03), rgba(255,254,250,0.95));
+  border-color: rgba(147,51,234,0.16);
+}
+
+/* ── Top milestone cards ── */
+:root[data-theme="light"] .top-milestone-card {
+  background: rgba(255,254,250,0.95);
+  border-color: rgba(194,155,80,0.14);
+  box-shadow: 0 3px 14px rgba(180,120,20,0.08);
+}
+
+:root[data-theme="light"] .top-milestone-card:hover {
+  box-shadow: 0 10px 36px rgba(180,120,20,0.14);
+  border-color: rgba(194,105,10,0.28);
+}
+
+:root[data-theme="light"] .top-milestone-card:nth-child(1) {
+  background: linear-gradient(140deg, rgba(22,128,60,0.07), rgba(255,254,250,0.95));
+  border-color: rgba(22,128,60,0.20);
+}
+
+:root[data-theme="light"] .top-milestone-card:nth-child(2) {
+  background: linear-gradient(140deg, rgba(3,105,161,0.07), rgba(255,254,250,0.95));
+  border-color: rgba(3,105,161,0.20);
+}
+
+:root[data-theme="light"] .top-milestone-card:nth-child(3) {
+  background: linear-gradient(140deg, rgba(194,105,10,0.07), rgba(255,254,250,0.95));
+  border-color: rgba(194,105,10,0.20);
+}
+
+:root[data-theme="light"] .top-milestone-card:nth-child(3) .top-milestone-rank,
+:root[data-theme="light"] .top-milestone-card:nth-child(3) .top-milestone-countdown {
+  color: #A35608;
+}
+
+/* ── Glow orb des top cards — solaire ── */
+:root[data-theme="light"] .top-milestone-card::after {
+  background: radial-gradient(circle, rgba(255,200,100,0.12), transparent 70%);
+}
+
+/* ── View toggle ── */
+:root[data-theme="light"] .view-toggle-segmented {
+  background: rgba(255,252,240,0.90);
+  border-color: rgba(194,155,80,0.20);
+}
+
+:root[data-theme="light"] .view-toggle-btn.active {
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 1px 6px rgba(180,120,20,0.12), inset 0 1px 0 rgba(255,255,255,0.95);
+  border-color: rgba(194,155,80,0.25);
+  color: #1C1810;
+}
+
+/* ── Timeline — épine solaire ── */
+:root[data-theme="light"] .timeline-spine {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #C2690A 6%,
+    #E05020 50%,
+    #C2690A 94%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 6px 1px rgba(194,105,10,0.30),
+    0 0 18px 4px rgba(224,80,32,0.12);
+}
+
+:root[data-theme="light"] .timeline-now-ring {
+  background: #C2690A;
+  box-shadow:
+    0 0 0 3px rgba(255,255,255,0.95),
+    0 0 0 6px rgba(194,105,10,0.25),
+    0 0 16px rgba(194,105,10,0.30);
+}
+
+/* ── Theme toggle button — verre crème ── */
+:root[data-theme="light"] .btn-theme-toggle {
+  background: rgba(255,252,240,0.90);
+  border-color: rgba(194,155,80,0.22);
+  color: #4A3F2E;
+  box-shadow: 0 2px 10px rgba(180,120,20,0.10);
+}
+
+:root[data-theme="light"] .btn-theme-toggle:hover {
+  background: rgba(255,246,220,0.95);
+  border-color: rgba(194,105,10,0.35);
+  color: #1C1810;
+}
+
+/* ── PWA Banner (déjà overridé mais harmonisation) ── */
+:root[data-theme="light"] .pwa-banner__inner {
+  background: rgba(255,252,240,0.96);
+  border-color: rgba(194,155,80,0.20);
+  box-shadow: 0 4px 24px rgba(180,120,20,0.14);
+}
+
+/* ── Dynamic section backgrounds — teintes solaires en light ── */
+:root[data-theme="light"] body::after { opacity: 0.25; }
+
+/* ── Blog cards ── */
+:root[data-theme="light"] .blog-card-tag {
+  background: rgba(194,105,10,0.09);
+  color: #A35608;
+}
+
+:root[data-theme="light"] .blog-card {
+  background: rgba(255,254,250,0.92);
+  border-color: rgba(194,155,80,0.14);
+  box-shadow: 0 2px 10px rgba(180,120,20,0.06);
+}
+
+:root[data-theme="light"] .blog-card:hover {
+  background: rgba(255,252,240,0.98);
+  border-color: rgba(194,105,10,0.26);
+  box-shadow: 0 6px 22px rgba(180,120,20,0.12);
+}
+
+/* ── Friend compare cards ── */
+:root[data-theme="light"] .friend-form-card {
+  background: linear-gradient(140deg, rgba(3,105,161,0.05), rgba(255,254,250,0.92));
+  border-color: rgba(194,155,80,0.18);
+}
+
+:root[data-theme="light"] .friend-form-field input {
+  background: rgba(255,255,255,0.95);
+  border-color: rgba(180,130,60,0.22);
+  color: #1C1810;
+}
+
+:root[data-theme="light"] .friend-form-field input:focus {
+  border-color: #C2690A;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(194,105,10,0.12);
+}
+
+:root[data-theme="light"] .friend-compare-summary {
+  background: rgba(194,105,10,0.08);
+  border-color: rgba(194,105,10,0.18);
+}
+
+:root[data-theme="light"] .friend-compare-summary strong {
+  color: #A35608;
+}
+
+:root[data-theme="light"] .friend-compare-card {
+  background: rgba(255,254,250,0.95);
+  border-color: rgba(194,155,80,0.16);
+  box-shadow: 0 2px 10px rgba(180,120,20,0.07);
+}
+
+:root[data-theme="light"] .friend-compare-card:hover {
+  border-color: rgba(194,105,10,0.28);
+  box-shadow: 0 6px 20px rgba(180,120,20,0.12);
+}
+
+:root[data-theme="light"] .fcard-row {
+  background: rgba(255,248,230,0.60);
+}
+
+:root[data-theme="light"] .btn-show-all-pairs {
+  background: rgba(255,254,250,0.92);
+  border-color: rgba(194,155,80,0.18);
+  color: #4A3F2E;
+}
+
+:root[data-theme="light"] .btn-show-all-pairs:hover {
+  background: rgba(255,250,235,0.98);
+  border-color: rgba(194,105,10,0.32);
+  color: #1C1810;
+}
+
+/* ── Countdown colors en clair ── */
+:root[data-theme="light"] .countdown {
+  color: #16803C;
+}
+
+:root[data-theme="light"] .countdown.hot {
+  color: #D62E4A;
+}
+
+:root[data-theme="light"] .past-done {
+  color: #A35608;
+}
+
+/* ── Numerology famous names ── */
+:root[data-theme="light"] .numerology-famous-name {
+  background: rgba(3,105,161,0.07);
+  border-color: rgba(3,105,161,0.16);
+  color: #4A3F2E;
+}
+
+/* ── Blog showcase CTA ── */
+:root[data-theme="light"] .blog-showcase-cta {
+  color: #A35608;
+}
+
+:root[data-theme="light"] .blog-showcase-cta:hover {
+  background: rgba(194,105,10,0.08);
+  color: #7A3A06;
+}
+
+/* ── Btn compare (friend) — couleur solaire ── */
+:root[data-theme="light"] .btn-compare {
+  background: linear-gradient(135deg, #C2690A, #E05020);
+  box-shadow: 0 4px 16px rgba(194,105,10,0.28);
+}
+
+:root[data-theme="light"] .btn-compare:hover {
+  box-shadow: 0 6px 24px rgba(194,105,10,0.38);
+}
+
+/* ── Age box — texte anthracite ── */
+:root[data-theme="light"] .age-box .val {
+  background: linear-gradient(135deg, #C2690A 0%, #E05020 50%, #A35608 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Countdown achieved ── */
+:root[data-theme="light"] .countdown.achieved,
+:root[data-theme="light"] .top-milestone-countdown.achieved {
+  color: #A35608;
+}
+
+/* ── Achieved badge ── */
+:root[data-theme="light"] .achieved-badge {
+  background: linear-gradient(135deg, #C2690A 0%, #E05020 100%);
+  box-shadow: 0 0 12px rgba(194,105,10,0.30);
+}
+
+/* ── Card milestone-achieved ── */
+:root[data-theme="light"] .card.milestone-achieved {
+  background: linear-gradient(140deg,
+    rgba(194,105,10,0.09) 0%,
+    rgba(224,80,32,0.05) 60%,
+    rgba(255,254,250,0.95) 100%
+  ) !important;
+  border-color: rgba(194,105,10,0.40) !important;
+}
+
+:root[data-theme="light"] .card.milestone-achieved::before {
+  background: linear-gradient(180deg, #C2690A, #E05020) !important;
+}
+
+/* ── Footer ── */
+:root[data-theme="light"] footer {
+  border-top-color: rgba(194,155,80,0.16);
+}
+
+/* ── Astro card achieved badge hot ── */
+:root[data-theme="light"] .top-milestone-countdown.hot {
+  color: #D62E4A;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -2754,8 +3450,8 @@ body.theme-seasons::after {
     radial-gradient(ellipse 50% 40% at 30% 70%, rgba(139,92,246,0.08) 0%, transparent 50%);
 }
 
-/* Light mode: reduce theme intensity */
-:root[data-theme="light"] body::after { opacity: 0.3; }
+/* Light mode: reduce theme intensity — overridé par la section principale */
+:root[data-theme="light"] body::after { opacity: 0.20; }
 
 /* ─── ASCENDANT CARD ─── */
 .astro-card.ascendant { border-color: rgba(6,182,212,0.2); background: linear-gradient(140deg, rgba(6,182,212,0.05), var(--surface)); }
@@ -2858,10 +3554,11 @@ body.theme-seasons::after {
   opacity: 1;
 }
 
-/* Light mode adjustments */
+/* Light mode adjustments — overridé par la section principale light mode */
 :root[data-theme="light"] .view-toggle-btn.active {
-  background: rgba(255,255,255,0.75);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.90);
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 1px 6px rgba(180,120,20,0.12), inset 0 1px 0 rgba(255,255,255,0.95);
+  border-color: rgba(194,155,80,0.25);
 }
 
 @media (max-width: 440px) {
@@ -3437,17 +4134,18 @@ body.theme-seasons::after {
   }
 }
 
-/* Light mode */
+/* Light mode — blog (palette solaire, overridé par :root[data-theme="light"] section principale) */
 [data-theme="light"] .blog-card-tag {
-  background: rgba(99,102,241,0.08);
+  background: rgba(194,105,10,0.09);
+  color: #A35608;
 }
 [data-theme="light"] .blog-card {
-  background: rgba(0,0,0,0.02);
-  border-color: rgba(0,0,0,0.08);
+  background: rgba(255,254,250,0.92);
+  border-color: rgba(194,155,80,0.14);
 }
 [data-theme="light"] .blog-card:hover {
-  background: rgba(0,0,0,0.04);
-  border-color: rgba(0,0,0,0.12);
+  background: rgba(255,252,240,0.98);
+  border-color: rgba(194,105,10,0.26);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -3793,50 +4491,51 @@ body.theme-seasons::after {
   border-color: var(--border3);
 }
 
-/* ── Light mode overrides ── */
+/* ── Light mode overrides — friend compare (palette solaire) ── */
 [data-theme="light"] .friend-form-card {
-  background: linear-gradient(140deg, rgba(99,102,241,0.05), rgba(255,255,255,0.8));
-  border-color: rgba(0,0,0,0.08);
+  background: linear-gradient(140deg, rgba(3,105,161,0.05), rgba(255,254,250,0.92));
+  border-color: rgba(194,155,80,0.18);
 }
 
 [data-theme="light"] .friend-form-field input {
-  background: rgba(255,255,255,0.9);
-  border-color: rgba(0,0,0,0.12);
-  color: #1E293B;
+  background: rgba(255,255,255,0.95);
+  border-color: rgba(180,130,60,0.22);
+  color: #1C1810;
 }
 
 [data-theme="light"] .friend-form-field input:focus {
-  border-color: #4F46E5;
+  border-color: #C2690A;
   background: #ffffff;
 }
 
 [data-theme="light"] .friend-compare-summary {
-  background: rgba(99,102,241,0.06);
-  border-color: rgba(99,102,241,0.15);
+  background: rgba(194,105,10,0.08);
+  border-color: rgba(194,105,10,0.18);
 }
 
 [data-theme="light"] .friend-compare-card {
-  background: rgba(255,255,255,0.8);
-  border-color: rgba(0,0,0,0.08);
+  background: rgba(255,254,250,0.95);
+  border-color: rgba(194,155,80,0.16);
 }
 
 [data-theme="light"] .friend-compare-card:hover {
-  border-color: rgba(0,0,0,0.15);
+  border-color: rgba(194,105,10,0.28);
 }
 
 [data-theme="light"] .fcard-row {
-  background: rgba(0,0,0,0.03);
+  background: rgba(255,248,230,0.60);
 }
 
 [data-theme="light"] .btn-show-all-pairs {
-  background: rgba(0,0,0,0.04);
-  border-color: rgba(0,0,0,0.10);
-  color: #475569;
+  background: rgba(255,254,250,0.92);
+  border-color: rgba(194,155,80,0.18);
+  color: #4A3F2E;
 }
 
 [data-theme="light"] .btn-show-all-pairs:hover {
-  background: rgba(0,0,0,0.07);
-  border-color: rgba(0,0,0,0.15);
+  background: rgba(255,250,235,0.98);
+  border-color: rgba(194,105,10,0.32);
+  color: #1C1810;
 }
 
 /* ── Responsive ── */

@@ -1,0 +1,4 @@
+# Cloudflare Pages — redirections
+/blog           /blog/index.html    301
+/boutique       /boutique.html      301
+/timeline       /timeline.html      301

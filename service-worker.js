@@ -19,7 +19,6 @@ const PRECACHE_URLS = [
   '/js/calendars.js',
   '/favicon.svg',
   '/manifest.json',
-  '/blog/',
   '/blog/index.html',
   '/blog/style.css',
   '/blog/milliardieme-seconde.html',

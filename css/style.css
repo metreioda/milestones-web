@@ -586,11 +586,13 @@ input[type="date"]:focus,
 .stat-pill strong {
   display: block;
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.4rem;
+  font-size: clamp(1rem, 3vw, 1.4rem);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  line-height: 1.1;
+  line-height: 1.2;
   margin-bottom: 5px;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .stat-pill span {
@@ -822,6 +824,8 @@ input[type="date"]:focus,
   font-weight: 700;
   margin-bottom: 4px;
   color: var(--text);
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .card-tagline {
@@ -1728,7 +1732,7 @@ footer {
   .inp-time { width: 100%; }
 
   /* Stats */
-  .stats-row { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+  .stats-row { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
 
   /* Grids */
   .grid { grid-template-columns: 1fr; }
@@ -1747,6 +1751,7 @@ footer {
 @media (max-width: 380px) {
   .hero-title { font-size: 2.4rem; }
   .stats-row { grid-template-columns: 1fr 1fr; }
+  .stat-pill strong { font-size: 0.95rem; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1768,7 +1773,7 @@ footer {
 
 @media (min-width: 701px) and (max-width: 900px) {
   .top-milestones-grid { grid-template-columns: 1fr 1fr; }
-  .top-milestones-grid .top-milestone-card:last-child { grid-column: 1 / -1; max-width: 50%; margin: 0 auto; width: 100%; }
+  .top-milestones-grid .top-milestone-card:last-child { grid-column: 1 / -1; max-width: 70%; margin: 0 auto; width: 100%; }
 }
 
 .top-milestone-card {
@@ -1852,6 +1857,8 @@ footer {
   font-weight: 700;
   color: var(--text);
   margin-bottom: 4px;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .top-milestone-tagline {
@@ -1859,6 +1866,8 @@ footer {
   color: var(--muted);
   line-height: 1.45;
   margin-bottom: 14px;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .top-milestone-date {
@@ -1916,4 +1925,200 @@ footer {
   }
   .top-milestone-card { animation: none; transition: none; }
   .liquid-btn { transition: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME TOGGLE BUTTON
+   ═══════════════════════════════════════════════════════════════════════════ */
+.theme-toggle-wrap {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 999;
+}
+
+.btn-theme-toggle {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.18s ease;
+}
+
+.btn-theme-toggle:hover {
+  background: var(--surface3);
+  border-color: var(--border3);
+  color: var(--text);
+}
+
+.btn-theme-toggle:active {
+  transform: scale(0.93);
+}
+
+/* Sun visible in dark mode, moon visible in light mode */
+.theme-icon-moon { display: none; }
+:root[data-theme="light"] .theme-icon-sun  { display: none; }
+:root[data-theme="light"] .theme-icon-moon { display: block; }
+
+@media (max-width: 640px) {
+  .theme-toggle-wrap { top: 16px; right: 16px; }
+  .btn-theme-toggle  { width: 40px; height: 40px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SMOOTH THEME TRANSITIONS
+   Applies only to color/background — never to transform-based animations
+   ═══════════════════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+  transition:
+    background-color 0.30s ease,
+    border-color     0.30s ease,
+    color            0.30s ease;
+}
+
+/* Restore precise transitions on interactive/animated components so
+   they are not slowed down by the generic 0.30s rule above */
+.card,
+.stat-pill,
+.top-milestone-card {
+  transition:
+    transform        0.22s ease,
+    border-color     0.22s ease,
+    box-shadow       0.22s ease,
+    background-color 0.30s ease;
+}
+
+.liquid-btn {
+  transition:
+    transform  0.20s ease,
+    box-shadow 0.20s ease;
+}
+
+.reveal-section {
+  transition:
+    opacity   0.60s ease,
+    transform 0.60s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE — :root[data-theme="light"]
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root[data-theme="light"] {
+  /* Backgrounds */
+  --bg:  #FAFBFF;
+  --bg2: #F3F4FA;
+
+  /* Surfaces */
+  --surface:  rgba(51,65,85,0.04);
+  --surface2: rgba(51,65,85,0.08);
+  --surface3: rgba(51,65,85,0.12);
+
+  /* Borders */
+  --border:  rgba(51,65,85,0.10);
+  --border2: rgba(51,65,85,0.18);
+  --border3: rgba(51,65,85,0.28);
+
+  /* Text */
+  --text:  #1E293B;
+  --text2: #475569;
+  --muted: rgba(71,85,105,0.65);
+
+  /* Accents — slightly deeper for contrast on white */
+  --indigo:  #4F46E5;
+  --violet:  #7C3AED;
+  --amber:   #D97706;
+  --emerald: #059669;
+  --rose:    #E11D48;
+  --cyan:    #0891B2;
+
+  /* Dim backgrounds */
+  --indigo-dim:  rgba(79,70,229,0.10);
+  --violet-dim:  rgba(124,58,237,0.10);
+  --amber-dim:   rgba(217,119,6,0.08);
+  --emerald-dim: rgba(5,150,105,0.08);
+  --rose-dim:    rgba(225,29,72,0.08);
+  --cyan-dim:    rgba(8,145,178,0.08);
+
+  /* Legacy aliases */
+  --gold:        #D97706;
+  --gold-dim:    rgba(217,119,6,0.08);
+  --purple:      #7C3AED;
+  --purple-dim:  rgba(124,58,237,0.10);
+  --purple-glow: rgba(124,58,237,0.15);
+  --green:       #059669;
+  --green-dim:   rgba(5,150,105,0.08);
+  --pink:        #E11D48;
+  --pink-dim:    rgba(225,29,72,0.08);
+}
+
+/* Hide WebGL canvas — shader is incomprehensible on light bg */
+:root[data-theme="light"] #hero-canvas {
+  display: none;
+}
+
+/* Reduce aurora and nebula intensities so they read as subtle tints, not dark blobs */
+:root[data-theme="light"] .aurora-layer {
+  opacity: 0.25;
+}
+
+:root[data-theme="light"] body::before {
+  opacity: 0.20;
+}
+
+/* Hero title — readable dark gradient on light background */
+:root[data-theme="light"] .hero-title {
+  background: linear-gradient(145deg, #1E293B 0%, #334155 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Input color-scheme so native date/time pickers render light */
+:root[data-theme="light"] input[type="date"],
+:root[data-theme="light"] .inp-time,
+:root[data-theme="light"] .inp-place,
+:root[data-theme="light"] .inp-select {
+  color-scheme: light;
+  background: rgba(51,65,85,0.05);
+  border-color: rgba(51,65,85,0.16);
+}
+
+/* Select option background — overrides the hardcoded dark value */
+:root[data-theme="light"] .inp-select option {
+  background: #FAFBFF;
+  color: #1E293B;
+}
+
+/* Form card — lighten the glass effect */
+:root[data-theme="light"] .form-card {
+  background: rgba(255,255,255,0.72);
+  border-color: rgba(51,65,85,0.12);
+  box-shadow:
+    0 24px 48px rgba(0,0,0,0.08),
+    0 0 0 1px rgba(255,255,255,0.80) inset;
+}
+
+/* Progress track — light bg needs a visible track */
+:root[data-theme="light"] .prog-track {
+  background: rgba(51,65,85,0.10);
+}
+
+/* Numerology divider */
+:root[data-theme="light"] .numerology-divider {
+  border-bottom-color: rgba(51,65,85,0.10);
+}
+
+/* Event item hover */
+:root[data-theme="light"] .event-item:hover {
+  background: rgba(51,65,85,0.04);
 }

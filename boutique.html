@@ -47,71 +47,71 @@
   <style>
   /* ═══════════════════════════════════════════════════════════════════════════
      MilestoneMe Boutique — Design System "Cosmic Observatory"
-     Standalone stylesheet — design tokens self-contained
+     Premium e-commerce — standalone self-contained
      ═══════════════════════════════════════════════════════════════════════════ */
 
   /* ─── DESIGN TOKENS ──────────────────────────────────────────────────────── */
   :root {
-    --bg:  #030711;
-    --bg2: #0A0818;
+    --bg:       #030711;
+    --bg2:      #0A0818;
+    --bg3:      #0d0a1e;
     --surface:  rgba(255,255,255,0.03);
     --surface2: rgba(255,255,255,0.06);
     --surface3: rgba(255,255,255,0.10);
-    --border:  rgba(255,255,255,0.06);
-    --border2: rgba(255,255,255,0.12);
-    --border3: rgba(255,255,255,0.22);
-    --text:  #F1F5F9;
-    --text2: #CBD5E1;
-    --muted: rgba(203,213,225,0.50);
-    --indigo:  #6366F1;
-    --violet:  #8B5CF6;
-    --amber:   #F59E0B;
-    --emerald: #10B981;
-    --rose:    #F43F5E;
-    --cyan:    #06B6D4;
+    --border:   rgba(255,255,255,0.06);
+    --border2:  rgba(255,255,255,0.12);
+    --border3:  rgba(255,255,255,0.22);
+    --text:     #F1F5F9;
+    --text2:    #CBD5E1;
+    --muted:    rgba(203,213,225,0.50);
+    --indigo:   #6366F1;
+    --violet:   #8B5CF6;
+    --amber:    #F59E0B;
+    --emerald:  #10B981;
+    --rose:     #F43F5E;
+    --cyan:     #06B6D4;
     --indigo-dim:  rgba(99,102,241,0.12);
     --violet-dim:  rgba(139,92,246,0.12);
     --amber-dim:   rgba(245,158,11,0.12);
     --emerald-dim: rgba(16,185,129,0.10);
     --rose-dim:    rgba(244,63,94,0.10);
     --cyan-dim:    rgba(6,182,212,0.10);
-    --radius-card: 18px;
+    --radius-card: 20px;
     --radius-pill: 100px;
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.45);
   }
 
   /* ─── LIGHT MODE ─────────────────────────────────────────────────────────── */
   :root[data-theme="light"] {
     --bg:  #FAFBFF;
     --bg2: #F3F4FA;
+    --bg3: #ECEEF8;
     --surface:  rgba(51,65,85,0.04);
     --surface2: rgba(51,65,85,0.08);
     --surface3: rgba(51,65,85,0.12);
-    --border:  rgba(51,65,85,0.10);
-    --border2: rgba(51,65,85,0.18);
-    --border3: rgba(51,65,85,0.28);
-    --text:  #1E293B;
-    --text2: #475569;
-    --muted: rgba(71,85,105,0.65);
-    --indigo:  #4F46E5;
-    --violet:  #7C3AED;
-    --amber:   #D97706;
-    --emerald: #059669;
-    --rose:    #E11D48;
-    --cyan:    #0891B2;
+    --border:   rgba(51,65,85,0.10);
+    --border2:  rgba(51,65,85,0.18);
+    --border3:  rgba(51,65,85,0.28);
+    --text:     #1E293B;
+    --text2:    #475569;
+    --muted:    rgba(71,85,105,0.65);
+    --indigo:   #4F46E5;
+    --violet:   #7C3AED;
+    --amber:    #D97706;
+    --emerald:  #059669;
+    --rose:     #E11D48;
+    --cyan:     #0891B2;
     --indigo-dim:  rgba(79,70,229,0.10);
     --violet-dim:  rgba(124,58,237,0.10);
     --amber-dim:   rgba(217,119,6,0.08);
     --emerald-dim: rgba(5,150,105,0.08);
     --rose-dim:    rgba(225,29,72,0.08);
     --cyan-dim:    rgba(8,145,178,0.08);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
   }
 
   /* ─── RESET ──────────────────────────────────────────────────────────────── */
-  *, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   /* ─── SMOOTH THEME TRANSITIONS ───────────────────────────────────────────── */
   *, *::before, *::after {
@@ -136,15 +136,21 @@
     line-height: 1.6;
   }
 
-  a {
-    color: var(--indigo);
-    text-decoration: none;
-    transition: color 0.18s ease;
-  }
-
+  a { color: var(--indigo); text-decoration: none; transition: color 0.18s ease; }
   a:hover { color: var(--violet); }
 
-  /* ─── AURORA BACKGROUND ──────────────────────────────────────────────────── */
+  /* ─── STAR CANVAS BACKGROUND ─────────────────────────────────────────────── */
+  #star-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  :root[data-theme="light"] #star-canvas { opacity: 0.12; }
+
+  /* ─── NEBULA GRADIENTS ───────────────────────────────────────────────────── */
   body::before {
     content: '';
     position: fixed;
@@ -152,144 +158,30 @@
     z-index: 0;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 80% 60% at 15% 10%,  rgba(99,102,241,0.12)  0%, transparent 65%),
-      radial-gradient(ellipse 60% 50% at 85% 90%,  rgba(139,92,246,0.10)  0%, transparent 65%),
-      radial-gradient(ellipse 50% 40% at 50% 45%,  rgba(245,158,11,0.04)  0%, transparent 60%),
-      radial-gradient(ellipse 40% 35% at 75% 15%,  rgba(6,182,212,0.07)   0%, transparent 60%),
-      radial-gradient(ellipse 35% 30% at 20% 78%,  rgba(244,63,94,0.06)   0%, transparent 60%);
-    animation: nebulaShift 12s ease-in-out infinite alternate;
+      radial-gradient(ellipse 80% 60% at 15% 10%,  rgba(99,102,241,0.14) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 50% at 88% 92%,  rgba(139,92,246,0.12) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 50% 45%,  rgba(245,158,11,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 35% at 75% 15%,  rgba(6,182,212,0.08)  0%, transparent 60%),
+      radial-gradient(ellipse 35% 30% at 20% 80%,  rgba(244,63,94,0.06)  0%, transparent 60%);
+    animation: nebulaShift 14s ease-in-out infinite alternate;
   }
 
-  :root[data-theme="light"] body::before { opacity: 0.20; }
+  :root[data-theme="light"] body::before { opacity: 0.18; }
 
   @keyframes nebulaShift {
-    0%   { opacity: 0.8; }
-    100% { opacity: 1;   }
+    0%   { opacity: 0.7; transform: scale(1);     }
+    100% { opacity: 1;   transform: scale(1.025); }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    body::before { animation: none; }
-  }
-
-  /* ─── AURORA LAYER ───────────────────────────────────────────────────────── */
-  .aurora-layer {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background-image:
-      repeating-linear-gradient(100deg, transparent 0%, transparent 7%, rgba(99,102,241,0.04) 10%, transparent 12%, transparent 16%),
-      repeating-linear-gradient(100deg, rgba(99,102,241,0.08) 10%, rgba(139,92,246,0.06) 15%, rgba(6,182,212,0.05) 20%, rgba(139,92,246,0.04) 25%, rgba(99,102,241,0.07) 30%);
-    background-size: 300% 300%, 200% 200%;
-    animation: auroraMove 20s linear infinite;
-    filter: blur(8px);
-  }
-
-  :root[data-theme="light"] .aurora-layer { opacity: 0.25; }
-
-  @keyframes auroraMove {
-    from { background-position: 50% 50%, 50% 50%; }
-    to   { background-position: 350% 50%, 350% 50%; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .aurora-layer { animation: none; }
-  }
+  @media (prefers-reduced-motion: reduce) { body::before { animation: none; } }
 
   /* ─── LAYOUT ─────────────────────────────────────────────────────────────── */
   .wrap {
-    max-width: 1100px;
+    max-width: 1160px;
     margin: 0 auto;
     padding: 0 28px;
     position: relative;
     z-index: 1;
-  }
-
-  /* ═══════════════════════════════════════════════════════════════════════════
-     SITE HEADER
-     ═══════════════════════════════════════════════════════════════════════════ */
-  .site-header {
-    position: relative;
-    z-index: 10;
-    padding: 24px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .site-header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .site-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-  }
-
-  .site-logo-mark {
-    width: 34px;
-    height: 34px;
-    background: linear-gradient(135deg, var(--indigo), var(--violet));
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    flex-shrink: 0;
-    box-shadow: 0 0 16px rgba(99,102,241,0.35);
-  }
-
-  .site-logo-text {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--text);
-    letter-spacing: -0.01em;
-  }
-
-  .site-logo-text span {
-    font-weight: 400;
-    color: var(--muted);
-  }
-
-  .site-nav {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .nav-link {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--text2);
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: var(--radius-pill);
-    border: 1px solid transparent;
-    letter-spacing: 0.02em;
-    transition: all 0.18s ease;
-  }
-
-  .nav-link:hover {
-    color: var(--text);
-    background: var(--surface2);
-    border-color: var(--border2);
-  }
-
-  .nav-link--cta {
-    background: var(--indigo-dim);
-    border-color: rgba(99,102,241,0.30);
-    color: #818CF8;
-  }
-
-  .nav-link--cta:hover {
-    background: rgba(99,102,241,0.22);
-    border-color: rgba(99,102,241,0.50);
-    color: #A5B4FC;
   }
 
   /* ─── THEME TOGGLE ───────────────────────────────────────────────────────── */
@@ -311,15 +203,11 @@
     border-radius: 12px;
     color: var(--text2);
     cursor: pointer;
-    transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.18s ease;
+    transition: background 0.25s, border-color 0.25s, color 0.25s, transform 0.18s;
+    backdrop-filter: blur(8px);
   }
 
-  .btn-theme-toggle:hover {
-    background: var(--surface3);
-    border-color: var(--border3);
-    color: var(--text);
-  }
-
+  .btn-theme-toggle:hover { background: var(--surface3); border-color: var(--border3); color: var(--text); }
   .btn-theme-toggle:active { transform: scale(0.93); }
 
   .theme-icon-moon { display: none; }
@@ -332,48 +220,174 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
-     CONSTRUCTION BANNER
+     HEADER
      ═══════════════════════════════════════════════════════════════════════════ */
-  .construction-banner {
+  .site-header {
     position: relative;
-    z-index: 2;
-    background: linear-gradient(90deg,
-      rgba(245,158,11,0.10) 0%,
-      rgba(139,92,246,0.10) 50%,
-      rgba(245,158,11,0.10) 100%);
-    border-bottom: 1px solid rgba(245,158,11,0.22);
-    padding: 12px 20px;
-    text-align: center;
+    z-index: 10;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    background: rgba(3,7,17,0.60);
   }
 
-  .construction-banner-inner {
+  :root[data-theme="light"] .site-header {
+    background: rgba(250,251,255,0.75);
+  }
+
+  .site-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .site-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .site-logo-mark {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--indigo), var(--violet));
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    box-shadow: 0 0 18px rgba(99,102,241,0.40);
+  }
+
+  .site-logo-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .site-logo-text span { font-weight: 400; color: var(--muted); }
+
+  .site-nav { display: flex; align-items: center; gap: 8px; }
+
+  .nav-link {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text2);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    border: 1px solid transparent;
+    letter-spacing: 0.02em;
+    transition: all 0.18s ease;
+  }
+
+  .nav-link:hover { color: var(--text); background: var(--surface2); border-color: var(--border2); }
+
+  .nav-link--cta {
+    background: var(--indigo-dim);
+    border-color: rgba(99,102,241,0.30);
+    color: #818CF8;
+  }
+
+  .nav-link--cta:hover { background: rgba(99,102,241,0.22); border-color: rgba(99,102,241,0.50); color: #A5B4FC; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     MARQUEE STRIP — "Collection Limitée"
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .marquee-strip {
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    background: linear-gradient(90deg,
+      rgba(99,102,241,0.10) 0%,
+      rgba(139,92,246,0.12) 40%,
+      rgba(245,158,11,0.10) 70%,
+      rgba(99,102,241,0.10) 100%);
+    border-bottom: 1px solid rgba(99,102,241,0.20);
+    padding: 10px 0;
+  }
+
+  .marquee-track {
+    display: flex;
+    gap: 0;
+    width: max-content;
+    animation: marqueeScroll 28s linear infinite;
+  }
+
+  .marquee-track:hover { animation-play-state: paused; }
+
+  @keyframes marqueeScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track { animation: none; }
+  }
+
+  .marquee-item {
+    display: flex;
+    align-items: center;
     gap: 10px;
+    padding: 0 28px;
+    white-space: nowrap;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.70rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+
+  .marquee-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--indigo);
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .marquee-item strong { color: var(--amber); }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     NOTIFY BANNER
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .notify-banner {
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(90deg,
+      rgba(245,158,11,0.08) 0%,
+      rgba(139,92,246,0.08) 50%,
+      rgba(245,158,11,0.08) 100%);
+    border-bottom: 1px solid rgba(245,158,11,0.18);
+    padding: 11px 20px;
+  }
+
+  .notify-banner-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
     flex-wrap: wrap;
   }
 
-  .construction-banner-text {
+  .notify-banner-text {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.82rem;
+    font-size: 0.80rem;
     font-weight: 500;
     color: var(--text2);
   }
 
-  .construction-banner-text strong {
-    color: var(--amber);
-    font-weight: 700;
-  }
+  .notify-banner-text strong { color: var(--amber); font-weight: 700; }
 
-  /* Notify form inline */
-  .notify-form {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+  .notify-form { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
 
   .notify-input {
     background: var(--surface2);
@@ -381,19 +395,16 @@
     border-radius: var(--radius-pill);
     color: var(--text);
     font-family: 'Inter', sans-serif;
-    font-size: 0.80rem;
+    font-size: 0.78rem;
     padding: 7px 16px;
     outline: none;
     width: 200px;
     transition: border-color 0.18s, box-shadow 0.18s;
+    backdrop-filter: blur(8px);
   }
 
   .notify-input::placeholder { color: var(--muted); }
-
-  .notify-input:focus {
-    border-color: var(--amber);
-    box-shadow: 0 0 0 3px rgba(245,158,11,0.15);
-  }
+  .notify-input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,158,11,0.15); }
 
   .notify-btn {
     background: linear-gradient(135deg, var(--amber), #F97316);
@@ -401,20 +412,16 @@
     border-radius: var(--radius-pill);
     color: #1a0a00;
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     font-weight: 700;
     padding: 8px 18px;
     cursor: pointer;
     letter-spacing: 0.04em;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s, box-shadow 0.15s;
     white-space: nowrap;
   }
 
-  .notify-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(245,158,11,0.40);
-  }
-
+  .notify-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(245,158,11,0.40); }
   .notify-btn:active { transform: translateY(0); }
 
   /* ═══════════════════════════════════════════════════════════════════════════
@@ -422,114 +429,241 @@
      ═══════════════════════════════════════════════════════════════════════════ */
   .shop-hero {
     text-align: center;
-    padding: 72px 20px 56px;
+    padding: 88px 20px 64px;
+    position: relative;
+    z-index: 1;
   }
 
-  .shop-hero-badge {
+  .shop-hero-eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     background: rgba(245,158,11,0.10);
     border: 1px solid rgba(245,158,11,0.28);
     color: #FCD34D;
-    padding: 6px 18px;
+    padding: 6px 20px;
     border-radius: var(--radius-pill);
-    font-size: 0.72rem;
-    font-weight: 600;
+    font-size: 0.68rem;
+    font-weight: 700;
     font-family: 'Space Grotesk', sans-serif;
-    letter-spacing: 0.10em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin-bottom: 28px;
+    margin-bottom: 32px;
+    animation: fadeInDown 0.6s ease both;
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   .shop-hero-title {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-size: clamp(2.6rem, 6vw, 4.8rem);
     font-weight: 700;
-    line-height: 1.08;
-    letter-spacing: -0.02em;
-    background: linear-gradient(145deg, #ffffff 0%, rgba(226,232,240,0.80) 100%);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    background: linear-gradient(145deg, #ffffff 0%, rgba(226,232,240,0.75) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
+    animation: fadeInUp 0.7s 0.1s ease both;
   }
 
   :root[data-theme="light"] .shop-hero-title {
     background: linear-gradient(145deg, #1E293B 0%, #334155 100%);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .shop-hero-title em {
+  .shop-hero-title-accent {
+    display: block;
     font-style: italic;
-    background: linear-gradient(135deg, var(--amber) 0%, var(--violet) 55%, var(--indigo) 100%);
+    background: linear-gradient(125deg, var(--amber) 0%, var(--rose) 40%, var(--violet) 75%, var(--indigo) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: clamp(2.8rem, 6.5vw, 5.2rem);
+    animation: fadeInUp 0.7s 0.2s ease both;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .shop-hero-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(0.95rem, 2vw, 1.12rem);
+    color: var(--muted);
+    max-width: 520px;
+    margin: 24px auto 0;
+    line-height: 1.75;
+    animation: fadeInUp 0.7s 0.3s ease both;
+  }
+
+  .shop-hero-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 48px;
+    animation: fadeInUp 0.7s 0.4s ease both;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    line-height: 1;
+    background: linear-gradient(135deg, var(--indigo), var(--violet));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .shop-hero-sub {
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(0.95rem, 2vw, 1.10rem);
+  .hero-stat-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
     color: var(--muted);
-    max-width: 500px;
-    margin: 0 auto;
-    line-height: 1.70;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .hero-stat-sep {
+    width: 1px;
+    height: 36px;
+    background: var(--border2);
+  }
+
+  @media (max-width: 560px) {
+    .shop-hero { padding: 56px 16px 44px; }
+    .shop-hero-stats { gap: 24px; }
+    .hero-stat-value { font-size: 1.25rem; }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     CATEGORY FILTER PILLS
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .filter-section {
+    position: relative;
+    z-index: 2;
+    padding: 0 0 36px;
+  }
+
+  .filter-pills {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .filter-pill {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-pill);
+    padding: 9px 20px;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    outline: none;
+  }
+
+  .filter-pill:hover {
+    color: var(--text);
+    background: var(--surface3);
+    border-color: var(--border3);
+  }
+
+  .filter-pill.active {
+    color: #fff;
+    background: linear-gradient(135deg, var(--indigo), var(--violet));
+    border-color: transparent;
+    box-shadow: 0 4px 16px rgba(99,102,241,0.35);
+  }
+
+  .filter-pill:focus-visible {
+    outline: 2px solid var(--indigo);
+    outline-offset: 2px;
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
      PRODUCTS GRID
      ═══════════════════════════════════════════════════════════════════════════ */
   .products-section {
-    padding-bottom: 96px;
+    position: relative;
+    z-index: 1;
+    padding-bottom: 80px;
   }
 
   .products-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
   }
 
-  @media (max-width: 900px) {
-    .products-grid { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 1100px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 760px)  { .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+  @media (max-width: 480px)  { .products-grid { grid-template-columns: 1fr; gap: 14px; } }
+
+  /* Featured card spans 2 columns */
+  .product-card--featured {
+    grid-column: span 2;
   }
 
-  @media (max-width: 560px) {
-    .products-grid { grid-template-columns: 1fr; }
-    .shop-hero { padding: 52px 16px 40px; }
+  @media (max-width: 760px) {
+    .product-card--featured { grid-column: span 1; }
   }
 
   /* ─── PRODUCT CARD ───────────────────────────────────────────────────────── */
   .product-card {
-    background: linear-gradient(150deg, var(--card-from, rgba(99,102,241,0.06)), var(--surface));
+    background: linear-gradient(160deg, var(--card-from, rgba(99,102,241,0.06)), var(--surface));
     border: 1px solid var(--border2);
     border-radius: var(--radius-card);
     overflow: hidden;
     position: relative;
     display: flex;
     flex-direction: column;
-    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    transition: transform 0.24s cubic-bezier(0.34,1.56,0.64,1), border-color 0.24s ease, box-shadow 0.24s ease;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
   }
 
-  /* Top accent line */
+  /* Top shimmer line */
   .product-card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     height: 2px;
-    background: linear-gradient(90deg, transparent, var(--card-accent, var(--indigo)), transparent);
-    opacity: 0.6;
+    background: linear-gradient(90deg, transparent 0%, var(--card-accent, var(--indigo)) 50%, transparent 100%);
+    opacity: 0.55;
+    transition: opacity 0.24s;
   }
 
+  .product-card:hover { transform: translateY(-6px); border-color: var(--card-accent, var(--indigo)); }
+  .product-card:hover::before { opacity: 1; }
+
   .product-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--card-accent, var(--indigo));
     box-shadow:
-      0 12px 40px rgba(0,0,0,0.22),
+      0 20px 60px rgba(0,0,0,0.30),
+      0 0 40px rgba(0,0,0,0.05),
       0 0 0 1px rgba(255,255,255,0.04) inset;
   }
 
@@ -538,43 +672,32 @@
     .product-card:hover { transform: none; }
   }
 
-  /* ─── Color variants ─────────────────────────────────────────────────────── */
-  .product-card--indigo {
-    --card-accent: var(--indigo);
-    --card-from: rgba(99,102,241,0.07);
-  }
-  .product-card--violet {
-    --card-accent: var(--violet);
-    --card-from: rgba(139,92,246,0.07);
-  }
-  .product-card--amber {
-    --card-accent: var(--amber);
-    --card-from: rgba(245,158,11,0.07);
-  }
-  .product-card--emerald {
-    --card-accent: var(--emerald);
-    --card-from: rgba(16,185,129,0.06);
-  }
-  .product-card--rose {
-    --card-accent: var(--rose);
-    --card-from: rgba(244,63,94,0.06);
-  }
-  .product-card--cyan {
-    --card-accent: var(--cyan);
-    --card-from: rgba(6,182,212,0.06);
-  }
+  /* Color variants */
+  .product-card--indigo  { --card-accent: var(--indigo);  --card-from: rgba(99,102,241,0.07);  }
+  .product-card--violet  { --card-accent: var(--violet);  --card-from: rgba(139,92,246,0.07);  }
+  .product-card--amber   { --card-accent: var(--amber);   --card-from: rgba(245,158,11,0.07);  }
+  .product-card--emerald { --card-accent: var(--emerald); --card-from: rgba(16,185,129,0.06);  }
+  .product-card--rose    { --card-accent: var(--rose);    --card-from: rgba(244,63,94,0.06);   }
+  .product-card--cyan    { --card-accent: var(--cyan);    --card-from: rgba(6,182,212,0.06);   }
 
-  /* ─── Product visual / image placeholder ────────────────────────────────── */
+  /* ─── Glow ring on hover (per color) ────────────────────────────────────── */
+  .product-card--indigo:hover  { box-shadow: 0 20px 55px rgba(0,0,0,0.28), 0 0 30px rgba(99,102,241,0.12); }
+  .product-card--violet:hover  { box-shadow: 0 20px 55px rgba(0,0,0,0.28), 0 0 30px rgba(139,92,246,0.12); }
+  .product-card--amber:hover   { box-shadow: 0 20px 55px rgba(0,0,0,0.28), 0 0 30px rgba(245,158,11,0.12); }
+  .product-card--emerald:hover { box-shadow: 0 20px 55px rgba(0,0,0,0.28), 0 0 30px rgba(16,185,129,0.10); }
+  .product-card--rose:hover    { box-shadow: 0 20px 55px rgba(0,0,0,0.28), 0 0 30px rgba(244,63,94,0.10); }
+  .product-card--cyan:hover    { box-shadow: 0 20px 55px rgba(0,0,0,0.28), 0 0 30px rgba(6,182,212,0.10); }
+
+  /* ─── Product visual / image area ───────────────────────────────────────── */
   .product-visual {
     position: relative;
-    height: 220px;
+    height: 200px;
     background: linear-gradient(140deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
     border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     overflow: hidden;
   }
+
+  .product-card--featured .product-visual { height: 280px; }
 
   .product-visual img {
     width: 100%;
@@ -582,193 +705,317 @@
     object-fit: cover;
     object-position: center;
     display: block;
-    transition: transform 0.4s ease;
+    transition: transform 0.50s cubic-bezier(0.25,0.46,0.45,0.94);
   }
 
-  .product-card:hover .product-visual img {
-    transform: scale(1.05);
-  }
+  .product-card:hover .product-visual img { transform: scale(1.07); }
 
-  /* Subtle radial glow behind the emoji/icon */
+  /* Gradient overlay at image bottom for text readability */
   .product-visual::after {
     content: '';
     position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 60%;
+    background: linear-gradient(transparent, rgba(3,7,17,0.25));
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  :root[data-theme="light"] .product-visual::after {
+    background: linear-gradient(transparent, rgba(250,251,255,0.15));
+  }
+
+  /* Subtle glow behind image */
+  .product-visual::before {
+    content: '';
+    position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 60% 55% at 50% 60%, var(--card-accent, rgba(99,102,241,0.18)) 0%, transparent 70%);
-    opacity: 0.25;
+    background: radial-gradient(ellipse 70% 60% at 50% 70%, var(--card-accent, rgba(99,102,241,0.20)) 0%, transparent 70%);
+    opacity: 0;
+    z-index: 2;
+    transition: opacity 0.35s ease;
     pointer-events: none;
   }
 
+  .product-card:hover .product-visual::before { opacity: 0.30; }
+
+  /* Emoji fallback placeholder (shown if img fails to load) */
   .product-icon {
-    font-size: 4rem;
+    font-size: 4.2rem;
     line-height: 1;
-    position: relative;
-    z-index: 1;
-    /* Gentle float animation */
-    animation: productFloat 4s ease-in-out infinite alternate;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 0;
+    animation: productFloat 5s ease-in-out infinite alternate;
   }
 
   @keyframes productFloat {
-    0%   { transform: translateY(0px);  }
-    100% { transform: translateY(-8px); }
+    0%   { transform: translateY(0);   }
+    100% { transform: translateY(-9px); }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .product-icon { animation: none; }
-  }
+  @media (prefers-reduced-motion: reduce) { .product-icon { animation: none; } }
 
-  /* Each card has its own float timing so they feel independent */
-  .product-card:nth-child(2) .product-icon { animation-delay: -0.8s; }
-  .product-card:nth-child(3) .product-icon { animation-delay: -1.6s; }
-  .product-card:nth-child(4) .product-icon { animation-delay: -2.4s; }
-  .product-card:nth-child(5) .product-icon { animation-delay: -3.2s; }
-  .product-card:nth-child(6) .product-icon { animation-delay: -0.4s; }
-  .product-card:nth-child(7) .product-icon { animation-delay: -1.2s; }
-  .product-card:nth-child(8) .product-icon { animation-delay: -2.0s; }
+  .product-card:nth-child(2) .product-icon { animation-delay: -1.0s; }
+  .product-card:nth-child(3) .product-icon { animation-delay: -2.0s; }
+  .product-card:nth-child(4) .product-icon { animation-delay: -3.0s; }
+  .product-card:nth-child(5) .product-icon { animation-delay: -0.5s; }
+  .product-card:nth-child(6) .product-icon { animation-delay: -1.5s; }
+  .product-card:nth-child(7) .product-icon { animation-delay: -2.5s; }
+  .product-card:nth-child(8) .product-icon { animation-delay: -3.5s; }
 
-  /* "Bientôt" ribbon badge on visual */
-  .product-ribbon {
+  /* ─── Badges ─────────────────────────────────────────────────────────────── */
+  .badge-wrap {
     position: absolute;
     top: 14px;
-    right: 14px;
-    z-index: 2;
-    background: rgba(245,158,11,0.15);
-    border: 1px solid rgba(245,158,11,0.30);
+    left: 14px;
+    z-index: 3;
+    display: flex;
+    gap: 6px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .badge {
     border-radius: var(--radius-pill);
-    color: #FCD34D;
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.62rem;
+    font-size: 0.60rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.10em;
     text-transform: uppercase;
     padding: 4px 10px;
+    line-height: 1;
+    backdrop-filter: blur(6px);
+    white-space: nowrap;
+  }
+
+  .badge--new {
+    background: rgba(16,185,129,0.18);
+    border: 1px solid rgba(16,185,129,0.38);
+    color: #6EE7B7;
+  }
+
+  .badge--popular {
+    background: rgba(245,158,11,0.18);
+    border: 1px solid rgba(245,158,11,0.38);
+    color: #FCD34D;
+  }
+
+  .badge--limited {
+    background: rgba(244,63,94,0.18);
+    border: 1px solid rgba(244,63,94,0.38);
+    color: #FDA4AF;
+  }
+
+  .badge--prestige {
+    background: rgba(139,92,246,0.18);
+    border: 1px solid rgba(139,92,246,0.38);
+    color: #C4B5FD;
   }
 
   /* ─── Product body ───────────────────────────────────────────────────────── */
   .product-body {
-    padding: 22px 22px 20px;
+    padding: 20px 20px 18px;
     display: flex;
     flex-direction: column;
     flex: 1;
-    gap: 0;
   }
 
   .product-category {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--card-accent, var(--indigo));
-    margin-bottom: 8px;
-    opacity: 0.85;
+    margin-bottom: 7px;
+    opacity: 0.90;
   }
 
   .product-name {
     font-family: 'Playfair Display', serif;
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--text);
-    line-height: 1.30;
-    margin-bottom: 10px;
+    line-height: 1.28;
+    margin-bottom: 9px;
+  }
+
+  .product-card--featured .product-name {
+    font-size: 1.22rem;
   }
 
   .product-desc {
     font-family: 'Inter', sans-serif;
-    font-size: 0.82rem;
+    font-size: 0.80rem;
     color: var(--muted);
-    line-height: 1.60;
-    margin-bottom: 20px;
+    line-height: 1.62;
+    margin-bottom: 18px;
     flex: 1;
   }
 
-  /* ─── Product footer (price + CTA) ──────────────────────────────────────── */
+  /* ─── Product footer ─────────────────────────────────────────────────────── */
   .product-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding-top: 16px;
+    gap: 10px;
+    padding-top: 14px;
     border-top: 1px solid var(--border);
   }
 
   .product-price {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.20rem;
+    font-size: 1.18rem;
     font-weight: 700;
     color: var(--text);
     letter-spacing: -0.02em;
+    line-height: 1;
   }
 
-  .product-price .price-currency {
-    font-size: 0.80rem;
+  .price-currency {
+    font-size: 0.78rem;
     font-weight: 500;
     color: var(--muted);
     vertical-align: super;
-    margin-right: 2px;
+    margin-right: 1px;
   }
 
-  /* Ghost CTA button — disabled, placeholder */
+  /* Active CTA button */
   .product-cta {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.76rem;
-    font-weight: 600;
-    color: var(--muted);
-    background: var(--surface2);
-    border: 1px solid var(--border2);
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--card-accent, var(--indigo));
+    background: transparent;
+    border: 1px solid var(--card-accent, var(--indigo));
     border-radius: var(--radius-pill);
     padding: 8px 16px;
-    cursor: not-allowed;
-    letter-spacing: 0.03em;
+    cursor: pointer;
+    letter-spacing: 0.04em;
     white-space: nowrap;
-    opacity: 0.70;
-    transition: opacity 0.15s;
+    transition: all 0.18s ease;
+    outline: none;
+    opacity: 0.85;
+  }
+
+  .product-cta:hover {
+    background: var(--card-accent, var(--indigo));
+    color: #fff;
+    opacity: 1;
+    transform: scale(1.03);
+    box-shadow: 0 4px 16px rgba(99,102,241,0.30);
+  }
+
+  .product-cta:active { transform: scale(0.97); }
+  .product-cta:focus-visible { outline: 2px solid var(--card-accent, var(--indigo)); outline-offset: 2px; }
+
+  /* ─── Grid animation — stagger on load ──────────────────────────────────── */
+  .product-card {
+    animation: cardReveal 0.55s ease both;
+  }
+
+  @keyframes cardReveal {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .product-card:nth-child(1) { animation-delay: 0.05s; }
+  .product-card:nth-child(2) { animation-delay: 0.12s; }
+  .product-card:nth-child(3) { animation-delay: 0.19s; }
+  .product-card:nth-child(4) { animation-delay: 0.26s; }
+  .product-card:nth-child(5) { animation-delay: 0.33s; }
+  .product-card:nth-child(6) { animation-delay: 0.40s; }
+  .product-card:nth-child(7) { animation-delay: 0.47s; }
+  .product-card:nth-child(8) { animation-delay: 0.54s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-card { animation: none; }
+  }
+
+  /* hidden card (filter) */
+  .product-card.hidden {
+    display: none;
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
-     FOOTER NEWSLETTER BLOCK
+     NEWSLETTER / CTA BLOCK
      ═══════════════════════════════════════════════════════════════════════════ */
-  .shop-newsletter {
-    border-top: 1px solid var(--border);
-    padding: 56px 0 64px;
+  .shop-cta-block {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 80px;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid var(--border2);
+  }
+
+  .shop-cta-bg {
+    background: linear-gradient(135deg,
+      rgba(99,102,241,0.12) 0%,
+      rgba(139,92,246,0.10) 40%,
+      rgba(245,158,11,0.08) 80%,
+      rgba(6,182,212,0.06) 100%);
+    padding: 72px 40px;
     text-align: center;
+    position: relative;
   }
 
-  .shop-newsletter-inner {
-    max-width: 480px;
-    margin: 0 auto;
+  /* Decorative orb */
+  .shop-cta-bg::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%);
+    pointer-events: none;
   }
 
-  .shop-newsletter-icon {
-    font-size: 2.4rem;
-    margin-bottom: 20px;
+  .cta-icon {
+    font-size: 3rem;
+    margin-bottom: 24px;
     display: block;
+    animation: ctaBounce 2.4s ease-in-out infinite;
   }
 
-  .shop-newsletter-title {
+  @keyframes ctaBounce {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-7px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) { .cta-icon { animation: none; } }
+
+  .cta-title {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-size: clamp(1.5rem, 3.5vw, 2.4rem);
     font-weight: 700;
     font-style: italic;
-    background: linear-gradient(135deg, var(--amber) 0%, var(--violet) 60%, var(--indigo) 100%);
+    background: linear-gradient(125deg, var(--amber) 0%, var(--violet) 60%, var(--indigo) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 12px;
   }
 
-  .shop-newsletter-sub {
+  .cta-sub {
     font-family: 'Inter', sans-serif;
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     color: var(--muted);
-    line-height: 1.65;
-    margin-bottom: 28px;
+    line-height: 1.70;
+    max-width: 420px;
+    margin: 0 auto 32px;
   }
 
   .newsletter-form {
     display: flex;
     gap: 10px;
-    max-width: 380px;
+    max-width: 400px;
     margin: 0 auto;
   }
 
@@ -780,8 +1027,9 @@
     color: var(--text);
     font-family: 'Inter', sans-serif;
     font-size: 0.88rem;
-    padding: 12px 16px;
+    padding: 13px 18px;
     outline: none;
+    backdrop-filter: blur(8px);
     transition: border-color 0.18s, box-shadow 0.18s;
   }
 
@@ -796,37 +1044,69 @@
     background: linear-gradient(135deg, var(--indigo), var(--violet));
     border: none;
     border-radius: 12px;
-    color: #ffffff;
+    color: #fff;
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     font-weight: 700;
-    padding: 12px 20px;
+    padding: 13px 22px;
     cursor: pointer;
     letter-spacing: 0.03em;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s, box-shadow 0.15s;
     white-space: nowrap;
   }
 
-  .newsletter-submit:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(99,102,241,0.40);
-  }
-
+  .newsletter-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(99,102,241,0.42); }
   .newsletter-submit:active { transform: translateY(0); }
 
   @media (max-width: 480px) {
     .newsletter-form { flex-direction: column; }
     .newsletter-submit { width: 100%; }
+    .shop-cta-bg { padding: 48px 24px; }
   }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     TOAST NOTIFICATION
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .shop-toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    z-index: 9000;
+    background: var(--surface3);
+    border: 1px solid var(--border3);
+    border-radius: 14px;
+    padding: 14px 24px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.40);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.30s ease;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .shop-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast-icon { font-size: 1.1rem; }
 
   /* ═══════════════════════════════════════════════════════════════════════════
      FOOTER
      ═══════════════════════════════════════════════════════════════════════════ */
-  footer {
+  .site-footer {
     text-align: center;
     padding: 40px 20px;
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.80rem;
+    font-size: 0.78rem;
     color: var(--muted);
     letter-spacing: 0.04em;
     border-top: 1px solid var(--border);
@@ -834,20 +1114,13 @@
     z-index: 1;
   }
 
-  footer a {
-    color: inherit;
-    text-decoration: none;
-    opacity: 0.7;
-    transition: opacity 0.18s;
-  }
+  .site-footer a { color: inherit; opacity: 0.70; transition: opacity 0.18s; }
+  .site-footer a:hover { opacity: 1; }
+  .site-footer p + p { margin-top: 8px; }
 
-  footer a:hover { opacity: 1; }
+  /* ─── LIGHT MODE specific overrides ──────────────────────────────────────── */
+  :root[data-theme="light"] .site-header { border-color: rgba(51,65,85,0.12); }
 
-  :root[data-theme="light"] footer {
-    color: rgba(71,85,105,0.60);
-  }
-
-  /* ─── LIGHT MODE overrides ───────────────────────────────────────────────── */
   :root[data-theme="light"] .btn-theme-toggle {
     background: rgba(51,65,85,0.08);
     border-color: rgba(51,65,85,0.18);
@@ -860,31 +1133,17 @@
     color: #1E293B;
   }
 
-  :root[data-theme="light"] .product-card:hover {
-    box-shadow: 0 12px 40px rgba(0,0,0,0.10);
-  }
-
-  :root[data-theme="light"] .product-visual {
-    background: linear-gradient(140deg, rgba(51,65,85,0.04), rgba(51,65,85,0.02));
-  }
-
-  :root[data-theme="light"] .construction-banner {
-    background: linear-gradient(90deg,
-      rgba(217,119,6,0.08) 0%,
-      rgba(124,58,237,0.08) 50%,
-      rgba(217,119,6,0.08) 100%);
-    border-color: rgba(217,119,6,0.22);
-  }
-
-  :root[data-theme="light"] .product-price {
-    color: #1E293B;
-  }
+  :root[data-theme="light"] .product-card:hover { box-shadow: 0 16px 48px rgba(0,0,0,0.10); }
+  :root[data-theme="light"] .product-visual { background: linear-gradient(140deg, rgba(51,65,85,0.04), rgba(51,65,85,0.02)); }
+  :root[data-theme="light"] .notify-banner { border-color: rgba(217,119,6,0.20); }
+  :root[data-theme="light"] .product-cta:hover { color: #fff; }
+  :root[data-theme="light"] .shop-cta-block { border-color: rgba(51,65,85,0.12); }
   </style>
 </head>
 <body>
 
-<!-- Aurora background layer -->
-<div class="aurora-layer" aria-hidden="true"></div>
+<!-- Star canvas background -->
+<canvas id="star-canvas" aria-hidden="true"></canvas>
 
 <!-- Theme toggle -->
 <div class="theme-toggle-wrap">
@@ -903,16 +1162,40 @@
   </button>
 </div>
 
-<!-- Construction banner -->
-<div class="construction-banner" role="complementary" aria-label="Statut de la boutique">
-  <div class="construction-banner-inner">
-    <p class="construction-banner-text">
-      <strong>Boutique en construction</strong> — inscris-toi pour etre notifie(e) au lancement
+<!-- Notify banner -->
+<div class="notify-banner" role="complementary" aria-label="Statut de la boutique">
+  <div class="notify-banner-inner">
+    <p class="notify-banner-text">
+      <strong>Boutique en cours d'ouverture</strong> — inscris-toi pour etre parmi les premiers
     </p>
     <form class="notify-form" onsubmit="handleNotify(event)" aria-label="Formulaire de notification">
       <input type="email" class="notify-input" placeholder="ton@email.com" aria-label="Ton adresse e-mail">
       <button type="submit" class="notify-btn">Me notifier</button>
     </form>
+  </div>
+</div>
+
+<!-- Marquee strip -->
+<div class="marquee-strip" aria-hidden="true">
+  <div class="marquee-track">
+    <!-- Double the items for infinite loop illusion -->
+    <span class="marquee-item"><span class="marquee-dot"></span> Collection <strong>Limitee</strong></span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Livraison offerte des 49&euro;</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Edition <strong>Prestige</strong> disponible</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Objets graves sur mesure</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Impression risographie <strong>or & indigo</strong></span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Certifie fait en France</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Cadeaux uniques personnalises</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Satisfaction <strong>garantie</strong></span>
+    <!-- Repeat for seamless loop -->
+    <span class="marquee-item"><span class="marquee-dot"></span> Collection <strong>Limitee</strong></span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Livraison offerte des 49&euro;</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Edition <strong>Prestige</strong> disponible</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Objets graves sur mesure</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Impression risographie <strong>or & indigo</strong></span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Certifie fait en France</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Cadeaux uniques personnalises</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Satisfaction <strong>garantie</strong></span>
   </div>
 </div>
 
@@ -936,173 +1219,268 @@
   <div class="wrap">
 
     <!-- Hero -->
-    <section class="shop-hero">
-      <div class="shop-hero-badge" aria-label="Categorie">
+    <section class="shop-hero" aria-labelledby="hero-title">
+      <div class="shop-hero-eyebrow" aria-label="Categorie">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
         </svg>
         La boutique des milestones
       </div>
-      <h1 class="shop-hero-title">
-        Celebre chaque<br><em>instant cosmique</em>
+
+      <h1 id="hero-title">
+        <span class="shop-hero-title">La Boutique</span>
+        <span class="shop-hero-title-accent">Cosmique</span>
       </h1>
+
       <p class="shop-hero-sub">
-        Des cadeaux uniques pour marquer les vrais anniversaires — ton milliardieme seconde, tes 10 000 jours, ta constellation de naissance.
+        Des objets singuliers pour celebrer les vrais anniversaires — ton milliardieme seconde, tes 10 000 jours, ta constellation de naissance.
       </p>
+
+      <div class="shop-hero-stats" aria-label="Chiffres de la boutique">
+        <div class="hero-stat">
+          <div class="hero-stat-value">8</div>
+          <div class="hero-stat-label">Produits</div>
+        </div>
+        <div class="hero-stat-sep" aria-hidden="true"></div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">100%</div>
+          <div class="hero-stat-label">Personnalise</div>
+        </div>
+        <div class="hero-stat-sep" aria-hidden="true"></div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">FR</div>
+          <div class="hero-stat-label">Fait en France</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category filter pills -->
+    <section class="filter-section" aria-label="Filtrer par categorie">
+      <div class="filter-pills" role="group" aria-label="Categories">
+        <button class="filter-pill active" data-filter="all" aria-pressed="true">Tout voir</button>
+        <button class="filter-pill" data-filter="impression" aria-pressed="false">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Impressions d'art
+        </button>
+        <button class="filter-pill" data-filter="bijouterie" aria-pressed="false">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"/></svg>
+          Bijouterie
+        </button>
+        <button class="filter-pill" data-filter="papeterie" aria-pressed="false">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Papeterie
+        </button>
+        <button class="filter-pill" data-filter="box" aria-pressed="false">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Box cadeaux
+        </button>
+        <button class="filter-pill" data-filter="art-de-vivre" aria-pressed="false">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          Art de vivre
+        </button>
+        <button class="filter-pill" data-filter="accessoire" aria-pressed="false">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+          Accessoires
+        </button>
+      </div>
     </section>
 
     <!-- Products grid -->
     <section class="products-section" aria-label="Articles de la boutique">
-      <div class="products-grid">
+      <div class="products-grid" id="products-grid">
 
-        <!-- 1 — Poster milliardième seconde -->
-        <article class="product-card product-card--indigo" aria-label="Poster personnalise milliardieme seconde">
+        <!-- 1 — Poster milliardieme seconde (FEATURED) -->
+        <article class="product-card product-card--indigo product-card--featured"
+                 data-category="impression"
+                 aria-label="Poster personnalise milliardieme seconde">
           <div class="product-visual">
-            <span class="product-ribbon" aria-label="Bientot disponible">Bientot</span>
-            <img src="img/boutique/poster-milliardieme.webp" alt="Poster Ton Milliardieme Seconde" loading="lazy">
+            <div class="badge-wrap">
+              <span class="badge badge--popular">Populaire</span>
+              <span class="badge badge--limited">Ed. limitee</span>
+            </div>
+            <div class="product-icon" aria-hidden="true">🪐</div>
+            <img src="img/boutique/poster-milliardieme.webp"
+                 alt="Poster Ton Milliardieme Seconde"
+                 loading="lazy"
+                 onerror="this.style.display='none'">
           </div>
           <div class="product-body">
             <p class="product-category">Impression d'art</p>
             <h2 class="product-name">Poster "Ton Milliardieme Seconde"</h2>
-            <p class="product-desc">Un poster A3 personnalise avec ta date exacte, l'heure precise et le decompteur cosmique de ta vie. Impression risographie, encre or et indigo.</p>
+            <p class="product-desc">Un poster A3 personnalise avec ta date exacte, l'heure precise et le decompteur cosmique de ta vie. Impression risographie, encre or et indigo sur papier 300g.</p>
             <div class="product-footer">
-              <div class="product-price">
-                <span class="price-currency">€</span>24,90
-              </div>
-              <button class="product-cta" disabled aria-disabled="true">Bientot disponible</button>
+              <div class="product-price"><span class="price-currency">€</span>24,90</div>
+              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
             </div>
           </div>
         </article>
 
         <!-- 2 — Bracelet 10 000 jours -->
-        <article class="product-card product-card--amber" aria-label="Bracelet 10 000 jours grave">
+        <article class="product-card product-card--amber"
+                 data-category="bijouterie"
+                 aria-label="Bracelet 10 000 jours grave">
           <div class="product-visual">
-            <span class="product-ribbon">Bientot</span>
-            <img src="img/boutique/bracelet-10000.webp" alt="Bracelet 10 000 Jours grave" loading="lazy">
+            <div class="badge-wrap">
+              <span class="badge badge--new">Nouveau</span>
+            </div>
+            <div class="product-icon" aria-hidden="true">✨</div>
+            <img src="img/boutique/bracelet-10000.webp"
+                 alt="Bracelet 10 000 Jours grave"
+                 loading="lazy"
+                 onerror="this.style.display='none'">
           </div>
           <div class="product-body">
             <p class="product-category">Bijouterie</p>
             <h2 class="product-name">Bracelet "10 000 Jours" Grave</h2>
-            <p class="product-desc">Bracelet en acier inoxydable grave avec ton nombre de jours exact au moment de la commande. Coffret cadeau inclus, personnalisation optionnelle.</p>
+            <p class="product-desc">Bracelet acier inoxydable grave avec ton nombre exact de jours. Coffret cadeau inclus.</p>
             <div class="product-footer">
-              <div class="product-price">
-                <span class="price-currency">€</span>39,90
-              </div>
-              <button class="product-cta" disabled aria-disabled="true">Bientot disponible</button>
+              <div class="product-price"><span class="price-currency">€</span>39,90</div>
+              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
             </div>
           </div>
         </article>
 
         <!-- 3 — Carnet de bord -->
-        <article class="product-card product-card--emerald" aria-label="Carnet de bord des milestones">
+        <article class="product-card product-card--emerald"
+                 data-category="papeterie"
+                 aria-label="Carnet de bord des milestones">
           <div class="product-visual">
-            <span class="product-ribbon">Bientot</span>
-            <img src="img/boutique/carnet-milestones.webp" alt="Carnet de Bord des Milestones" loading="lazy">
+            <div class="product-icon" aria-hidden="true">📓</div>
+            <img src="img/boutique/carnet-milestones.webp"
+                 alt="Carnet de Bord des Milestones"
+                 loading="lazy"
+                 onerror="this.style.display='none'">
           </div>
           <div class="product-body">
             <p class="product-category">Papeterie</p>
             <h2 class="product-name">Carnet de Bord des Milestones</h2>
-            <p class="product-desc">Un carnet sewn-bound de 160 pages avec tes prochains grands milestones imprimes en tete de chapitre — espace pour y consigner tes pensees du jour.</p>
+            <p class="product-desc">160 pages sewn-bound avec tes milestones imprimes en tete de chapitre. Couverture toilee.</p>
             <div class="product-footer">
-              <div class="product-price">
-                <span class="price-currency">€</span>14,90
-              </div>
-              <button class="product-cta" disabled aria-disabled="true">Bientot disponible</button>
+              <div class="product-price"><span class="price-currency">€</span>14,90</div>
+              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
             </div>
           </div>
         </article>
 
         <!-- 4 — Box capsule temporelle -->
-        <article class="product-card product-card--violet" aria-label="Box cadeau capsule temporelle">
+        <article class="product-card product-card--violet"
+                 data-category="box"
+                 aria-label="Box cadeau capsule temporelle">
           <div class="product-visual">
-            <span class="product-ribbon">Bientot</span>
-            <img src="img/boutique/box-capsule.webp" alt="Box Capsule Temporelle" loading="lazy">
+            <div class="badge-wrap">
+              <span class="badge badge--prestige">Prestige</span>
+            </div>
+            <div class="product-icon" aria-hidden="true">🎁</div>
+            <img src="img/boutique/box-capsule.webp"
+                 alt="Box Capsule Temporelle"
+                 loading="lazy"
+                 onerror="this.style.display='none'">
           </div>
           <div class="product-body">
             <p class="product-category">Box cadeau</p>
             <h2 class="product-name">Box "Capsule Temporelle"</h2>
-            <p class="product-desc">La box complete : poster personnalise, carnet, bracelet grave et une lettre a ouvrir lors de ton prochain grand milestone. Emballage premium kraft.</p>
+            <p class="product-desc">Poster + carnet + bracelet grave + lettre a ouvrir au prochain milestone. Emballage premium kraft.</p>
             <div class="product-footer">
-              <div class="product-price">
-                <span class="price-currency">€</span>59,90
-              </div>
-              <button class="product-cta" disabled aria-disabled="true">Bientot disponible</button>
+              <div class="product-price"><span class="price-currency">€</span>59,90</div>
+              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
             </div>
           </div>
         </article>
 
         <!-- 5 — Tasse 1 million de minutes -->
-        <article class="product-card product-card--cyan" aria-label="Tasse 1 million de minutes">
+        <article class="product-card product-card--cyan"
+                 data-category="art-de-vivre"
+                 aria-label="Tasse 1 million de minutes">
           <div class="product-visual">
-            <span class="product-ribbon">Bientot</span>
-            <img src="img/boutique/tasse-minutes.webp" alt="Tasse 1 Million de Minutes" loading="lazy">
+            <div class="badge-wrap">
+              <span class="badge badge--new">Nouveau</span>
+            </div>
+            <div class="product-icon" aria-hidden="true">☕</div>
+            <img src="img/boutique/tasse-minutes.webp"
+                 alt="Tasse 1 Million de Minutes"
+                 loading="lazy"
+                 onerror="this.style.display='none'">
           </div>
           <div class="product-body">
             <p class="product-category">Art de vivre</p>
             <h2 class="product-name">Tasse "1 Million de Minutes"</h2>
-            <p class="product-desc">Mug en ceramique biscuit avec ta date du million de minutes inscrite. Le chiffre change de couleur a la chaleur — revele ton milestone a chaque cafe.</p>
+            <p class="product-desc">Mug ceramique biscuit — le chiffre change de couleur a la chaleur et revele ton milestone a chaque cafe.</p>
             <div class="product-footer">
-              <div class="product-price">
-                <span class="price-currency">€</span>19,90
-              </div>
-              <button class="product-cta" disabled aria-disabled="true">Bientot disponible</button>
+              <div class="product-price"><span class="price-currency">€</span>19,90</div>
+              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
             </div>
           </div>
         </article>
 
         <!-- 6 — Affiche constellation -->
-        <article class="product-card product-card--indigo" aria-label="Affiche constellation du jour de naissance">
+        <article class="product-card product-card--indigo"
+                 data-category="impression"
+                 aria-label="Affiche constellation du jour de naissance">
           <div class="product-visual">
-            <span class="product-ribbon">Bientot</span>
-            <img src="img/boutique/affiche-constellation.webp" alt="Affiche Constellation de Naissance" loading="lazy">
+            <div class="badge-wrap">
+              <span class="badge badge--limited">Ed. limitee</span>
+            </div>
+            <div class="product-icon" aria-hidden="true">🌌</div>
+            <img src="img/boutique/affiche-constellation.webp"
+                 alt="Affiche Constellation de Naissance"
+                 loading="lazy"
+                 onerror="this.style.display='none'">
           </div>
           <div class="product-body">
             <p class="product-category">Impression d'art</p>
             <h2 class="product-name">Affiche "Constellation de Naissance"</h2>
-            <p class="product-desc">La carte du ciel de ton lieu et ta date de naissance, sur fond noir profond. Format 40x50cm, edition limitee, imprimee sur papier 200g satin.</p>
+            <p class="product-desc">La carte du ciel de ton lieu et ta date de naissance. Format 40x50cm, papier satin 200g.</p>
             <div class="product-footer">
-              <div class="product-price">
-                <span class="price-currency">€</span>29,90
-              </div>
-              <button class="product-cta" disabled aria-disabled="true">Bientot disponible</button>
+              <div class="product-price"><span class="price-currency">€</span>29,90</div>
+              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
             </div>
           </div>
         </article>
 
-        <!-- 7 — Coffret kit anniversaire cosmique -->
-        <article class="product-card product-card--amber" aria-label="Coffret kit anniversaire cosmique">
+        <!-- 7 — Coffret Kit Anniversaire Cosmique (FEATURED) -->
+        <article class="product-card product-card--amber product-card--featured"
+                 data-category="box"
+                 aria-label="Coffret kit anniversaire cosmique">
           <div class="product-visual">
-            <span class="product-ribbon">Bientot</span>
-            <img src="img/boutique/coffret-cosmique.webp" alt="Coffret Kit Anniversaire Cosmique" loading="lazy">
+            <div class="badge-wrap">
+              <span class="badge badge--prestige">Prestige</span>
+              <span class="badge badge--popular">Populaire</span>
+            </div>
+            <div class="product-icon" aria-hidden="true">🚀</div>
+            <img src="img/boutique/coffret-cosmique.webp"
+                 alt="Coffret Kit Anniversaire Cosmique"
+                 loading="lazy"
+                 onerror="this.style.display='none'">
           </div>
           <div class="product-body">
             <p class="product-category">Edition prestige</p>
             <h2 class="product-name">Coffret "Kit Anniversaire Cosmique"</h2>
-            <p class="product-desc">L'edition ultra : affiche constellation + poster milestone + bracelet + carnet + tasse + bougie parfumee "cosmos". Le cadeau definitif pour les amoureux du temps.</p>
+            <p class="product-desc">L'edition ultra : affiche constellation + poster milestone + bracelet + carnet + tasse + bougie "cosmos". Le cadeau definitif pour les amoureux du temps et de l'espace.</p>
             <div class="product-footer">
-              <div class="product-price">
-                <span class="price-currency">€</span>79,90
-              </div>
-              <button class="product-cta" disabled aria-disabled="true">Bientot disponible</button>
+              <div class="product-price"><span class="price-currency">€</span>79,90</div>
+              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
             </div>
           </div>
         </article>
 
-        <!-- 8 — Badge révolutions solaires -->
-        <article class="product-card product-card--rose" aria-label="Badge survivant de X revolutions solaires">
+        <!-- 8 — Badge revolutions solaires -->
+        <article class="product-card product-card--rose"
+                 data-category="accessoire"
+                 aria-label="Badge survivant de X revolutions solaires">
           <div class="product-visual">
-            <span class="product-ribbon">Bientot</span>
-            <img src="img/boutique/badge-solaire.webp" alt="Badge Survivant de X Revolutions Solaires" loading="lazy">
+            <div class="product-icon" aria-hidden="true">🎖️</div>
+            <img src="img/boutique/badge-solaire.webp"
+                 alt="Badge Survivant de X Revolutions Solaires"
+                 loading="lazy"
+                 onerror="this.style.display='none'">
           </div>
           <div class="product-body">
             <p class="product-category">Accessoire</p>
             <h2 class="product-name">Badge "Survivant de X Revolutions"</h2>
-            <p class="product-desc">Pin's emaille grave avec ton nombre exact de revolutions solaires completees. Finition or, 3 cm de diametre, avec coffret individuel. Parfait pour les anniversaires ronds.</p>
+            <p class="product-desc">Pin's emaille grave, finition or, 3cm de diametre. Coffret individuel inclus. Parfait pour les anniversaires ronds.</p>
             <div class="product-footer">
-              <div class="product-price">
-                <span class="price-currency">€</span>9,90
-              </div>
-              <button class="product-cta" disabled aria-disabled="true">Bientot disponible</button>
+              <div class="product-price"><span class="price-currency">€</span>9,90</div>
+              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
             </div>
           </div>
         </article>
@@ -1110,13 +1488,13 @@
       </div>
     </section>
 
-    <!-- Newsletter / notification block -->
-    <section class="shop-newsletter" aria-labelledby="newsletter-title">
-      <div class="shop-newsletter-inner">
-        <span class="shop-newsletter-icon" aria-hidden="true">🚀</span>
-        <h2 class="shop-newsletter-title" id="newsletter-title">Tu seras le premier a savoir</h2>
-        <p class="shop-newsletter-sub">
-          La boutique ouvre bientot. Laisse ton email et on te previent en avant-premiere — avec un code de reduction de lancement exclusif.
+    <!-- Newsletter CTA block -->
+    <section class="shop-cta-block" aria-labelledby="cta-title">
+      <div class="shop-cta-bg">
+        <span class="cta-icon" aria-hidden="true">🌠</span>
+        <h2 class="cta-title" id="cta-title">Tu seras le premier a savoir</h2>
+        <p class="cta-sub">
+          La boutique ouvre bientot. Laisse ton email et on te previent en avant-premiere — avec un code de reduction exclusif au lancement.
         </p>
         <form class="newsletter-form" onsubmit="handleNewsletter(event)" aria-label="Inscription newsletter">
           <input type="email" class="newsletter-input" placeholder="ton@email.com" required
@@ -1129,42 +1507,171 @@
   </div>
 </main>
 
-<footer>
-  MilestoneMe — Celebre chaque instant de ta vie<br>
-  <small>
-    &copy; 2026 MilestoneMe — Tous droits reserves
+<!-- Toast notification -->
+<div class="shop-toast" id="shop-toast" role="status" aria-live="polite" aria-atomic="true">
+  <span class="toast-icon">🛸</span>
+  <span id="toast-msg">Bientot disponible — tu seras notifie(e) !</span>
+</div>
+
+<footer class="site-footer">
+  <p>MilestoneMe &mdash; Celebre chaque instant de ta vie</p>
+  <p>
+    &copy; 2026 MilestoneMe &mdash; Tous droits reserves
     &nbsp;&middot;&nbsp;
     <a href="index.html">Retour a l'app</a>
     &nbsp;&middot;&nbsp;
     <a href="blog/index.html">Blog</a>
-  </small>
+  </p>
 </footer>
 
 <script>
-  // Banner notify form — placeholder feedback
+  /* ───────────────────────────────────────────────────────────────────────────
+     STAR CANVAS
+     ─────────────────────────────────────────────────────────────────────────── */
+  (function initStars() {
+    var canvas = document.getElementById('star-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var stars = [];
+    var W, H;
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function createStars(n) {
+      stars = [];
+      for (var i = 0; i < n; i++) {
+        stars.push({
+          x:  Math.random() * W,
+          y:  Math.random() * H,
+          r:  Math.random() * 1.4 + 0.2,
+          a:  Math.random(),
+          da: (Math.random() - 0.5) * 0.004,
+          speed: Math.random() * 0.12 + 0.02
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        s.a += s.da;
+        if (s.a <= 0 || s.a >= 1) s.da *= -1;
+        s.y += s.speed;
+        if (s.y > H) { s.y = 0; s.x = Math.random() * W; }
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,' + s.a.toFixed(2) + ')';
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+
+    resize();
+    createStars(260);
+
+    var rAF = true;
+    window.addEventListener('resize', function() {
+      resize();
+      createStars(260);
+    });
+
+    // Respect reduced motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      canvas.style.display = 'none';
+      return;
+    }
+
+    draw();
+  })();
+
+  /* ───────────────────────────────────────────────────────────────────────────
+     CATEGORY FILTER
+     ─────────────────────────────────────────────────────────────────────────── */
+  (function initFilter() {
+    var pills = document.querySelectorAll('.filter-pill');
+    var cards = document.querySelectorAll('.product-card');
+
+    pills.forEach(function(pill) {
+      pill.addEventListener('click', function() {
+        // Update active state
+        pills.forEach(function(p) {
+          p.classList.remove('active');
+          p.setAttribute('aria-pressed', 'false');
+        });
+        pill.classList.add('active');
+        pill.setAttribute('aria-pressed', 'true');
+
+        var filter = pill.getAttribute('data-filter');
+
+        cards.forEach(function(card) {
+          if (filter === 'all') {
+            card.classList.remove('hidden');
+          } else {
+            var cat = card.getAttribute('data-category');
+            if (cat === filter) {
+              card.classList.remove('hidden');
+            } else {
+              card.classList.add('hidden');
+            }
+          }
+        });
+      });
+    });
+  })();
+
+  /* ───────────────────────────────────────────────────────────────────────────
+     TOAST
+     ─────────────────────────────────────────────────────────────────────────── */
+  var toastTimer = null;
+
+  function showToast(msg) {
+    var toast = document.getElementById('shop-toast');
+    var msgEl = document.getElementById('toast-msg');
+    if (!toast || !msgEl) return;
+    msgEl.textContent = msg;
+    clearTimeout(toastTimer);
+    toast.classList.add('show');
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('show');
+    }, 3400);
+  }
+
+  function handleCartToast(btn) {
+    showToast('Bientot disponible — tu seras notifie(e) en avant-premiere !');
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────────
+     NOTIFY BANNER FORM
+     ─────────────────────────────────────────────────────────────────────────── */
   function handleNotify(e) {
     e.preventDefault();
-    const form = e.target;
-    const input = form.querySelector('input[type="email"]');
-    const btn = form.querySelector('button');
+    var form  = e.target;
+    var input = form.querySelector('input[type="email"]');
+    var btn   = form.querySelector('button');
     if (!input.value) return;
     btn.textContent = 'Merci !';
     btn.style.background = 'linear-gradient(135deg, #10B981, #059669)';
     btn.disabled = true;
     input.value = '';
-    setTimeout(() => {
+    setTimeout(function() {
       btn.textContent = 'Me notifier';
       btn.style.background = '';
       btn.disabled = false;
-    }, 4000);
+    }, 4500);
   }
 
-  // Newsletter form — placeholder feedback
+  /* ───────────────────────────────────────────────────────────────────────────
+     NEWSLETTER FORM
+     ─────────────────────────────────────────────────────────────────────────── */
   function handleNewsletter(e) {
     e.preventDefault();
-    const form = e.target;
-    const input = form.querySelector('input[type="email"]');
-    const btn = form.querySelector('button');
+    var form  = e.target;
+    var input = form.querySelector('input[type="email"]');
+    var btn   = form.querySelector('button');
     if (!input.value) return;
     btn.textContent = 'Inscrit(e) !';
     btn.style.background = 'linear-gradient(135deg, #10B981, #059669)';
@@ -1172,6 +1679,7 @@
     input.disabled = true;
     input.value = '';
     input.placeholder = 'A tres bientot !';
+    showToast('Parfait ! Tu seras notifie(e) en avant-premiere avec un code exclusif.');
   }
 </script>
 

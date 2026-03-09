@@ -398,9 +398,9 @@ function prefillMilestone(isoDate) {
 
   input.value = isoDate;
 
-  // Sync wheel pickers if available
-  if (window._wheelPickers) {
-    window._wheelPickers.setDate(isoDate);
+  // Sync segmented inputs if available
+  if (window._setSegDate) {
+    window._setSegDate(isoDate);
   }
 
   // Trigger native change event so any listeners pick up the new value
@@ -828,6 +828,9 @@ function calculate() {
   }
 
   confetti();
+
+  // ── Brevo modal — alerte milestone (8s après résultats) ──
+  if (typeof window.triggerBrevoModal === 'function') window.triggerBrevoModal();
 
   // ── Section "Hit du jour de ta naissance" ──
   if (typeof loadChartHit === 'function') {
@@ -1292,12 +1295,242 @@ function generatePoster() {
   bg.src = 'img/poster-bg.webp';
 }
 
+// ── SEGMENTED DATE/TIME INPUT ─────────────────────────────────────────────────
+// Remplace le wheel picker — chaque segment est un <input text> inline.
+// Les inputs cachés #bd et #bt restent la source de vérité pour calculate().
+//
+// Algorithme inspiré de timescape : chaque segment accumule les chiffres dans
+// un buffer local. Quand le buffer est plein, ou que le prochain chiffre ne
+// pourrait plus former un nombre valide (ex. "2" en mois → 2*10=20 > 12),
+// on commite et on avance au segment suivant.
+// opts est un objet muable passé par référence : nextSeg / prevSeg peuvent
+// être assignés après la création du segment (chaînage tardif).
+
+function createSegment(inputEl, opts) {
+  // opts : { min, max, digits, onCommit, nextSeg?, prevSeg? }
+  let buffer = '';
+
+  function display(val) {
+    if (val === null || val === undefined || val === '') {
+      inputEl.value = '';
+      return;
+    }
+    inputEl.value = String(val).padStart(opts.digits, '0');
+  }
+
+  function commit(numStr) {
+    const num = Math.max(opts.min, Math.min(opts.max, parseInt(numStr, 10)));
+    buffer = '';
+    display(num);
+    opts.onCommit(num);
+    if (opts.nextSeg) {
+      opts.nextSeg.el.focus();
+      opts.nextSeg.el.select();
+    }
+  }
+
+  function handleKey(e) {
+    // ── Chiffres ────────────────────────────────────────────────────────────
+    if (e.key >= '0' && e.key <= '9') {
+      e.preventDefault();
+      const newBuffer = buffer + e.key;
+      const num = parseInt(newBuffer, 10);
+
+      // Buffer plein → commit immédiat
+      if (newBuffer.length === opts.digits) {
+        commit(newBuffer);
+        return;
+      }
+
+      // Si multiplier par 10 dépasse le max, aucun chiffre suivant ne sera
+      // valide → on commite tout de suite (ex. mois "2" : 2×10=20 > 12)
+      if (num * 10 > opts.max) {
+        commit(newBuffer);
+        return;
+      }
+
+      // Accumulation normale
+      buffer = newBuffer;
+      inputEl.value = buffer;
+      opts.onCommit(num); // sync partiel (pas bloquant)
+      return;
+    }
+
+    // ── Backspace ────────────────────────────────────────────────────────────
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      if (buffer.length > 0) {
+        buffer = buffer.slice(0, -1);
+        inputEl.value = buffer;
+        if (buffer === '') opts.onCommit(null);
+      } else if (opts.prevSeg) {
+        opts.prevSeg.el.focus();
+        opts.prevSeg.el.select();
+      }
+      return;
+    }
+
+    // ── ArrowUp : incrémenter ────────────────────────────────────────────────
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const cur = parseInt(inputEl.value, 10);
+      const next = isNaN(cur) ? opts.min : (cur >= opts.max ? opts.min : cur + 1);
+      buffer = '';
+      display(next);
+      opts.onCommit(next);
+      return;
+    }
+
+    // ── ArrowDown : décrémenter ──────────────────────────────────────────────
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const cur = parseInt(inputEl.value, 10);
+      const prev = isNaN(cur) ? opts.max : (cur <= opts.min ? opts.max : cur - 1);
+      buffer = '';
+      display(prev);
+      opts.onCommit(prev);
+      return;
+    }
+
+    // ── Navigation horizontale ───────────────────────────────────────────────
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      if (opts.prevSeg) { opts.prevSeg.el.focus(); opts.prevSeg.el.select(); }
+      return;
+    }
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      if (opts.nextSeg) { opts.nextSeg.el.focus(); opts.nextSeg.el.select(); }
+      return;
+    }
+
+    // ── Enter : déclencher le calcul ─────────────────────────────────────────
+    if (e.key === 'Enter') { calculate(); return; }
+
+    // ── Tab : navigation native ───────────────────────────────────────────────
+    if (e.key === 'Tab') return;
+
+    // ── Bloquer tout le reste (lettres, symboles…) ───────────────────────────
+    if (!e.metaKey && !e.ctrlKey) e.preventDefault();
+  }
+
+  inputEl.addEventListener('keydown', handleKey);
+  // Focus/clic → sélectionner tout le contenu
+  inputEl.addEventListener('focus', () => inputEl.select());
+  inputEl.addEventListener('click', () => inputEl.select());
+  // Bloquer toute saisie directe (paste, composition, etc.) — on gère tout via keydown
+  inputEl.addEventListener('beforeinput', e => e.preventDefault());
+
+  return { el: inputEl, display, opts, reset: () => { buffer = ''; inputEl.value = ''; } };
+}
+
+function initSegmentedDate() {
+  const dayEl   = document.getElementById('seg-day');
+  const monthEl = document.getElementById('seg-month');
+  const yearEl  = document.getElementById('seg-year');
+  const hourEl  = document.getElementById('seg-hour');
+  // Support des deux nommages possibles du champ minute
+  const minEl   = document.getElementById('seg-minute') || document.getElementById('seg-min');
+  const bdEl    = document.getElementById('bd');
+  const btEl    = document.getElementById('bt');
+
+  if (!dayEl || !monthEl || !yearEl) return;
+
+  // État partagé — source de vérité côté JS
+  const state = { day: null, month: null, year: null, hour: null, min: null };
+
+  function syncDate() {
+    if (state.day && state.month && state.year && String(state.year).length === 4) {
+      const iso = `${state.year}-${String(state.month).padStart(2,'0')}-${String(state.day).padStart(2,'0')}`;
+      const date = new Date(iso + 'T12:00:00');
+      if (!isNaN(date.getTime())) bdEl.value = iso;
+    }
+  }
+
+  function syncTime() {
+    if (state.hour !== null && state.min !== null) {
+      btEl.value = `${String(state.hour).padStart(2,'0')}:${String(state.min).padStart(2,'0')}`;
+    }
+  }
+
+  // Création des segments — opts muables pour le chaînage tardif
+  const day = createSegment(dayEl, {
+    min: 1, max: 31, digits: 2,
+    onCommit: v => { state.day = v; syncDate(); }
+  });
+  const month = createSegment(monthEl, {
+    min: 1, max: 12, digits: 2,
+    onCommit: v => { state.month = v; syncDate(); }
+  });
+  const year = createSegment(yearEl, {
+    min: 1900, max: new Date().getFullYear(), digits: 4,
+    onCommit: v => { state.year = v; syncDate(); }
+  });
+
+  // Chaînage date : JJ → MM → AAAA
+  day.opts.nextSeg   = month;
+  month.opts.prevSeg = day;
+  month.opts.nextSeg = year;
+  year.opts.prevSeg  = month;
+
+  // Segments heure (optionnels) — déclarés en dehors du if pour rester
+  // accessibles dans l'API publique _setSegTime ci-dessous.
+  let hourSeg = null;
+  let minSeg  = null;
+
+  if (hourEl && minEl) {
+    hourSeg = createSegment(hourEl, {
+      min: 0, max: 23, digits: 2,
+      onCommit: v => { state.hour = v; syncTime(); }
+    });
+    minSeg = createSegment(minEl, {
+      min: 0, max: 59, digits: 2,
+      onCommit: v => { state.min = v; syncTime(); }
+    });
+
+    // Chaînage heure : AAAA → HH → mm
+    year.opts.nextSeg      = hourSeg;
+    hourSeg.opts.prevSeg   = year;
+    hourSeg.opts.nextSeg   = minSeg;
+    minSeg.opts.prevSeg    = hourSeg;
+  }
+
+  // Clic sur le conteneur → focus premier segment
+  document.getElementById('seg-date')?.addEventListener('click', e => {
+    if (!e.target.classList.contains('seg-input__field')) dayEl.focus();
+  });
+  document.getElementById('seg-time')?.addEventListener('click', e => {
+    if (!e.target.classList.contains('seg-input__field')) hourEl?.focus();
+  });
+
+  // ── API publique ─────────────────────────────────────────────────────────────
+  // Utilisée par prefillMilestone() et la restauration des paramètres URL
+  window._setSegDate = function(isoDate) {
+    if (!isoDate) return;
+    const [y, m, d] = isoDate.split('-');
+    state.year  = parseInt(y, 10);
+    state.month = parseInt(m, 10);
+    state.day   = parseInt(d, 10);
+    day.display(state.day);
+    month.display(state.month);
+    year.display(state.year);
+    syncDate();
+  };
+
+  window._setSegTime = function(hhmm) {
+    if (!hhmm || !hourSeg || !minSeg) return;
+    const [h, mn] = hhmm.split(':');
+    state.hour = parseInt(h, 10);
+    state.min  = parseInt(mn, 10);
+    hourSeg.display(state.hour);
+    minSeg.display(state.min);
+    syncTime();
+  };
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 // Set max date to today
 document.getElementById('bd').max = new Date().toISOString().split('T')[0];
-
-// Allow Enter key on main date field
-document.getElementById('bd').addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
 
 // Allow Enter key on friend date field (event delegation — l'input est injecté dynamiquement par calculate())
 document.addEventListener('keydown', e => {
@@ -1306,6 +1539,9 @@ document.addEventListener('keydown', e => {
 
 // ── URL DÉCODAGE AU CHARGEMENT ────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
+  // Initialiser le segmented date/time input
+  initSegmentedDate();
+
   const p = new URLSearchParams(location.search);
   if (p.get('l'))       document.getElementById('bplace').value  = p.get('l');
   if (p.get('name'))    document.getElementById('pname').value   = p.get('name');
@@ -1314,10 +1550,10 @@ window.addEventListener('DOMContentLoaded', () => {
   if (p.get('d')) {
     document.getElementById('bd').value = p.get('d');
     if (p.get('t')) document.getElementById('bt').value = p.get('t');
-    // Sync wheel pickers to URL-restored values
-    if (window._wheelPickers) {
-      window._wheelPickers.setDate(p.get('d'));
-      if (p.get('t')) window._wheelPickers.setTime(p.get('t'));
+    // Sync segmented inputs to URL-restored values
+    if (window._setSegDate) {
+      window._setSegDate(p.get('d'));
+      if (p.get('t')) window._setSegTime(p.get('t'));
     }
     calculate();
 

@@ -1,6 +1,6 @@
 # Roadmap -- MilestoneMe (milestones-web)
 
-> Derniere mise a jour : 2026-03-09 (music chart hits + "Ils sont nés comme toi" complétés)
+> Derniere mise a jour : 2026-03-10 (Hero section + Segmented date/time + Boutique mockup complétés)
 
 ## Complete
 
@@ -34,6 +34,9 @@
 - [2026-03-09] **Export image / poster PNG personnalisé** -- Bouton "Générer mon poster" générant un canvas 1024×1536 (format portrait 2:3) avec fond img/poster-bg.webp (constellations dorées sur bleu marine), contenu personnalisé (prénom, milestone le plus proche avec chiffre doré, date exacte, signe astrologique, branding statsme.org), téléchargement PNG via canvas.toBlob(), bouton doré avec effet shimmer, fallback dégradé si image non disponible.
 - [2026-03-09] **Ils sont nés comme toi** -- Stats anniversaire : 585 célébrités indexées par jour de naissance (Jan-Dec, min 3-5/jour, mix historique/contemporain), 115 journées mondiales (WORLD_DAYS) couvrant 12 mois (fêtes ONU, célébrations françaises), affichage de célé grille + badge journée mondiale quand applicable, badge glassmorphisme (gradient ambre), 0 fetch nécessaire.
 - [2026-03-09] **Music chart hit feature** -- Affichage du #1 du hit-parade le jour de naissance : 15,335 jours FR (1984-2025) + 24,610 jours US (1958-2025) via data/charts-fr.json + data/charts-us.json, lazy fetch avec cache mémoire, card 2-col (FR/US side-by-side), bouton YouTube "écouter", fallback gracieux pour données manquantes (gaps 2017-2021 FR).
+- [2026-03-10] **Hero section améliorations visuelles** -- Badge hero avec glow pulsant, 3 chips de suggestion cliquables (10k jours, 1M de secondes, 1k semaines) pré-remplissent la date, form card glassmorphism renforcé (blur 48px, ligne de lumière, glow focus indigo), streaks diagonales animées (2 ellipses blurées, dérive lente).
+- [2026-03-10] **Segmented date/time input** -- Inputs segmentés JJ/MM/AAAA + HH:MM style timescape remplaçant les inputs natifs, algorithme d'accumulation buffer avec auto-avance intelligente, ArrowUp/Down incrémente/décrémente, Backspace, navigation clavier complète, CSS glassmorphism width 2rem, placeholder visible.
+- [2026-03-10] **Boutique LemonSqueezy (mockup statique)** -- js/cart.js avec état panier localStorage, 3 produits (mug 19,90€, poster 34,90€, premium 9€/an), boutique.html redesign complet avec product cards et "Comment ça marche", FAB flottant panier + drawer glassmorphism (index + boutique), gift trigger banner (hidden, prêt pour activation), modal checkout mockup "bientôt disponible".
 
 ## En cours
 
@@ -42,16 +45,19 @@
 ## A faire (priorise)
 
 ### Priorite haute
-(rien de prioritaire — voir backlog)
+- **LemonSqueezy intégration réelle** -- Remplir les product IDs, connecter checkout overlay, tester flux d'achat complet
+- **Gift trigger activation** -- Logique JS pour détecter milestone dans les 60 jours et afficher la banner
+- **Segmented input polish** -- Tests cross-browser, cas edge (paste, mobile autocomplete), refinements UX
 
 ## Idees / Backlog
 
 - **Biorhythmes** -- Cycles physique (23j), emotionnel (28j), intellectuel (33j) avec graphique
 - **Carte du ciel a la naissance** -- Representation visuelle simplifiee des positions planetaires
 - **Notifications push** -- Rappel le jour d'un milestone (necessite PWA + permission)
-- **Soundtrack personnalisee** -- Jouer la chanson numero 1 le jour de ta naissance (via API externe)
-- **Hit du jour de naissance** -- Afficher le titre #1 au Top 50 le jour de la naissance de l'utilisateur, selon son pays (France / Monde), données hardcodées ou via API Charts
 - **Multi-langue** -- Support anglais/espagnol en plus du francais
+- **Mode sombre/clair avancé** -- Préférence persistante localStorage, scheme détection système
+- **Gamification avancée** -- Badges, achievements, leaderboards (share-able)
+- **Intégrations reseaux sociaux** -- Shareable milestones vers Instagram Stories, TikTok (via deeplinks)
 
 ## Abandonne / Deprioritise
 

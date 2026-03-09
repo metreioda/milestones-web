@@ -32,6 +32,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <!-- Brevo embed styles -->
+  <link rel="stylesheet" href="https://sibforms.com/forms/end-form/build/sib-styles.css">
   <!-- Structured data -->
   <script type="application/ld+json">
   {
@@ -186,29 +188,34 @@
 
       <div class="form-row">
 
-        <!-- Date wheel picker -->
+        <!-- Date segmented input -->
         <div class="field-group field-group--date">
-          <label class="field-label">Ta date de naissance</label>
-          <div class="wheel-picker" id="wheel-date" role="group" aria-label="Date de naissance">
-            <div class="wheel-col wheel-col--day"   id="wcol-day"   tabindex="0" role="spinbutton" aria-label="Jour"></div>
-            <div class="wheel-sep" aria-hidden="true">/</div>
-            <div class="wheel-col wheel-col--month" id="wcol-month" tabindex="0" role="spinbutton" aria-label="Mois"></div>
-            <div class="wheel-sep" aria-hidden="true">/</div>
-            <div class="wheel-col wheel-col--year"  id="wcol-year"  tabindex="0" role="spinbutton" aria-label="Année"></div>
+          <label class="field-label" for="seg-day">Ta date de naissance</label>
+          <div class="seg-input" id="seg-date" role="group" aria-label="Date de naissance">
+            <input class="seg-input__field" id="seg-day" type="text" inputmode="numeric"
+                   maxlength="2" placeholder="JJ" aria-label="Jour" autocomplete="off">
+            <span class="seg-input__sep" aria-hidden="true">/</span>
+            <input class="seg-input__field" id="seg-month" type="text" inputmode="numeric"
+                   maxlength="2" placeholder="MM" aria-label="Mois" autocomplete="off">
+            <span class="seg-input__sep" aria-hidden="true">/</span>
+            <input class="seg-input__field seg-input__field--year" id="seg-year" type="text" inputmode="numeric"
+                   maxlength="4" placeholder="AAAA" aria-label="Année" autocomplete="off">
           </div>
-          <!-- Input caché — compatibilité avec calculate() -->
+          <!-- Input caché pour calculate() -->
           <input type="date" id="bd" max="" hidden>
         </div>
 
-        <!-- Time wheel picker -->
+        <!-- Time segmented input -->
         <div class="field-group field-group--time">
-          <label class="field-label">Heure <span class="field-optional">(optionnel)</span></label>
-          <div class="wheel-picker" id="wheel-time" role="group" aria-label="Heure de naissance">
-            <div class="wheel-col wheel-col--hour" id="wcol-hour" tabindex="0" role="spinbutton" aria-label="Heure"></div>
-            <div class="wheel-sep" aria-hidden="true">:</div>
-            <div class="wheel-col wheel-col--min"  id="wcol-min"  tabindex="0" role="spinbutton" aria-label="Minute"></div>
+          <label class="field-label" for="seg-hour">Heure <span class="field-optional">(optionnel)</span></label>
+          <div class="seg-input" id="seg-time" role="group" aria-label="Heure de naissance">
+            <input class="seg-input__field" id="seg-hour" type="text" inputmode="numeric"
+                   maxlength="2" placeholder="HH" aria-label="Heure" autocomplete="off">
+            <span class="seg-input__sep" aria-hidden="true">:</span>
+            <input class="seg-input__field" id="seg-minute" type="text" inputmode="numeric"
+                   maxlength="2" placeholder="MM" aria-label="Minute" autocomplete="off">
           </div>
-          <!-- Input caché — compatibilité avec calculate() -->
+          <!-- Input caché pour calculate() -->
           <input type="time" id="bt" class="inp-time" hidden>
         </div>
 
@@ -344,6 +351,16 @@
 
     <!-- 7. Tous les milestones futurs -->
     <div id="future-section"></div>
+
+    <!-- Gift trigger — visible si un milestone arrive dans < 60 jours (géré par app.js) -->
+    <div class="gift-trigger" id="gift-trigger" hidden>
+      <div class="gift-trigger__icon" aria-hidden="true">🎁</div>
+      <div class="gift-trigger__text">
+        <strong>Ton prochain milestone approche !</strong>
+        <p id="gift-trigger-msg">Tu atteins <span id="gift-milestone-name"></span> dans <span id="gift-days-left"></span> jours — le moment parfait pour un souvenir.</p>
+      </div>
+      <a href="/boutique" class="gift-trigger__cta">Voir la boutique</a>
+    </div>
 
     <!-- 8. Milestones passés -->
     <div id="past-section"></div>
@@ -544,7 +561,6 @@
 <script src="js/calendars.js"></script>
 <script src="js/render.js"></script>
 <script src="js/charts.js"></script>
-<script src="js/wheel-picker.js"></script>
 <script src="js/app.js"></script>
 
 <!-- Dynamic section theming — background change par section -->
@@ -1219,6 +1235,206 @@
     if (banner) banner.setAttribute('hidden', '');
   }
 
+})();
+</script>
+
+<!-- ── CART — overlay, drawer, FAB ─────────────────────────────────────── -->
+<!-- Overlay (clic → ferme le drawer) -->
+<div id="cart-overlay" class="cart-overlay" aria-hidden="true"></div>
+
+<!-- Cart drawer -->
+<aside id="cart-drawer" class="cart-drawer" role="dialog" aria-label="Mon panier" aria-modal="true" aria-hidden="true">
+  <div class="cart-drawer__header">
+    <h2>Mon panier</h2>
+    <button class="cart-drawer__close" onclick="closeCart()" aria-label="Fermer le panier">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="cart-drawer__body" id="cart-body"></div>
+  <footer class="cart-drawer__footer" id="cart-footer" hidden>
+    <div class="cart-drawer__total">
+      <span>Total</span>
+      <strong id="cart-total">0,00€</strong>
+    </div>
+    <button class="cart-drawer__checkout" onclick="checkout()">
+      Commander →
+    </button>
+  </footer>
+</aside>
+
+<!-- Floating cart button -->
+<button id="cart-btn" class="cart-fab" aria-label="Voir mon panier" type="button">
+  <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <path d="M16 10a4 4 0 01-8 0"/>
+  </svg>
+  <span id="cart-count" class="cart-badge" style="display:none" aria-live="polite" aria-label="articles dans le panier">0</span>
+</button>
+
+<!-- Cart logic -->
+<script src="js/cart.js"></script>
+
+<!-- ── Modal Brevo — Alerte Milestone ── -->
+<div id="brevo-modal" role="dialog" aria-modal="true" aria-label="Reçois ton alerte milestone" style="display:none">
+  <div id="brevo-modal-backdrop"></div>
+  <div id="brevo-modal-box">
+    <button id="brevo-modal-close" aria-label="Fermer">&times;</button>
+    <div id="brevo-modal-icon">⏳</div>
+    <h2 id="brevo-modal-title">Ton prochain milestone approche</h2>
+    <p id="brevo-modal-desc">Reçois une alerte email le jour exact où tu l'atteins.</p>
+    <div id="error-message" class="sib-form-message-panel" style="display:none;font-size:14px;color:#661d1d;background:#ffeded;border-radius:6px;padding:10px;margin-bottom:12px;">
+      Nous n'avons pas pu confirmer ton inscription. Réessaie.
+    </div>
+    <div id="success-message" class="sib-form-message-panel" style="display:none;font-size:14px;color:#085229;background:#e7faf0;border-radius:6px;padding:10px;margin-bottom:12px;">
+      C'est noté ! Tu recevras ton alerte.
+    </div>
+    <form id="sib-form" method="POST"
+      action="https://b6b0b725.sibforms.com/serve/MUIFAPm8GYDpTwmO5tp2n4y83E8ZWN0bIfveTFqR8vn8esF-PonJlA8X4cksbHXtNy52XRGrlDrk5IpLMspeXRKn3m6RxEltdq_TfqKLaxpVnFm5bgfIsK-uHcLtuWTxu1_37U4Y-FP6zmn_Fu1Y5A9HohbKTuvPpMfS2lq0RGxBVLExAFSL7sbSVvvPoEX1Ix4n_SIdgXZm8qNP9Q=="
+      data-type="subscription">
+      <div id="brevo-modal-field">
+        <input type="email" id="EMAIL" name="EMAIL" autocomplete="email"
+          placeholder="ton@email.com" required />
+        <button type="submit">Me prévenir</button>
+      </div>
+      <input type="text" name="email_address_check" value="" style="display:none">
+      <input type="hidden" name="locale" value="fr">
+    </form>
+    <p id="brevo-modal-skip"><button id="brevo-modal-skip-btn">Non merci</button></p>
+  </div>
+</div>
+
+<style>
+#brevo-modal {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+}
+#brevo-modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(3,7,17,0.82);
+  backdrop-filter: blur(6px);
+}
+#brevo-modal-box {
+  position: relative; z-index: 1;
+  background: linear-gradient(145deg, #0d1224 0%, #0a0f1e 100%);
+  border: 1px solid rgba(212,175,55,0.25);
+  border-radius: 16px;
+  padding: 36px 32px 28px;
+  max-width: 420px; width: 90%;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(212,175,55,0.08), 0 24px 60px rgba(0,0,0,0.6);
+}
+#brevo-modal-close {
+  position: absolute; top: 12px; right: 16px;
+  background: none; border: none; color: rgba(255,255,255,0.4);
+  font-size: 24px; cursor: pointer; line-height: 1; padding: 4px 8px;
+}
+#brevo-modal-close:hover { color: #fff; }
+#brevo-modal-icon { font-size: 36px; margin-bottom: 12px; }
+#brevo-modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem; color: #f0e6c0;
+  margin: 0 0 10px; line-height: 1.3;
+}
+#brevo-modal-desc {
+  font-size: 0.9rem; color: rgba(255,255,255,0.55);
+  margin: 0 0 22px; line-height: 1.5;
+}
+#brevo-modal-field {
+  display: flex; gap: 8px; margin-bottom: 10px;
+}
+#brevo-modal-field input[type="email"] {
+  flex: 1; padding: 11px 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px; color: #fff;
+  font-size: 0.9rem; outline: none;
+}
+#brevo-modal-field input[type="email"]::placeholder { color: rgba(255,255,255,0.3); }
+#brevo-modal-field input[type="email"]:focus { border-color: rgba(212,175,55,0.5); }
+#brevo-modal-field button[type="submit"] {
+  padding: 11px 18px;
+  background: linear-gradient(135deg, #d4af37, #b8962e);
+  border: none; border-radius: 8px;
+  color: #0d1224; font-weight: 700; font-size: 0.88rem;
+  cursor: pointer; white-space: nowrap; transition: opacity 0.2s;
+}
+#brevo-modal-field button[type="submit"]:hover { opacity: 0.85; }
+#brevo-modal-success {
+  color: #5dde8a; font-size: 0.9rem; margin-top: 8px;
+}
+#brevo-modal-error {
+  color: #ff6b6b; font-size: 0.9rem; margin-top: 8px;
+}
+#brevo-modal-skip { margin: 14px 0 0; }
+#brevo-modal-skip-btn {
+  background: none; border: none;
+  color: rgba(255,255,255,0.3); font-size: 0.8rem;
+  cursor: pointer; text-decoration: underline;
+}
+#brevo-modal-skip-btn:hover { color: rgba(255,255,255,0.6); }
+</style>
+
+<script>
+window.REQUIRED_CODE_ERROR_MESSAGE = 'Veuillez choisir un code pays';
+window.LOCALE = 'fr';
+window.EMAIL_INVALID_MESSAGE = "Adresse email invalide.";
+window.REQUIRED_ERROR_MESSAGE = "Ce champ est requis.";
+window.GENERIC_INVALID_MESSAGE = "Informations invalides.";
+window.translation = { common: { selectedList: '{quantity} liste sélectionnée', selectedLists: '{quantity} listes sélectionnées', selectedOption: '{quantity} sélectionné', selectedOptions: '{quantity} sélectionnés' } };
+var AUTOHIDE = false;
+</script>
+<script defer src="https://sibforms.com/forms/end-form/build/main.js"></script>
+
+<script>
+(function() {
+  const STORAGE_KEY = 'brevo_subscribed';
+  let modalTimer = null;
+
+  function openBrevoModal() {
+    if (localStorage.getItem(STORAGE_KEY)) return;
+    const modal = document.getElementById('brevo-modal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function closeBrevoModal() {
+    const modal = document.getElementById('brevo-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  // Déclenche le modal 8s après que calculate() affiche les résultats
+  window.triggerBrevoModal = function() {
+    if (localStorage.getItem(STORAGE_KEY)) return;
+    clearTimeout(modalTimer);
+    modalTimer = setTimeout(openBrevoModal, 8000);
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const closeBtn = document.getElementById('brevo-modal-close');
+    const skipBtn  = document.getElementById('brevo-modal-skip-btn');
+    const backdrop = document.getElementById('brevo-modal-backdrop');
+    const form     = document.getElementById('sib-form');
+
+    if (closeBtn) closeBtn.addEventListener('click', closeBrevoModal);
+    if (skipBtn)  skipBtn.addEventListener('click', closeBrevoModal);
+    if (backdrop) backdrop.addEventListener('click', closeBrevoModal);
+
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        // Brevo gère le submit nativement via main.js
+        // On écoute le succès via l'apparition du message success
+        setTimeout(function() {
+          const success = document.getElementById('success-message');
+          if (success && success.style.display !== 'none') {
+            localStorage.setItem(STORAGE_KEY, '1');
+            setTimeout(closeBrevoModal, 2500);
+          }
+        }, 1500);
+      });
+    }
+  });
 })();
 </script>
 

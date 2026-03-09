@@ -1238,7 +1238,7 @@
 
       <div class="shop-hero-stats" aria-label="Chiffres de la boutique">
         <div class="hero-stat">
-          <div class="hero-stat-value">8</div>
+          <div class="hero-stat-value">3</div>
           <div class="hero-stat-label">Produits</div>
         </div>
         <div class="hero-stat-sep" aria-hidden="true"></div>
@@ -1258,233 +1258,112 @@
     <section class="filter-section" aria-label="Filtrer par categorie">
       <div class="filter-pills" role="group" aria-label="Categories">
         <button class="filter-pill active" data-filter="all" aria-pressed="true">Tout voir</button>
-        <button class="filter-pill" data-filter="impression" aria-pressed="false">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-          Impressions d'art
-        </button>
-        <button class="filter-pill" data-filter="bijouterie" aria-pressed="false">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"/></svg>
-          Bijouterie
-        </button>
-        <button class="filter-pill" data-filter="papeterie" aria-pressed="false">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          Papeterie
-        </button>
-        <button class="filter-pill" data-filter="box" aria-pressed="false">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-          Box cadeaux
-        </button>
         <button class="filter-pill" data-filter="art-de-vivre" aria-pressed="false">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
           Art de vivre
         </button>
-        <button class="filter-pill" data-filter="accessoire" aria-pressed="false">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
-          Accessoires
+        <button class="filter-pill" data-filter="impression" aria-pressed="false">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Impression d'art
+        </button>
+        <button class="filter-pill" data-filter="numerique" aria-pressed="false">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 15.4h7.6z"/></svg>
+          Premium
         </button>
       </div>
     </section>
 
-    <!-- Products grid -->
+    <!-- Products grid — 3 produits disponibles (LemonSqueezy IDs a remplir) -->
     <section class="products-section" aria-label="Articles de la boutique">
       <div class="products-grid" id="products-grid">
 
-        <!-- 1 — Poster milliardieme seconde (FEATURED) -->
-        <article class="product-card product-card--indigo product-card--featured"
-                 data-category="impression"
-                 aria-label="Poster personnalise milliardieme seconde">
-          <div class="product-visual">
-            <div class="badge-wrap">
-              <span class="badge badge--popular">Populaire</span>
-              <span class="badge badge--limited">Ed. limitee</span>
-            </div>
-            <div class="product-icon" aria-hidden="true">🪐</div>
-            <img src="/img/boutique/poster-milliardieme.webp"
-                 alt="Poster Ton Milliardieme Seconde"
-                 loading="lazy"
-                 onerror="this.style.display='none'">
-          </div>
-          <div class="product-body">
-            <p class="product-category">Impression d'art</p>
-            <h2 class="product-name">Poster "Ton Milliardieme Seconde"</h2>
-            <p class="product-desc">Un poster A3 personnalise avec ta date exacte, l'heure precise et le decompteur cosmique de ta vie. Impression risographie, encre or et indigo sur papier 300g.</p>
-            <div class="product-footer">
-              <div class="product-price"><span class="price-currency">€</span>24,90</div>
-              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
-            </div>
-          </div>
-        </article>
-
-        <!-- 2 — Bracelet 10 000 jours -->
+        <!-- 1 — Mug personnalisé -->
         <article class="product-card product-card--amber"
-                 data-category="bijouterie"
-                 aria-label="Bracelet 10 000 jours grave">
-          <div class="product-visual">
-            <div class="badge-wrap">
-              <span class="badge badge--new">Nouveau</span>
-            </div>
-            <div class="product-icon" aria-hidden="true">✨</div>
-            <img src="/img/boutique/bracelet-10000.webp"
-                 alt="Bracelet 10 000 Jours grave"
-                 loading="lazy"
-                 onerror="this.style.display='none'">
-          </div>
-          <div class="product-body">
-            <p class="product-category">Bijouterie</p>
-            <h2 class="product-name">Bracelet "10 000 Jours" Grave</h2>
-            <p class="product-desc">Bracelet acier inoxydable grave avec ton nombre exact de jours. Coffret cadeau inclus.</p>
-            <div class="product-footer">
-              <div class="product-price"><span class="price-currency">€</span>39,90</div>
-              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
-            </div>
-          </div>
-        </article>
-
-        <!-- 3 — Carnet de bord -->
-        <article class="product-card product-card--emerald"
-                 data-category="papeterie"
-                 aria-label="Carnet de bord des milestones">
-          <div class="product-visual">
-            <div class="product-icon" aria-hidden="true">📓</div>
-            <img src="/img/boutique/carnet-milestones.webp"
-                 alt="Carnet de Bord des Milestones"
-                 loading="lazy"
-                 onerror="this.style.display='none'">
-          </div>
-          <div class="product-body">
-            <p class="product-category">Papeterie</p>
-            <h2 class="product-name">Carnet de Bord des Milestones</h2>
-            <p class="product-desc">160 pages sewn-bound avec tes milestones imprimes en tete de chapitre. Couverture toilee.</p>
-            <div class="product-footer">
-              <div class="product-price"><span class="price-currency">€</span>14,90</div>
-              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
-            </div>
-          </div>
-        </article>
-
-        <!-- 4 — Box capsule temporelle -->
-        <article class="product-card product-card--violet"
-                 data-category="box"
-                 aria-label="Box cadeau capsule temporelle">
-          <div class="product-visual">
-            <div class="badge-wrap">
-              <span class="badge badge--prestige">Prestige</span>
-            </div>
-            <div class="product-icon" aria-hidden="true">🎁</div>
-            <img src="/img/boutique/box-capsule.webp"
-                 alt="Box Capsule Temporelle"
-                 loading="lazy"
-                 onerror="this.style.display='none'">
-          </div>
-          <div class="product-body">
-            <p class="product-category">Box cadeau</p>
-            <h2 class="product-name">Box "Capsule Temporelle"</h2>
-            <p class="product-desc">Poster + carnet + bracelet grave + lettre a ouvrir au prochain milestone. Emballage premium kraft.</p>
-            <div class="product-footer">
-              <div class="product-price"><span class="price-currency">€</span>59,90</div>
-              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
-            </div>
-          </div>
-        </article>
-
-        <!-- 5 — Tasse 1 million de minutes -->
-        <article class="product-card product-card--cyan"
                  data-category="art-de-vivre"
-                 aria-label="Tasse 1 million de minutes">
+                 aria-label="Mug personnalise avec ton milestone">
           <div class="product-visual">
             <div class="badge-wrap">
-              <span class="badge badge--new">Nouveau</span>
+              <span class="badge badge--popular">Bestseller</span>
             </div>
             <div class="product-icon" aria-hidden="true">☕</div>
-            <img src="/img/boutique/tasse-minutes.webp"
-                 alt="Tasse 1 Million de Minutes"
-                 loading="lazy"
-                 onerror="this.style.display='none'">
           </div>
           <div class="product-body">
             <p class="product-category">Art de vivre</p>
-            <h2 class="product-name">Tasse "1 Million de Minutes"</h2>
-            <p class="product-desc">Mug ceramique biscuit — le chiffre change de couleur a la chaleur et revele ton milestone a chaque cafe.</p>
+            <h2 class="product-name">Mug personnalisé</h2>
+            <p class="product-desc">Ton milestone imprimé sur un mug premium. La date exacte de ton 10 000ème jour, gravée dans la céramique. Dishwasher safe, impression durable.</p>
             <div class="product-footer">
               <div class="product-price"><span class="price-currency">€</span>19,90</div>
-              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
+              <button class="product-cta" data-product="mug" onclick="addToCart('mug')" type="button">Ajouter au panier</button>
             </div>
           </div>
         </article>
 
-        <!-- 6 — Affiche constellation -->
+        <!-- 2 — Poster A3 -->
         <article class="product-card product-card--indigo"
                  data-category="impression"
-                 aria-label="Affiche constellation du jour de naissance">
+                 aria-label="Poster A3 personnalise avec ta frise chronologique">
           <div class="product-visual">
             <div class="badge-wrap">
-              <span class="badge badge--limited">Ed. limitee</span>
+              <span class="badge badge--popular">Populaire</span>
             </div>
-            <div class="product-icon" aria-hidden="true">🌌</div>
-            <img src="/img/boutique/affiche-constellation.webp"
-                 alt="Affiche Constellation de Naissance"
-                 loading="lazy"
-                 onerror="this.style.display='none'">
+            <div class="product-icon" aria-hidden="true">🖼</div>
           </div>
           <div class="product-body">
             <p class="product-category">Impression d'art</p>
-            <h2 class="product-name">Affiche "Constellation de Naissance"</h2>
-            <p class="product-desc">La carte du ciel de ton lieu et ta date de naissance. Format 40x50cm, papier satin 200g.</p>
+            <h2 class="product-name">Poster A3</h2>
+            <p class="product-desc">Affiche A3 haute qualité avec ta frise chronologique personnalisée. Format encadrable. Impression sur papier 300g, encre premium indigo et or.</p>
             <div class="product-footer">
-              <div class="product-price"><span class="price-currency">€</span>29,90</div>
-              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
+              <div class="product-price"><span class="price-currency">€</span>34,90</div>
+              <button class="product-cta" data-product="poster" onclick="addToCart('poster')" type="button">Ajouter au panier</button>
             </div>
           </div>
         </article>
 
-        <!-- 7 — Coffret Kit Anniversaire Cosmique (FEATURED) -->
-        <article class="product-card product-card--amber product-card--featured"
-                 data-category="box"
-                 aria-label="Coffret kit anniversaire cosmique">
+        <!-- 3 — Premium annuel -->
+        <article class="product-card product-card--violet"
+                 data-category="numerique"
+                 aria-label="Abonnement premium annuel MilestoneMe">
           <div class="product-visual">
             <div class="badge-wrap">
-              <span class="badge badge--prestige">Prestige</span>
-              <span class="badge badge--popular">Populaire</span>
+              <span class="badge badge--prestige">Abonnement</span>
             </div>
-            <div class="product-icon" aria-hidden="true">🚀</div>
-            <img src="/img/boutique/coffret-cosmique.webp"
-                 alt="Coffret Kit Anniversaire Cosmique"
-                 loading="lazy"
-                 onerror="this.style.display='none'">
+            <div class="product-icon" aria-hidden="true">⭐</div>
           </div>
           <div class="product-body">
-            <p class="product-category">Edition prestige</p>
-            <h2 class="product-name">Coffret "Kit Anniversaire Cosmique"</h2>
-            <p class="product-desc">L'edition ultra : affiche constellation + poster milestone + bracelet + carnet + tasse + bougie "cosmos". Le cadeau definitif pour les amoureux du temps et de l'espace.</p>
+            <p class="product-category">Numérique</p>
+            <h2 class="product-name">Premium annuel</h2>
+            <p class="product-desc">Accès aux thèmes exclusifs, export illimité en haute résolution, alertes milestones par email. Renouvellement annuel, résiliable à tout moment.</p>
             <div class="product-footer">
-              <div class="product-price"><span class="price-currency">€</span>79,90</div>
-              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
+              <div class="product-price"><span class="price-currency">€</span>9<sup style="font-size:0.55em;vertical-align:super;color:var(--muted)">/an</sup></div>
+              <button class="product-cta" data-product="premium" onclick="addToCart('premium')" type="button">S'abonner</button>
             </div>
           </div>
         </article>
 
-        <!-- 8 — Badge revolutions solaires -->
-        <article class="product-card product-card--rose"
-                 data-category="accessoire"
-                 aria-label="Badge survivant de X revolutions solaires">
-          <div class="product-visual">
-            <div class="product-icon" aria-hidden="true">🎖️</div>
-            <img src="/img/boutique/badge-solaire.webp"
-                 alt="Badge Survivant de X Revolutions Solaires"
-                 loading="lazy"
-                 onerror="this.style.display='none'">
-          </div>
-          <div class="product-body">
-            <p class="product-category">Accessoire</p>
-            <h2 class="product-name">Badge "Survivant de X Revolutions"</h2>
-            <p class="product-desc">Pin's emaille grave, finition or, 3cm de diametre. Coffret individuel inclus. Parfait pour les anniversaires ronds.</p>
-            <div class="product-footer">
-              <div class="product-price"><span class="price-currency">€</span>9,90</div>
-              <button class="product-cta" onclick="handleCartToast(this)" type="button">Ajouter au panier</button>
-            </div>
-          </div>
-        </article>
+      </div>
+    </section>
 
+    <!-- Section "Comment ca marche" -->
+    <section aria-labelledby="hiw-title" style="position:relative;z-index:1;padding-bottom:64px;">
+      <h2 id="hiw-title" style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.3rem,3vw,1.8rem);font-weight:700;color:var(--text);text-align:center;margin:0 0 32px;letter-spacing:-0.01em;">
+        Comment ça marche ?
+      </h2>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);gap:12px;position:relative;">
+          <div style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.25);font-family:'Space Grotesk',sans-serif;font-size:0.90rem;font-weight:700;color:var(--indigo);">1</div>
+          <span style="font-size:1.6rem;" aria-hidden="true">📅</span>
+          <p style="font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:500;color:var(--text2);margin:0;line-height:1.5;">Entre ta date de naissance sur MilestoneMe</p>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);gap:12px;">
+          <div style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.25);font-family:'Space Grotesk',sans-serif;font-size:0.90rem;font-weight:700;color:var(--indigo);">2</div>
+          <span style="font-size:1.6rem;" aria-hidden="true">🖼</span>
+          <p style="font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:500;color:var(--text2);margin:0;line-height:1.5;">Génère ton poster personnalisé en un clic</p>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);gap:12px;">
+          <div style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.25);font-family:'Space Grotesk',sans-serif;font-size:0.90rem;font-weight:700;color:var(--indigo);">3</div>
+          <span style="font-size:1.6rem;" aria-hidden="true">📦</span>
+          <p style="font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:500;color:var(--text2);margin:0;line-height:1.5;">Commande en 2 clics, livré chez toi sous 5 jours</p>
+        </div>
       </div>
     </section>
 
@@ -1641,7 +1520,13 @@
   }
 
   function handleCartToast(btn) {
-    showToast('Bientot disponible — tu seras notifie(e) en avant-premiere !');
+    // Redirige vers addToCart si cart.js est charge, sinon toast mockup
+    var productId = btn && btn.getAttribute('data-product');
+    if (productId && typeof addToCart === 'function') {
+      addToCart(productId);
+    } else {
+      showToast('Bientot disponible — tu seras notifie(e) en avant-premiere !');
+    }
   }
 
   /* ───────────────────────────────────────────────────────────────────────────
@@ -1682,6 +1567,271 @@
     showToast('Parfait ! Tu seras notifie(e) en avant-premiere avec un code exclusif.');
   }
 </script>
+
+<!-- ── CART — overlay, drawer, FAB ─────────────────────────────────────── -->
+<div id="cart-overlay" class="cart-overlay" aria-hidden="true"></div>
+
+<aside id="cart-drawer" class="cart-drawer" role="dialog" aria-label="Mon panier" aria-modal="true" aria-hidden="true">
+  <div class="cart-drawer__header">
+    <h2>Mon panier</h2>
+    <button class="cart-drawer__close" onclick="closeCart()" aria-label="Fermer le panier">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="cart-drawer__body" id="cart-body"></div>
+  <footer class="cart-drawer__footer" id="cart-footer" hidden>
+    <div class="cart-drawer__total">
+      <span>Total</span>
+      <strong id="cart-total">0,00€</strong>
+    </div>
+    <button class="cart-drawer__checkout" onclick="checkout()">
+      Commander →
+    </button>
+  </footer>
+</aside>
+
+<button id="cart-btn" class="cart-fab" aria-label="Voir mon panier" type="button">
+  <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <path d="M16 10a4 4 0 01-8 0"/>
+  </svg>
+  <span id="cart-count" class="cart-badge" style="display:none" aria-live="polite" aria-label="articles dans le panier">0</span>
+</button>
+
+<!-- Cart styles embedded (boutique.html est standalone) -->
+<style>
+  /* Cart FAB, overlay, drawer — copies les regles de style.css pour standalone */
+  .cart-fab {
+    position: fixed;
+    bottom: 28px;
+    right: 24px;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    background: rgba(15,12,28,0.72);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    color: var(--text);
+    cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(99,102,241,0.18), 0 8px 32px rgba(0,0,0,0.55);
+    transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+  .cart-fab:hover { transform: translateY(-4px) scale(1.07); border-color: var(--border3); }
+  .cart-fab:focus-visible { outline: 2px solid var(--indigo); outline-offset: 4px; }
+
+  .cart-badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 10px;
+    background: var(--rose);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    border: 2px solid var(--bg);
+    pointer-events: none;
+    animation: badgePop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes badgePop { from { transform: scale(0); } to { transform: scale(1); } }
+
+  .cart-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 910;
+    background: rgba(3,7,17,0.65);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+  .cart-overlay.open { opacity: 1; pointer-events: all; }
+
+  .cart-drawer {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    z-index: 920;
+    width: min(380px, 100vw);
+    display: flex;
+    flex-direction: column;
+    background: rgba(10,8,24,0.88);
+    backdrop-filter: blur(32px) saturate(1.6);
+    -webkit-backdrop-filter: blur(32px) saturate(1.6);
+    border-left: 1px solid var(--border2);
+    box-shadow: -12px 0 60px rgba(0,0,0,0.6);
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+    will-change: transform;
+  }
+  .cart-drawer.open { transform: translateX(0); }
+  .cart-drawer::before { content: ''; display: block; height: 2px; background: linear-gradient(90deg, var(--indigo), var(--violet)); flex-shrink: 0; }
+
+  .cart-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .cart-drawer__header h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 0; }
+
+  .cart-drawer__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text2);
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+  .cart-drawer__close:hover { background: var(--rose-dim); color: var(--rose); }
+
+  .cart-drawer__body { flex: 1; overflow-y: auto; padding: 16px 24px; }
+
+  .cart-empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 48px 24px; gap: 10px;
+  }
+  .cart-empty__icon { color: var(--muted); margin-bottom: 4px; }
+  .cart-empty__title { font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--text2); margin: 0; }
+  .cart-empty__sub { font-size: 0.82rem; color: var(--muted); margin: 0; }
+  .cart-empty__link { margin-top: 8px; font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--indigo); text-decoration: none; border-bottom: 1px solid rgba(99,102,241,0.3); padding-bottom: 1px; }
+
+  .cart-item {
+    display: grid;
+    grid-template-columns: 36px 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .cart-item:last-child { border-bottom: none; }
+  .cart-item__emoji { font-size: 1.4rem; text-align: center; }
+  .cart-item__info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .cart-item__name { font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cart-item__price { font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem; color: var(--muted); }
+  .cart-item__qty { display: flex; align-items: center; gap: 6px; }
+  .cart-qty-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 6px;
+    border: 1px solid var(--border2); background: var(--surface2);
+    color: var(--text2); cursor: pointer; font-size: 1rem; line-height: 1;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .cart-qty-btn:hover { background: var(--indigo-dim); border-color: rgba(99,102,241,0.3); color: var(--text); }
+  .cart-qty-val { font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--text); min-width: 16px; text-align: center; }
+  .cart-item__remove {
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 6px;
+    border: none; background: transparent; color: var(--muted); cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .cart-item__remove:hover { background: var(--rose-dim); color: var(--rose); }
+
+  .cart-drawer__footer {
+    padding: 16px 24px 24px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .cart-drawer__total {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'Space Grotesk', sans-serif; font-size: 0.90rem; color: var(--text2);
+  }
+  .cart-drawer__total strong { font-size: 1.10rem; font-weight: 700; color: var(--text); }
+  .cart-drawer__checkout {
+    width: 100%;
+    background: linear-gradient(135deg, var(--indigo) 0%, var(--violet) 100%);
+    color: #fff;
+    border: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.93rem;
+    font-weight: 600;
+    padding: 13px 20px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.35);
+  }
+  .cart-drawer__checkout:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 28px rgba(99,102,241,0.50); }
+
+  /* Checkout mockup modal */
+  .checkout-mockup-modal {
+    position: fixed; inset: 0; z-index: 950;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    background: rgba(3,7,17,0.70); backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px); animation: fadeIn 0.18s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .checkout-mockup-panel {
+    background: rgba(14,10,30,0.95); border: 1px solid var(--border2);
+    border-radius: var(--radius-card); padding: 36px 32px;
+    max-width: 380px; width: 100%; text-align: center;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6); position: relative; overflow: hidden;
+  }
+  .checkout-mockup-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--indigo), var(--violet)); }
+  .checkout-mockup-icon { font-size: 2.2rem; margin-bottom: 12px; }
+  .checkout-mockup-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--text); margin: 0 0 10px; }
+  .checkout-mockup-msg { font-size: 0.85rem; color: var(--text2); line-height: 1.6; margin: 0 0 24px; }
+  .checkout-mockup-close {
+    min-width: 140px;
+    background: linear-gradient(135deg, var(--indigo), var(--violet));
+    color: #fff; border: none; padding: 11px 24px; border-radius: var(--radius-pill);
+    font-family: 'Space Grotesk', sans-serif; font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; transition: transform 0.18s ease;
+  }
+  .checkout-mockup-close:hover { transform: translateY(-2px); }
+
+  /* btn-added state */
+  .product-cta.btn-added { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.4); color: var(--emerald); }
+
+  /* Light mode */
+  :root[data-theme="light"] .cart-fab { background: rgba(255,255,255,0.82); border-color: rgba(0,0,0,0.10); color: #1E293B; }
+  :root[data-theme="light"] .cart-drawer { background: rgba(250,251,255,0.94); border-left-color: rgba(0,0,0,0.08); }
+  :root[data-theme="light"] .cart-overlay { background: rgba(15,20,50,0.45); }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .cart-fab, .cart-drawer, .cart-overlay { transition: none; }
+    .cart-fab:hover { transform: none; }
+    .cart-badge { animation: none; }
+    .checkout-mockup-modal { animation: none; }
+  }
+</style>
+
+<!-- How-it-works responsive fix -->
+<style>
+  @media (max-width: 640px) {
+    #products-grid { grid-template-columns: 1fr !important; }
+    section[aria-labelledby="hiw-title"] > div { grid-template-columns: 1fr !important; }
+  }
+</style>
+
+<!-- Cart logic -->
+<script src="js/cart.js"></script>
 
 </body>
 </html>

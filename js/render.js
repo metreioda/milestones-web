@@ -614,11 +614,15 @@ function toggleAstralProfile() {
 
 // ── ILS SONT NÉS COMME TOI ────────────────────────────────────────────────────
 // Dépend de : CELEBRITIES_BY_DAY, BIRTH_YEAR_EVENTS, PAST_LIVES,
-//             WORLD_POP_BY_YEAR (data.js)
+//             WORLD_POP_BY_YEAR, WORLD_DAYS (data.js)
 function renderBornLikeYou(birth) {
   const month = birth.getMonth() + 1;  // 1-12
   const day   = birth.getDate();       // 1-31
   const year  = birth.getFullYear();
+
+  // ── 0. Journée mondiale ───────────────────────────────────────────────────────
+  const wdKey = `${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  const worldDay = (typeof WORLD_DAYS !== 'undefined') ? (WORLD_DAYS[wdKey] || null) : null;
 
   // ── 1. Naissances du même jour ───────────────────────────────────────────────
   // Trouver la population de la décennie la plus proche
@@ -720,9 +724,21 @@ function renderBornLikeYou(birth) {
       </div>`
     : '';
 
+  // ── World Day badge ──────────────────────────────────────────────────────────
+  const worldDayHTML = worldDay ? `
+    <div class="bly-worldday-badge" role="note" aria-label="Journée mondiale : ${worldDay.name}">
+      <span class="bly-worldday-emoji" aria-hidden="true">${worldDay.emoji}</span>
+      <div class="bly-worldday-body">
+        <div class="bly-worldday-label">Journée mondiale ce jour</div>
+        <div class="bly-worldday-name">${worldDay.name}</div>
+      </div>
+    </div>` : '';
+
   // ── Rendu principal ──────────────────────────────────────────────────────────
   return `
     <h2 class="section-head">Ils sont nés comme toi</h2>
+
+    ${worldDayHTML}
 
     <div class="bly-grid">
 

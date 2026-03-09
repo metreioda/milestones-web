@@ -115,6 +115,11 @@ body.results-visible #hero-canvas {
 @media (prefers-reduced-motion: reduce) {
   .aurora-layer { animation: none; }
   #hero-canvas  { display: none; }
+  /* Hero enhancements — disable all motion-based animations */
+  .hero::before,
+  .hero::after     { animation: none; }
+  .hero-badge      { animation: none; }
+  .hero-chips .hero-chip { animation: none; opacity: 1; transform: none; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -395,7 +400,55 @@ body::before {
 .hero {
   text-align: center;
   padding: 100px 20px 80px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
 }
+
+/* Diagonal light streaks — complementary to aurora, purely decorative */
+.hero::before,
+.hero::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+}
+
+.hero::before {
+  width: 560px;
+  height: 220px;
+  top: -60px;
+  left: -120px;
+  background: linear-gradient(135deg,
+    rgba(99,102,241,0.12) 0%,
+    rgba(139,92,246,0.08) 50%,
+    transparent 100%);
+  transform: rotate(-22deg);
+  animation: heroStreakDrift 12s ease-in-out infinite alternate;
+}
+
+.hero::after {
+  width: 480px;
+  height: 180px;
+  bottom: 0;
+  right: -100px;
+  background: linear-gradient(135deg,
+    transparent 0%,
+    rgba(245,158,11,0.06) 40%,
+    rgba(99,102,241,0.10) 100%);
+  transform: rotate(-18deg);
+  animation: heroStreakDrift 16s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes heroStreakDrift {
+  from { opacity: 0.6; transform: rotate(-22deg) translateX(0); }
+  to   { opacity: 1;   transform: rotate(-22deg) translateX(30px); }
+}
+
+/* Ensure all direct children sit above streaks */
+.hero > * { position: relative; z-index: 1; }
 
 /* Badge pill */
 .hero-badge {
@@ -403,7 +456,7 @@ body::before {
   align-items: center;
   gap: 7px;
   background: rgba(99,102,241,0.10);
-  border: 1px solid rgba(99,102,241,0.30);
+  border: 1px solid rgba(99,102,241,0.32);
   color: #818CF8;
   padding: 6px 18px;
   border-radius: var(--radius-pill);
@@ -413,20 +466,39 @@ body::before {
   letter-spacing: 0.10em;
   text-transform: uppercase;
   margin-bottom: 36px;
+  /* Glow pulse — subtle halo breathing */
+  box-shadow:
+    0 0 0 0 rgba(99,102,241,0),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  animation: badgePulse 3.5s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    box-shadow:
+      0 0 8px 0 rgba(99,102,241,0.15),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  50% {
+    box-shadow:
+      0 0 20px 4px rgba(99,102,241,0.30),
+      0 0 40px 8px rgba(139,92,246,0.12),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+  }
 }
 
 /* Hero headline */
 .hero-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-size: clamp(2.9rem, 6.5vw, 5.2rem);
   font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
-  background: linear-gradient(145deg, #ffffff 0%, rgba(226,232,240,0.80) 100%);
+  line-height: 1.07;
+  letter-spacing: -0.025em;
+  background: linear-gradient(155deg, #ffffff 0%, rgba(226,232,240,0.85) 60%, rgba(196,210,230,0.65) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 /* Aurora borealis gradient on the italic word */
@@ -444,25 +516,192 @@ body::before {
   font-size: clamp(1rem, 2vw, 1.15rem);
   color: var(--muted);
   max-width: 500px;
-  margin: 0 auto 52px;
+  margin: 0 auto 36px;
   line-height: 1.70;
 }
+
+/* ─── MILESTONE SUGGESTION CHIPS ─────────────────────────────────────────── */
+/* Row of 3 clickable example chips displayed between subtitle and form card  */
+.hero-chips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 44px;
+}
+
+.hero-chips-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  /* Hidden on very small screens to save space */
+  flex-basis: 100%;
+  margin-bottom: 4px;
+}
+
+.hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--radius-pill);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.80rem;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background 0.20s ease,
+    border-color 0.20s ease,
+    color 0.20s ease,
+    transform 0.15s ease,
+    box-shadow 0.20s ease;
+  /* Subtle inner shimmer */
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.hero-chip:hover {
+  background: rgba(99,102,241,0.12);
+  border-color: rgba(99,102,241,0.40);
+  color: #a5b4fc;
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 16px rgba(99,102,241,0.20),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+}
+
+.hero-chip:active {
+  transform: translateY(0);
+  transition-duration: 0.06s;
+}
+
+/* Color variants per chip */
+.hero-chip--days {
+  --chip-accent: var(--emerald);
+  --chip-accent-rgb: 16,185,129;
+}
+.hero-chip--days:hover {
+  background: rgba(16,185,129,0.10);
+  border-color: rgba(16,185,129,0.38);
+  color: #6ee7b7;
+  box-shadow:
+    0 4px 16px rgba(16,185,129,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+}
+
+.hero-chip--seconds {
+  --chip-accent: var(--violet);
+  --chip-accent-rgb: 139,92,246;
+}
+.hero-chip--seconds:hover {
+  background: rgba(139,92,246,0.12);
+  border-color: rgba(139,92,246,0.40);
+  color: #c4b5fd;
+  box-shadow:
+    0 4px 16px rgba(139,92,246,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+}
+
+.hero-chip--weeks {
+  --chip-accent: var(--amber);
+  --chip-accent-rgb: 245,158,11;
+}
+.hero-chip--weeks:hover {
+  background: rgba(245,158,11,0.10);
+  border-color: rgba(245,158,11,0.36);
+  color: #fcd34d;
+  box-shadow:
+    0 4px 16px rgba(245,158,11,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+}
+
+/* Chip dot indicator */
+.hero-chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+/* Chip "ripple" on click — pure CSS via pseudo */
+.hero-chip::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255,255,255,0.06);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.hero-chip { position: relative; overflow: hidden; }
+.hero-chip:active::after { opacity: 1; }
+
+/* Staggered entrance animation */
+@keyframes chipSlideIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+.hero-chips .hero-chip:nth-child(1) { animation: chipSlideIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.1s both; }
+.hero-chips .hero-chip:nth-child(2) { animation: chipSlideIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both; }
+.hero-chips .hero-chip:nth-child(3) { animation: chipSlideIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.3s both; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    FORM CARD — glassmorphism premium
    ═══════════════════════════════════════════════════════════════════════════ */
 .form-card {
-  background: rgba(255,255,255,0.03);
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 24px;
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(48px) saturate(1.4);
+  -webkit-backdrop-filter: blur(48px) saturate(1.4);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 28px;
   padding: 40px;
   max-width: 480px;
   margin: 0 auto;
   box-shadow:
-    0 32px 64px rgba(0,0,0,0.40),
-    0 0 0 1px rgba(255,255,255,0.05) inset;
+    0 40px 80px rgba(0,0,0,0.50),
+    0 0 0 1px rgba(255,255,255,0.06) inset,
+    0 1px 0 rgba(255,255,255,0.10) inset;
+  transition:
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+  /* Top edge highlight — gives the glass a "lifted" look */
+  position: relative;
+}
+
+/* Inner top highlight line — mimics real glass catching light */
+.form-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  border-radius: 0 0 50% 50%;
+  pointer-events: none;
+}
+
+/* Ambient glow that activates when the date input has focus */
+.form-card:has(input:focus),
+.form-card.focus-glow {
+  border-color: rgba(99,102,241,0.35);
+  box-shadow:
+    0 40px 80px rgba(0,0,0,0.50),
+    0 0 0 1px rgba(255,255,255,0.06) inset,
+    0 1px 0 rgba(255,255,255,0.10) inset,
+    0 0 0 3px rgba(99,102,241,0.10),
+    0 0 60px 0 rgba(99,102,241,0.18),
+    0 0 100px 0 rgba(139,92,246,0.10);
 }
 
 /* Form layout */
@@ -539,7 +778,10 @@ input[type="date"] {
 input[type="date"]:focus,
 .inp-time:focus {
   border-color: var(--indigo);
-  box-shadow: 0 0 0 3px rgba(99,102,241,0.18);
+  box-shadow:
+    0 0 0 3px rgba(99,102,241,0.22),
+    0 0 20px rgba(99,102,241,0.15);
+  background: rgba(99,102,241,0.06);
 }
 
 .inp-place:focus {
@@ -567,6 +809,261 @@ input[type="date"]:focus,
 .inp-select option {
   background: #0F0F23;
   color: var(--text);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WHEEL PICKER — iOS-style drum roll selectors (date & time)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Outer container — glassmorphism tray */
+.wheel-picker {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 16px;
+  padding: 0 10px;
+  overflow: hidden;
+  position: relative;
+  height: 200px;           /* 5 items × 40px */
+  cursor: grab;
+  /* Inner glow that sits behind the selection bar */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.20);
+}
+
+.wheel-picker:focus-within {
+  border-color: rgba(99, 102, 241, 0.35);
+  box-shadow:
+    0 0 0 2px rgba(99, 102, 241, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Selection highlight bar — sits at the vertical centre */
+.wheel-picker::after {
+  content: '';
+  position: absolute;
+  left: 8px; right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 40px;
+  background: rgba(99, 102, 241, 0.07);
+  border-top: 1px solid rgba(99, 102, 241, 0.40);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.40);
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Separator characters ( / and : ) */
+.wheel-sep {
+  color: rgba(255, 255, 255, 0.30);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 300;
+  user-select: none;
+  flex-shrink: 0;
+  line-height: 1;
+  z-index: 6;
+  /* Keep the separator above the selection bar */
+  position: relative;
+}
+
+/* Individual column */
+.wheel-col {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  height: 200px;
+  outline: none;
+  /* Outline via box-shadow to avoid layout shift */
+}
+.wheel-col:focus-visible {
+  box-shadow: inset 0 0 0 2px rgba(99, 102, 241, 0.50);
+  border-radius: 6px;
+}
+
+/* Column width constraints */
+.wheel-col--day   { min-width: 40px;  max-width: 52px;  }
+.wheel-col--month { min-width: 92px;              }
+.wheel-col--year  { min-width: 56px;  max-width: 68px;  }
+.wheel-col--hour  { min-width: 40px;  max-width: 52px;  }
+.wheel-col--min   { min-width: 40px;  max-width: 52px;  }
+
+/* Fade gradients — top and bottom masks that create the "drum" effect */
+.wheel-col::before,
+.wheel-col::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 72px;
+  z-index: 10;
+  pointer-events: none;
+}
+.wheel-col::before {
+  top: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--bg, #030711) 0%,
+    rgba(3, 7, 17, 0.60) 50%,
+    transparent 100%
+  );
+}
+.wheel-col::after {
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    var(--bg, #030711) 0%,
+    rgba(3, 7, 17, 0.60) 50%,
+    transparent 100%
+  );
+}
+
+/* Scrolling track — absolutely positioned inside each column */
+.wheel-track {
+  position: absolute;
+  left: 0; right: 0;
+  will-change: transform;
+}
+
+/* Individual row item */
+.wheel-item {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.35);
+  user-select: none;
+  cursor: pointer;
+  /* transform and opacity driven by JS _render() */
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  /* Smooth color blend as items slide in/out of selection */
+  transition: color 0.12s ease;
+}
+
+/* Selected (centre) item */
+.wheel-item.is-selected {
+  color: rgba(255, 255, 255, 0.96);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* ── field-group sizing overrides for wheel pickers ─────────────────────── */
+/* Date picker needs more horizontal room than the old <input type="date"> */
+.field-group--date { flex: 1 1 auto; }
+
+/* Time picker: let it breathe naturally */
+.field-group--time { flex: 0 0 auto; }
+.field-group--time .wheel-picker {
+  min-width: 130px;
+}
+
+/* ── Light mode ─────────────────────────────────────────────────────────── */
+:root[data-theme="light"] .wheel-picker {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(0, 0, 0, 0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.90),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06),
+    0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+:root[data-theme="light"] .wheel-picker:focus-within {
+  border-color: rgba(79, 70, 229, 0.40);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.18);
+}
+
+:root[data-theme="light"] .wheel-picker::after {
+  background: rgba(79, 70, 229, 0.06);
+  border-top-color: rgba(79, 70, 229, 0.35);
+  border-bottom-color: rgba(79, 70, 229, 0.35);
+}
+
+/* Light fade gradients — use light --bg */
+:root[data-theme="light"] .wheel-col::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(250, 251, 255, 1.0) 0%,
+    rgba(250, 251, 255, 0.55) 50%,
+    transparent 100%
+  );
+}
+:root[data-theme="light"] .wheel-col::after {
+  background: linear-gradient(
+    to top,
+    rgba(250, 251, 255, 1.0) 0%,
+    rgba(250, 251, 255, 0.55) 50%,
+    transparent 100%
+  );
+}
+
+:root[data-theme="light"] .wheel-item {
+  color: rgba(30, 41, 59, 0.32);
+}
+:root[data-theme="light"] .wheel-item.is-selected {
+  color: rgba(30, 41, 59, 0.95);
+}
+:root[data-theme="light"] .wheel-sep {
+  color: rgba(30, 41, 59, 0.28);
+}
+
+/* ── Reduced motion — disable all 3D + JS animations ───────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .wheel-item {
+    transform: none !important;
+    transition: none !important;
+  }
+  .wheel-track {
+    transition: none !important;
+  }
+}
+
+/* ── Mobile breakpoint (≤ 480px) ────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .wheel-picker {
+    height: 180px;     /* 5 × 36px */
+    border-radius: 14px;
+    padding: 0 6px;
+  }
+
+  .wheel-col {
+    height: 180px;
+  }
+
+  .wheel-col::before,
+  .wheel-col::after {
+    height: 62px;
+  }
+
+  .wheel-picker::after {
+    height: 36px;
+  }
+
+  .wheel-item {
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .wheel-item.is-selected {
+    font-size: 15px;
+  }
+
+  /* Tighter columns on phone */
+  .wheel-col--day,
+  .wheel-col--hour,
+  .wheel-col--min  { min-width: 34px; }
+  .wheel-col--year { min-width: 50px; }
+  .wheel-col--month { min-width: 80px; }
+
+  .field-group--time .wheel-picker {
+    min-width: 112px;
+  }
 }
 
 /* ─── PERSONALIZE ACCORDION ─────────────────────────────────────────────── */
@@ -2330,6 +2827,11 @@ footer {
   .hero { padding: 64px 16px 52px; }
   .hero-title { letter-spacing: -0.01em; }
 
+  /* Chips — compact on mobile */
+  .hero-chips { gap: 8px; margin-bottom: 32px; }
+  .hero-chip  { font-size: 0.75rem; padding: 6px 13px; }
+  .hero-chips-label { font-size: 0.68rem; }
+
   /* Form */
   .form-card { padding: 28px 22px; border-radius: 20px; }
   .form-row { flex-direction: column; }
@@ -2531,49 +3033,7 @@ footer {
   .liquid-btn { transition: none; }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   THEME TOGGLE BUTTON
-   ═══════════════════════════════════════════════════════════════════════════ */
-.theme-toggle-wrap {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  z-index: 999;
-}
-
-.btn-theme-toggle {
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  color: var(--text2);
-  cursor: pointer;
-  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.18s ease;
-}
-
-.btn-theme-toggle:hover {
-  background: var(--surface3);
-  border-color: var(--border3);
-  color: var(--text);
-}
-
-.btn-theme-toggle:active {
-  transform: scale(0.93);
-}
-
-/* Sun visible in dark mode, moon visible in light mode */
-.theme-icon-moon { display: none; }
-:root[data-theme="light"] .theme-icon-sun  { display: none; }
-:root[data-theme="light"] .theme-icon-moon { display: block; }
-
-@media (max-width: 640px) {
-  .theme-toggle-wrap { top: 16px; right: 16px; }
-  .btn-theme-toggle  { width: 40px; height: 40px; }
-}
+/* Theme toggle removed — dark mode forced */
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SMOOTH THEME TRANSITIONS
@@ -2757,14 +3217,58 @@ footer {
 
 /* ── Form card — verre blanc chaud avec ombre douce ── */
 :root[data-theme="light"] .form-card {
-  background: rgba(255, 254, 248, 0.92);
-  border-color: rgba(194,155,80,0.18);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 254, 248, 0.94);
+  border-color: rgba(194,155,80,0.20);
+  backdrop-filter: blur(32px) saturate(1.4);
+  -webkit-backdrop-filter: blur(32px) saturate(1.4);
   box-shadow:
     0 20px 60px rgba(180,120,20,0.10),
     0 4px 16px rgba(180,120,20,0.06),
     0 0 0 1px rgba(255,255,255,0.90) inset;
+}
+
+:root[data-theme="light"] .form-card::before {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.80), transparent);
+}
+
+:root[data-theme="light"] .form-card:has(input:focus),
+:root[data-theme="light"] .form-card.focus-glow {
+  border-color: rgba(194,105,10,0.40);
+  box-shadow:
+    0 20px 60px rgba(180,120,20,0.12),
+    0 4px 16px rgba(180,120,20,0.08),
+    0 0 0 1px rgba(255,255,255,0.90) inset,
+    0 0 0 3px rgba(194,105,10,0.08),
+    0 0 40px 0 rgba(194,105,10,0.12);
+}
+
+/* ── Hero chips — light mode ── */
+:root[data-theme="light"] .hero-chip {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(180,130,60,0.22);
+  color: #5A4A30;
+}
+
+:root[data-theme="light"] .hero-chip--days:hover {
+  background: rgba(5,150,105,0.08);
+  border-color: rgba(5,150,105,0.32);
+  color: #065f46;
+}
+
+:root[data-theme="light"] .hero-chip--seconds:hover {
+  background: rgba(124,58,237,0.08);
+  border-color: rgba(124,58,237,0.30);
+  color: #4c1d95;
+}
+
+:root[data-theme="light"] .hero-chip--weeks:hover {
+  background: rgba(217,119,6,0.08);
+  border-color: rgba(217,119,6,0.30);
+  color: #78350f;
+}
+
+:root[data-theme="light"] .hero-chips-label {
+  color: rgba(90,75,50,0.60);
 }
 
 /* ── Inputs — fond blanc propre, bordure beige-dorée ── */
@@ -3205,19 +3709,6 @@ footer {
     0 0 16px rgba(194,105,10,0.30);
 }
 
-/* ── Theme toggle button — verre crème ── */
-:root[data-theme="light"] .btn-theme-toggle {
-  background: rgba(255,252,240,0.90);
-  border-color: rgba(194,155,80,0.22);
-  color: #4A3F2E;
-  box-shadow: 0 2px 10px rgba(180,120,20,0.10);
-}
-
-:root[data-theme="light"] .btn-theme-toggle:hover {
-  background: rgba(255,246,220,0.95);
-  border-color: rgba(194,105,10,0.35);
-  color: #1C1810;
-}
 
 /* ── PWA Banner (déjà overridé mais harmonisation) ── */
 :root[data-theme="light"] .pwa-banner__inner {
@@ -5494,5 +5985,134 @@ body.theme-seasons::after {
   .chart-hit-card:hover,
   .chart-hit-listen:hover {
     transform: none;
+  }
+}
+
+/* ── POSTER BUTTON ─────────────────────────────────────────────────────────── */
+.poster-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 40px auto 20px;
+  padding: 0 20px;
+}
+
+.btn-poster {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  background: linear-gradient(135deg, #d4af37 0%, #f0cc55 45%, #c49a20 100%);
+  color: #1a1200;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  /* Subtle gold glow */
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,0.25),
+    0 4px 16px rgba(212,175,55,0.30),
+    0 1px 3px rgba(0,0,0,0.30);
+  transition:
+    transform 0.22s cubic-bezier(0.34,1.56,0.64,1),
+    box-shadow 0.22s ease,
+    filter 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shimmer gloss sweep */
+.btn-poster::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255,255,255,0.38) 50%,
+    transparent 65%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.55s ease;
+}
+
+.btn-poster:hover::before {
+  transform: translateX(100%);
+}
+
+.btn-poster:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,0.40),
+    0 8px 28px rgba(212,175,55,0.45),
+    0 2px 6px rgba(0,0,0,0.25);
+  filter: brightness(1.06);
+}
+
+.btn-poster:active {
+  transform: translateY(-1px) scale(1.00);
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,0.30),
+    0 3px 10px rgba(212,175,55,0.30);
+  transition-duration: 0.08s;
+}
+
+.btn-poster:focus-visible {
+  outline: 3px solid #d4af37;
+  outline-offset: 4px;
+}
+
+.btn-poster:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+
+.poster-btn-icon {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.poster-hint {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.80rem;
+  color: var(--muted);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+/* Light mode */
+:root[data-theme="light"] .btn-poster {
+  color: #2a1a00;
+  box-shadow:
+    0 0 0 1px rgba(180,140,20,0.30),
+    0 4px 16px rgba(180,140,20,0.25),
+    0 1px 3px rgba(0,0,0,0.12);
+}
+
+:root[data-theme="light"] .btn-poster:hover {
+  box-shadow:
+    0 0 0 1px rgba(180,140,20,0.45),
+    0 8px 28px rgba(180,140,20,0.35),
+    0 2px 6px rgba(0,0,0,0.10);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn-poster,
+  .btn-poster::before {
+    transition: none;
+  }
+  .btn-poster:hover {
+    transform: none;
+    filter: brightness(1.05);
+  }
+  .btn-poster::before {
+    display: none;
   }
 }

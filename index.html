@@ -11,20 +11,19 @@
   <meta property="og:title" content="MilestoneMe — Célèbre chaque instant">
   <meta property="og:description" content="Découvre tes anniversaires secrets : 10 000 jours, 1 milliard de secondes et des dizaines d'autres milestones de vie.">
   <meta property="og:url" content="https://statsme.org/">
-  <meta property="og:image" content="https://statsme.org/img/og-image.png">
+  <meta property="og:image" content="https://statsme.org/img/og-image.jpg">
   <meta property="og:locale" content="fr_FR">
   <meta property="og:site_name" content="MilestoneMe">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MilestoneMe — Célèbre chaque instant">
   <meta name="twitter:description" content="Découvre tes anniversaires secrets : 10 000 jours, 1 milliard de secondes et des dizaines d'autres milestones de vie.">
-  <meta name="twitter:image" content="https://statsme.org/img/og-image.png">
+  <meta name="twitter:image" content="https://statsme.org/img/og-image.jpg">
   <!-- Favicon & PWA -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/favicon.svg">
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#030711">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="MilestoneMe">
@@ -47,30 +46,8 @@
     "inLanguage": "fr"
   }
   </script>
-  <!-- Theme init — runs synchronously to set data-theme before first paint, preventing FOUC -->
-  <script>
-  (function initTheme() {
-    var saved = localStorage.getItem('theme');
-    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    var initial = saved || (prefersDark ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', initial);
-
-    window.toggleTheme = function() {
-      var cur = document.documentElement.getAttribute('data-theme') || 'dark';
-      var next = cur === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      var btn = document.getElementById('theme-toggle-btn');
-      if (btn) btn.setAttribute('aria-pressed', next === 'light');
-    };
-
-    // Apply aria-pressed once DOM is ready
-    document.addEventListener('DOMContentLoaded', function() {
-      var btn = document.getElementById('theme-toggle-btn');
-      if (btn) btn.setAttribute('aria-pressed', initial === 'light');
-    });
-  })();
-  </script>
+  <!-- Theme: forced dark mode -->
+  <script>document.documentElement.setAttribute('data-theme', 'dark');</script>
 </head>
 <body>
 
@@ -173,18 +150,68 @@
 
     <p class="hero-sub">Entre ta date de naissance et découvre tous tes anniversaires secrets — 10 000 jours, 1 milliard de secondes, et des dizaines d'autres.</p>
 
+    <!-- Milestone suggestion chips — pre-fill birth date for inspiration -->
+    <div class="hero-chips" aria-label="Exemples de milestones">
+      <button
+        class="hero-chip hero-chip--days"
+        type="button"
+        onclick="prefillMilestone('1998-10-22')"
+        aria-label="Pré-remplir pour atteindre 10 000 jours aujourd'hui"
+        title="Né·e le 22 oct. 1998 → 10 000 jours aujourd'hui">
+        <span class="hero-chip-dot" aria-hidden="true"></span>
+        10 000 jours
+      </button>
+      <button
+        class="hero-chip hero-chip--seconds"
+        type="button"
+        onclick="prefillMilestone('1994-06-30')"
+        aria-label="Pré-remplir pour atteindre 1 milliard de secondes aujourd'hui"
+        title="Né·e le 30 juin 1994 → 1 milliard de secondes aujourd'hui">
+        <span class="hero-chip-dot" aria-hidden="true"></span>
+        1 milliard de secondes
+      </button>
+      <button
+        class="hero-chip hero-chip--weeks"
+        type="button"
+        onclick="prefillMilestone('2007-01-08')"
+        aria-label="Pré-remplir pour atteindre 1 000 semaines aujourd'hui"
+        title="Né·e le 8 jan. 2007 → 1 000 semaines aujourd'hui">
+        <span class="hero-chip-dot" aria-hidden="true"></span>
+        1 000 semaines
+      </button>
+    </div>
+
     <!-- Form card glassmorphism -->
     <div class="form-card">
 
       <div class="form-row">
+
+        <!-- Date wheel picker -->
         <div class="field-group field-group--date">
-          <label class="field-label" for="bd">Ta date de naissance</label>
-          <input type="date" id="bd" max="" style="margin-bottom:0">
+          <label class="field-label">Ta date de naissance</label>
+          <div class="wheel-picker" id="wheel-date" role="group" aria-label="Date de naissance">
+            <div class="wheel-col wheel-col--day"   id="wcol-day"   tabindex="0" role="spinbutton" aria-label="Jour"></div>
+            <div class="wheel-sep" aria-hidden="true">/</div>
+            <div class="wheel-col wheel-col--month" id="wcol-month" tabindex="0" role="spinbutton" aria-label="Mois"></div>
+            <div class="wheel-sep" aria-hidden="true">/</div>
+            <div class="wheel-col wheel-col--year"  id="wcol-year"  tabindex="0" role="spinbutton" aria-label="Année"></div>
+          </div>
+          <!-- Input caché — compatibilité avec calculate() -->
+          <input type="date" id="bd" max="" hidden>
         </div>
+
+        <!-- Time wheel picker -->
         <div class="field-group field-group--time">
-          <label class="field-label" for="bt">Heure <span class="field-optional">(optionnel)</span></label>
-          <input type="time" id="bt" class="inp-time">
+          <label class="field-label">Heure <span class="field-optional">(optionnel)</span></label>
+          <div class="wheel-picker" id="wheel-time" role="group" aria-label="Heure de naissance">
+            <div class="wheel-col wheel-col--hour" id="wcol-hour" tabindex="0" role="spinbutton" aria-label="Heure"></div>
+            <div class="wheel-sep" aria-hidden="true">:</div>
+            <div class="wheel-col wheel-col--min"  id="wcol-min"  tabindex="0" role="spinbutton" aria-label="Minute"></div>
+          </div>
+          <!-- Input caché — compatibilité avec calculate() -->
+          <input type="time" id="bt" class="inp-time" hidden>
         </div>
+
       </div>
 
       <div class="field-group field-group--place" style="margin-bottom: 18px;">
@@ -347,24 +374,25 @@
     <!-- 12. Comparaison avec un ami -->
     <div id="friend-compare-section" class="friend-compare-section"></div>
 
+    <!-- 13. Bouton poster -->
+    <div id="poster-wrap" class="poster-wrap" style="display:none">
+      <button id="btn-poster" class="btn-poster" onclick="generatePoster()" type="button"
+              aria-label="Générer et télécharger mon poster de milestones en PNG">
+        <svg class="poster-btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="2.5"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <span>Générer mon poster</span>
+      </button>
+      <p class="poster-hint">Télécharge une image PNG à partager</p>
+    </div>
+
   </div>
 
 </div>
 
-<!-- Theme toggle — fixed top-right, persistent across sessions -->
-<div class="theme-toggle-wrap">
-  <button id="theme-toggle-btn" class="btn-theme-toggle" onclick="toggleTheme()" type="button" aria-label="Basculer le mode clair/sombre" aria-pressed="false">
-    <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-      <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-    </svg>
-    <svg class="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-    </svg>
-  </button>
-</div>
 
 <!-- Blog section — visible on main page -->
 <section class="blog-showcase" id="blog-showcase">
@@ -516,6 +544,7 @@
 <script src="js/calendars.js"></script>
 <script src="js/render.js"></script>
 <script src="js/charts.js"></script>
+<script src="js/wheel-picker.js"></script>
 <script src="js/app.js"></script>
 
 <!-- Dynamic section theming — background change par section -->

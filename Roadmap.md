@@ -1,6 +1,6 @@
 # Roadmap -- MilestoneMe (milestones-web)
 
-> Derniere mise a jour : 2026-03-08 (ajout backlog 2026-03-09)
+> Derniere mise a jour : 2026-03-09 (music chart hits + "Ils sont nés comme toi" complétés)
 
 ## Complete
 
@@ -31,6 +31,9 @@
 - [2026-03-08] **PWA / mode hors-ligne** -- manifest.json + service-worker.js (cache-first static, network-first fonts), bannière "Installer l'app" dismissible, registration dans index.html et timeline.html. Dégradation gracieuse sur file://.
 - [2026-03-09] **Animations milestone atteint** -- Célébration en temps réel quand un compteur atteint zéro : flash écran or/indigo, confetti burst doré (120 pièces, palette or+indigo), toast glassmorphism avec barre de progression auto-dismiss 6.5s, transformation visuelle de la card (glow pulsé or/indigo, badge "Atteint !"). Gestion `prefers-reduced-motion`, compatible dark/light mode.
 - [2026-03-09] **Comparaison avec un ami** -- Section en bas des résultats : input date/heure/prénom de l'ami, calcul des milestones proches (≤30j) et simultanés (≤7j), cards triées, bouton "voir plus", URL partageable avec `?friend_d=&friend_t=&friend_name=`, compatible dark/light mode.
+- [2026-03-09] **Export image / poster PNG personnalisé** -- Bouton "Générer mon poster" générant un canvas 1024×1536 (format portrait 2:3) avec fond img/poster-bg.webp (constellations dorées sur bleu marine), contenu personnalisé (prénom, milestone le plus proche avec chiffre doré, date exacte, signe astrologique, branding statsme.org), téléchargement PNG via canvas.toBlob(), bouton doré avec effet shimmer, fallback dégradé si image non disponible.
+- [2026-03-09] **Ils sont nés comme toi** -- Stats anniversaire : 585 célébrités indexées par jour de naissance (Jan-Dec, min 3-5/jour, mix historique/contemporain), 115 journées mondiales (WORLD_DAYS) couvrant 12 mois (fêtes ONU, célébrations françaises), affichage de célé grille + badge journée mondiale quand applicable, badge glassmorphisme (gradient ambre), 0 fetch nécessaire.
+- [2026-03-09] **Music chart hit feature** -- Affichage du #1 du hit-parade le jour de naissance : 15,335 jours FR (1984-2025) + 24,610 jours US (1958-2025) via data/charts-fr.json + data/charts-us.json, lazy fetch avec cache mémoire, card 2-col (FR/US side-by-side), bouton YouTube "écouter", fallback gracieux pour données manquantes (gaps 2017-2021 FR).
 
 ## En cours
 
@@ -43,11 +46,9 @@
 
 ## Idees / Backlog
 
-- **Ils sont nés comme toi** -- Stats anniversaire enrichies (priorité moyenne) : nombre de personnes dans le monde partageant la même date de naissance, célébrités/personnages historiques nés le même jour, événements historiques majeurs survenus le même jour (expansion des 118 événements existants), statistiques astrales (% de Scorpions dans le monde, etc.), journée mondiale/fête associée à la date
 - **Biorhythmes** -- Cycles physique (23j), emotionnel (28j), intellectuel (33j) avec graphique
 - **Carte du ciel a la naissance** -- Representation visuelle simplifiee des positions planetaires
 - **Notifications push** -- Rappel le jour d'un milestone (necessite PWA + permission)
-- **Export image/story** -- Generer une belle image (canvas) d'un milestone pour Instagram/stories
 - **Soundtrack personnalisee** -- Jouer la chanson numero 1 le jour de ta naissance (via API externe)
 - **Hit du jour de naissance** -- Afficher le titre #1 au Top 50 le jour de la naissance de l'utilisateur, selon son pays (France / Monde), données hardcodées ou via API Charts
 - **Multi-langue** -- Support anglais/espagnol en plus du francais

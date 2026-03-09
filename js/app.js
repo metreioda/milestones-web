@@ -3,6 +3,7 @@ let futureItems = [];
 let intervals = [];
 let allMilestones = [];       // référence globale pour la timeline
 let currentView = 'grid';     // 'grid' | 'timeline'
+let _posterData = null;       // données pour generatePoster()
 
 // ── CITIES ────────────────────────────────────────────────────────────────────
 function buildCitiesDatalist() {
@@ -388,6 +389,43 @@ function updateURL() {
   history.replaceState(null, '', '?' + params.toString());
 }
 
+// ── MILESTONE SUGGESTION CHIPS — pre-fill helper ──────────────────────────────
+// Called by hero chip buttons. Fills #bd with the given ISO date string,
+// briefly animates the form card to draw attention, then focuses the input.
+function prefillMilestone(isoDate) {
+  const input = document.getElementById('bd');
+  if (!input) return;
+
+  input.value = isoDate;
+
+  // Sync wheel pickers if available
+  if (window._wheelPickers) {
+    window._wheelPickers.setDate(isoDate);
+  }
+
+  // Trigger native change event so any listeners pick up the new value
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+
+  // Briefly highlight the form card
+  const card = input.closest('.form-card');
+  if (card) {
+    card.classList.add('focus-glow');
+    // Scroll the card into view smoothly (mobile)
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // Give the scroll time to complete, then focus the input
+  setTimeout(() => {
+    input.focus();
+    input.select && input.select();
+  }, 120);
+
+  // Remove the manual focus-glow class after a beat — CSS :has() handles the rest
+  setTimeout(() => {
+    if (card) card.classList.remove('focus-glow');
+  }, 2000);
+}
+
 // ── MAIN CALCULATE ────────────────────────────────────────────────────────────
 function calculate() {
   const val = document.getElementById('bd').value;
@@ -765,6 +803,20 @@ function calculate() {
     setTimeout(window.observeThemeSections, 100);
   }
 
+  // ── Données poster ──
+  // Stocker les données utiles pour la génération du poster PNG
+  _posterData = {
+    name,
+    birth,
+    ageMs,
+    zodiacEmoji: zodiac.emoji,
+    zodiacName:  zodiac.name,
+    nextMilestone: future.length > 0 ? future[0] : null,
+  };
+  // Afficher le bouton poster
+  const posterWrap = document.getElementById('poster-wrap');
+  if (posterWrap) posterWrap.style.display = 'flex';
+
   updateURL();
 
   // Update "Ma Timeline" link with current URL params
@@ -1019,6 +1071,227 @@ function expandTimeline() {
   _observeTimelineItems();
 }
 
+// ── POSTER GENERATION ─────────────────────────────────────────────────────────
+function generatePoster() {
+  if (!_posterData) return;
+
+  const { name, birth, ageMs, zodiacEmoji, zodiacName, nextMilestone } = _posterData;
+
+  const W = 1024, H = 1536;
+  const canvas = document.createElement('canvas');
+  canvas.width  = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // ── Helpers Canvas ─────────────────────────────────────────────────────────
+
+  // Dessine du texte centré avec retour à la ligne automatique si trop long
+  function wrapText(text, x, y, maxWidth, lineHeight) {
+    const words = text.split(' ');
+    let line = '';
+    let curY = y;
+    for (const word of words) {
+      const test = line ? line + ' ' + word : word;
+      if (ctx.measureText(test).width > maxWidth && line) {
+        ctx.fillText(line, x, curY);
+        line = word;
+        curY += lineHeight;
+      } else {
+        line = test;
+      }
+    }
+    if (line) ctx.fillText(line, x, curY);
+    return curY; // retourne la dernière Y utilisée
+  }
+
+  // Tracé d'une ligne décorative dorée
+  function drawGoldLine(y, width) {
+    const grad = ctx.createLinearGradient(W / 2 - width / 2, y, W / 2 + width / 2, y);
+    grad.addColorStop(0,   'rgba(212,175,55,0)');
+    grad.addColorStop(0.3, 'rgba(212,175,55,0.85)');
+    grad.addColorStop(0.7, 'rgba(212,175,55,0.85)');
+    grad.addColorStop(1,   'rgba(212,175,55,0)');
+    ctx.save();
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(W / 2 - width / 2, y);
+    ctx.lineTo(W / 2 + width / 2, y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ── Données à afficher ─────────────────────────────────────────────────────
+
+  const displayName = name || 'Toi';
+
+  // Milestone le plus proche
+  let milestoneLabel = '';
+  let milestoneValue = '';
+  let milestoneDate  = '';
+  if (nextMilestone) {
+    const m = nextMilestone.m;
+    milestoneLabel = m.n;     // ex : "1 000 000 000 secondes"
+    milestoneValue = m.e;     // emoji
+    // Date courte lisible
+    milestoneDate = nextMilestone.date.toLocaleDateString('fr-FR', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+    // Heure
+    const hh  = String(nextMilestone.date.getHours()).padStart(2, '0');
+    const min = String(nextMilestone.date.getMinutes()).padStart(2, '0');
+    milestoneDate += ` à ${hh}h${min}`;
+  }
+
+  // Age
+  const totalYears = Math.floor(ageMs / (365.25 * 864e5));
+  const ageLabel   = `${totalYears} an${totalYears > 1 ? 's' : ''}`;
+
+  // ── Rendu texte (appelé après que le fond a été placé) ────────────────────
+  const renderText = () => {
+    // ── Contenu textuel ────────────────────────────────────────────────────
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'alphabetic';
+
+    // — Étiquette haute — "MES MILESTONES"
+    ctx.fillStyle = 'rgba(212,175,55,0.7)';
+    ctx.font      = '500 22px "Space Grotesk", Georgia, serif';
+    ctx.letterSpacing = '0.22em';
+    ctx.fillText('MES MILESTONES', W / 2, 310);
+    ctx.letterSpacing = '0';
+
+    // — Prénom —
+    ctx.fillStyle = '#ffffff';
+    ctx.font      = 'bold 96px Georgia, serif';
+    // Réduire si trop long
+    let nameSize = 96;
+    while (ctx.measureText(displayName).width > W - 120 && nameSize > 48) {
+      nameSize -= 4;
+      ctx.font = `bold ${nameSize}px Georgia, serif`;
+    }
+    ctx.fillText(displayName, W / 2, 410);
+
+    // — Séparateur doré —
+    drawGoldLine(450, 420);
+
+    // — Ornement étoile —
+    ctx.fillStyle = '#d4af37';
+    ctx.font      = '28px serif';
+    ctx.fillText('✦', W / 2, 500);
+
+    // — Milestone : valeur et libellé —
+    if (nextMilestone) {
+      // Nombre (ex: "1 000 000 000")
+      const numberPart = nextMilestone.m.n.replace(/[^\d\s]/g, '').trim();
+      const unitPart   = nextMilestone.m.n.replace(/[\d\s]/g, '').trim();
+
+      ctx.fillStyle = '#d4af37';
+      ctx.font      = 'bold 72px Georgia, serif';
+      // Si le nombre est très long, on réduit
+      let numSize = 72;
+      while (ctx.measureText(numberPart).width > W - 80 && numSize > 36) {
+        numSize -= 4;
+        ctx.font = `bold ${numSize}px Georgia, serif`;
+      }
+      ctx.fillText(numberPart, W / 2, 600);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.font      = '40px Georgia, serif';
+      ctx.fillText(unitPart || 'de vie', W / 2, 658);
+
+      // — Tagline —
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.font      = 'italic 26px Georgia, serif';
+      wrapText(nextMilestone.m.t, W / 2, 718, W - 160, 36);
+    }
+
+    // — Séparateur —
+    drawGoldLine(780, 340);
+
+    // — Date du milestone —
+    if (milestoneDate) {
+      ctx.fillStyle = 'rgba(255,255,255,0.80)';
+      ctx.font      = '32px Georgia, serif';
+      const firstCapDate = milestoneDate.charAt(0).toUpperCase() + milestoneDate.slice(1);
+      wrapText(firstCapDate, W / 2, 840, W - 120, 44);
+    }
+
+    // — Signe astrologique & âge —
+    ctx.fillStyle = '#d4af37';
+    ctx.font      = '500 30px "Space Grotesk", Georgia, serif';
+    ctx.fillText(`${zodiacEmoji} ${zodiacName}  ·  ${ageLabel}`, W / 2, 970);
+
+    // — Second séparateur —
+    drawGoldLine(1010, 280);
+
+    // — Branding statsme.org —
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font      = '500 24px "Space Grotesk", Georgia, serif';
+    ctx.letterSpacing = '0.06em';
+    ctx.fillText('statsme.org', W / 2, 1460);
+    ctx.letterSpacing = '0';
+
+    // ── 4. Téléchargement ──────────────────────────────────────────────────
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a   = document.createElement('a');
+      a.href     = url;
+      a.download = `milestone-${(name || 'statsme').toLowerCase().replace(/\s+/g, '-')}.png`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+
+      // Retour visuel sur le bouton
+      const btn = document.getElementById('btn-poster');
+      if (btn) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<span>Téléchargement en cours…</span>';
+        btn.disabled = true;
+        setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2200);
+      }
+    }, 'image/png');
+  };
+
+  // Chargement de l'image de fond
+  const bg = new Image();
+  bg.crossOrigin = 'anonymous';
+  bg.onload = () => {
+    // ── 1. Fond image ───────────────────────────────────────────────────
+    ctx.drawImage(bg, 0, 0, W, H);
+    // ── 2. Overlay sombre centré pour lisibilité ─────────────────────────
+    const overlay = ctx.createLinearGradient(0, 0, 0, H);
+    overlay.addColorStop(0,    'rgba(3,7,18,0.20)');
+    overlay.addColorStop(0.18, 'rgba(3,7,18,0.60)');
+    overlay.addColorStop(0.82, 'rgba(3,7,18,0.60)');
+    overlay.addColorStop(1,    'rgba(3,7,18,0.20)');
+    ctx.fillStyle = overlay;
+    ctx.fillRect(0, 0, W, H);
+    renderText();
+  };
+  bg.onerror = () => {
+    // Fallback : fond dégradé si l'image ne charge pas (mode file://)
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0,   '#030711');
+    grad.addColorStop(0.5, '#0f0a2a');
+    grad.addColorStop(1,   '#030711');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+    // Petites étoiles décoratives
+    ctx.fillStyle = 'rgba(212,175,55,0.25)';
+    for (let i = 0; i < 120; i++) {
+      const sx = Math.random() * W;
+      const sy = Math.random() * H;
+      const sr = 0.4 + Math.random() * 1.8;
+      ctx.beginPath();
+      ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    renderText();
+  };
+  // En local file:// le chemin relatif suffit ; en prod HTTPS la même origin évite les CORS
+  bg.src = 'img/poster-bg.webp';
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 // Set max date to today
 document.getElementById('bd').max = new Date().toISOString().split('T')[0];
@@ -1041,6 +1314,11 @@ window.addEventListener('DOMContentLoaded', () => {
   if (p.get('d')) {
     document.getElementById('bd').value = p.get('d');
     if (p.get('t')) document.getElementById('bt').value = p.get('t');
+    // Sync wheel pickers to URL-restored values
+    if (window._wheelPickers) {
+      window._wheelPickers.setDate(p.get('d'));
+      if (p.get('t')) window._wheelPickers.setTime(p.get('t'));
+    }
     calculate();
 
     // Restaurer les paramètres ami et relancer la comparaison si présents

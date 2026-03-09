@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ma Timeline de vie — MilestoneMe</title>
   <meta name="description" content="Visualise toute ta vie en une seule timeline : chaque milestone passé et futur, de ta naissance à l'infini.">
-  <link rel="canonical" href="https://statsme.org/timeline.html">
+  <link rel="canonical" href="https://statsme.org/timeline">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Ma Timeline de vie — MilestoneMe">
   <meta property="og:description" content="Chaque seconde, minute, heure, jour et semaine de ta vie sur une seule timeline chronologique.">
-  <meta property="og:url" content="https://statsme.org/timeline.html">
-  <meta property="og:image" content="https://statsme.org/og-image.png">
+  <meta property="og:url" content="https://statsme.org/timeline">
+  <meta property="og:image" content="https://statsme.org/img/og-image.png">
   <meta property="og:locale" content="fr_FR">
   <meta property="og:site_name" content="MilestoneMe">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Ma Timeline de vie — MilestoneMe">
+  <meta name="twitter:description" content="Chaque seconde, minute, heure, jour et semaine de ta vie sur une seule timeline chronologique.">
+  <meta name="twitter:image" content="https://statsme.org/img/og-image.png">
   <!-- Favicon & PWA -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/favicon.svg">
@@ -1075,7 +1077,7 @@ function cardHTML(item, side, fIdx) {
       <div class="tl-card-header">
         <span class="tl-card-emoji" aria-hidden="true">${m.e}</span>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span class="tl-card-unit ${m.u}">${UNIT_LABELS_TL[m.u]}</span>
+          <span class="tl-card-unit u-${m.u}">${UNIT_LABELS_TL[m.u]}</span>
           <span class="tl-card-badge ${typeClass}">${badgeLabel}</span>
         </div>
       </div>

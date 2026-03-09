@@ -743,7 +743,7 @@ function calculate() {
     document.querySelectorAll('#results > div').forEach((el, i) => {
       // Exclure la timeline (hidden par défaut) et le toggle wrapper
       // pour éviter de perturber l'animation au moment du switch de vue
-      if (el.id === 'timeline-section' || el.id === 'view-toggle-wrap' || el.id === 'friend-compare-section') return;
+      if (el.id === 'timeline-section' || el.id === 'view-toggle-wrap' || el.id === 'friend-compare-section' || el.id === 'chart-hit-section') return;
       el.style.opacity = '0';
       el.style.transform = 'translateY(20px)';
       el.style.transition = `opacity 0.5s ease ${i * 0.08}s, transform 0.5s ease ${i * 0.08}s`;
@@ -776,6 +776,11 @@ function calculate() {
   }
 
   confetti();
+
+  // ── Section "Hit du jour de ta naissance" ──
+  if (typeof loadChartHit === 'function') {
+    loadChartHit(birth);
+  }
 
   // ── Section "Ils sont nés comme toi" ──
   const blySection = document.getElementById('born-like-you-section');

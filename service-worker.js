@@ -6,7 +6,7 @@
      - Fonts / SVG / JSON → Cache-first    : immuables, changent rarement
    ═══════════════════════════════════════════════════════════════════════════ */
 
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v7';
 const CACHE_STATIC  = `milestoneme-static-${CACHE_VERSION}`;
 const CACHE_PAGES   = `milestoneme-pages-${CACHE_VERSION}`;
 const CACHE_FONTS   = `milestoneme-fonts-${CACHE_VERSION}`;
@@ -25,8 +25,8 @@ const PRECACHE_ASSETS = [
 /* Pages HTML mises en cache pour le mode offline uniquement */
 const PRECACHE_PAGES = [
   '/index.html',
-  '/timeline.html',
-  '/boutique.html',
+  '/timeline/',
+  '/boutique/',
   '/blog/index.html',
   '/blog/milliardieme-seconde.html',
   '/blog/30-milliards-km.html',

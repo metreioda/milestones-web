@@ -18,6 +18,14 @@
   <meta name="twitter:description" content="Posters, bracelets et coffrets pour célébrer chaque milestone de ta vie.">
   <meta name="twitter:image" content="https://statsme.org/img/og-image.png">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MilestoneMe">
+  <meta name="mobile-web-app-capable" content="yes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1680,6 +1688,19 @@
     input.value = '';
     input.placeholder = 'A tres bientot !';
     showToast('Parfait ! Tu seras notifie(e) en avant-premiere avec un code exclusif.');
+  }
+</script>
+
+<script>
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/service-worker.js', {
+          scope: '/',
+          updateViaCache: 'none'
+        })
+        .then(function(reg) { reg.update(); })
+        .catch(function(err) { console.warn('SW boutique:', err); });
+    });
   }
 </script>
 

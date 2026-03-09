@@ -1442,7 +1442,11 @@ document.addEventListener('DOMContentLoaded', () => {
 (function() {
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+      navigator.serviceWorker.register('/service-worker.js', {
+          scope: '/',
+          updateViaCache: 'none'
+        })
+        .then(function(reg) { reg.update(); })
         .catch(function(err) {
           console.warn('[PWA] Service Worker non enregistré :', err.message);
         });

@@ -1087,10 +1087,25 @@
      Uniquement sur HTTPS (ou localhost). Dégradation gracieuse sur file://. */
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+      navigator.serviceWorker.register('/service-worker.js', {
+          scope: '/',
+          updateViaCache: 'none'  // toujours vérifier le SW sur le réseau
+        })
         .then(function(reg) {
-          // Vérifier les mises à jour périodiquement (toutes les heures)
-          setInterval(function() { reg.update(); }, 60 * 60 * 1000);
+          // Vérifier les mises à jour à chaque chargement de page + toutes les 5 min
+          reg.update();
+          setInterval(function() { reg.update(); }, 5 * 60 * 1000);
+
+          // Quand un nouveau SW est prêt, recharger automatiquement la page
+          reg.addEventListener('updatefound', function() {
+            var newWorker = reg.installing;
+            if (!newWorker) return;
+            newWorker.addEventListener('statechange', function() {
+              if (newWorker.state === 'activated') {
+                window.location.reload();
+              }
+            });
+          });
         })
         .catch(function(err) {
           // Le SW a échoué — l'app fonctionne quand même normalement

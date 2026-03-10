@@ -4,1168 +4,175 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mug Personnalisé — MilestoneMe</title>
-  <meta name="description" content="Commande ton mug personnalisé MilestoneMe avec ton prénom et ton milestone de vie. Aperçu en temps réel, livraison gratuite en France.">
-  <link rel="canonical" href="https://statsme.org/mug-customizer">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Mug Personnalisé — MilestoneMe">
-  <meta property="og:description" content="Commande ton mug milestone personnalisé. Aperçu en temps réel.">
-  <meta property="og:url" content="https://statsme.org/mug-customizer">
-  <meta property="og:image" content="https://statsme.org/img/og-image.jpg">
-  <meta property="og:locale" content="fr_FR">
-  <meta property="og:site_name" content="MilestoneMe">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#030711">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Sync theme avant premier paint pour éviter le flash -->
-  <script>
-    (function () {
-      var stored = localStorage.getItem('theme');
-      var preferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', stored || preferred || 'dark');
-    })();
-  </script>
-
   <style>
-  /* ═══════════════════════════════════════════════════════════════════════════
-     MilestoneMe Mug Customizer — Design "Cosmic Observatory"
-     Page autonome, standalone, cohérente avec boutique.html
-     ═══════════════════════════════════════════════════════════════════════════ */
-
-  /* ─── DESIGN TOKENS ──────────────────────────────────────────────────────── */
-  :root {
-    --bg:       #030711;
-    --bg2:      #0A0818;
-    --surface:  rgba(255,255,255,0.03);
-    --surface2: rgba(255,255,255,0.06);
-    --surface3: rgba(255,255,255,0.10);
-    --border:   rgba(255,255,255,0.06);
-    --border2:  rgba(255,255,255,0.12);
-    --border3:  rgba(255,255,255,0.22);
-    --text:     #F1F5F9;
-    --text2:    #CBD5E1;
-    --muted:    rgba(203,213,225,0.50);
-    --indigo:   #6366F1;
-    --violet:   #8B5CF6;
-    --amber:    #F59E0B;
-    --emerald:  #10B981;
-    --rose:     #F43F5E;
-    --cyan:     #06B6D4;
-    --indigo-dim:  rgba(99,102,241,0.12);
-    --violet-dim:  rgba(139,92,246,0.12);
-    --amber-dim:   rgba(245,158,11,0.12);
-    --emerald-dim: rgba(16,185,129,0.10);
-    --rose-dim:    rgba(244,63,94,0.10);
-    --radius-card: 20px;
-    --radius-pill: 100px;
-    --shadow-card: 0 8px 32px rgba(0,0,0,0.35);
-  }
-
-  :root[data-theme="light"] {
-    --bg:       #FAFBFF;
-    --bg2:      #F3F4FA;
-    --surface:  rgba(51,65,85,0.04);
-    --surface2: rgba(51,65,85,0.08);
-    --surface3: rgba(51,65,85,0.14);
-    --border:   rgba(51,65,85,0.10);
-    --border2:  rgba(51,65,85,0.18);
-    --border3:  rgba(51,65,85,0.28);
-    --text:     #1E293B;
-    --text2:    #475569;
-    --muted:    rgba(71,85,105,0.65);
-    --indigo:   #4F46E5;
-    --violet:   #7C3AED;
-    --amber:    #D97706;
-    --emerald:  #059669;
-    --rose:     #E11D48;
-    --cyan:     #0891B2;
-    --indigo-dim:  rgba(79,70,229,0.10);
-    --violet-dim:  rgba(124,58,237,0.10);
-    --amber-dim:   rgba(217,119,6,0.08);
-    --emerald-dim: rgba(5,150,105,0.08);
-    --rose-dim:    rgba(225,29,72,0.08);
-    --shadow-card: 0 8px 32px rgba(0,0,0,0.10);
-  }
-
-  /* ─── RESET ──────────────────────────────────────────────────────────────── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  *, *::before, *::after {
-    transition: background-color 0.28s ease, border-color 0.28s ease, color 0.28s ease;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { transition: none !important; animation: none !important; }
-  }
-
-  /* ─── BASE ───────────────────────────────────────────────────────────────── */
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    line-height: 1.6;
-  }
-  a { color: var(--indigo); text-decoration: none; transition: color 0.18s ease; }
-  a:hover { color: var(--violet); }
-
-  /* ─── FOND NEBULA ────────────────────────────────────────────────────────── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(ellipse 80% 60% at 15% 10%,  rgba(99,102,241,0.14) 0%, transparent 65%),
-      radial-gradient(ellipse 60% 50% at 88% 92%,  rgba(139,92,246,0.12) 0%, transparent 65%),
-      radial-gradient(ellipse 40% 35% at 75% 15%,  rgba(6,182,212,0.07)  0%, transparent 60%),
-      radial-gradient(ellipse 35% 30% at 20% 80%,  rgba(244,63,94,0.05)  0%, transparent 60%);
-    animation: nebulaShift 14s ease-in-out infinite alternate;
-  }
-  :root[data-theme="light"] body::before { opacity: 0.18; }
-  @keyframes nebulaShift {
-    0%   { opacity: 0.7; transform: scale(1); }
-    100% { opacity: 1;   transform: scale(1.025); }
-  }
-
-  /* ─── LAYOUT ─────────────────────────────────────────────────────────────── */
-  .wrap {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 28px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* ─── THEME TOGGLE ───────────────────────────────────────────────────────── */
-  .theme-toggle-wrap {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    z-index: 999;
-  }
-  .btn-theme-toggle {
-    width: 44px; height: 44px;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: 12px;
-    color: var(--text2);
-    cursor: pointer;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    transition: background 0.22s, border-color 0.22s, color 0.22s, transform 0.18s;
-  }
-  .btn-theme-toggle:hover  { background: var(--surface3); border-color: var(--border3); color: var(--text); }
-  .btn-theme-toggle:active { transform: scale(0.93); }
-  .theme-icon-moon { display: none; }
-  :root[data-theme="light"] .theme-icon-sun  { display: none; }
-  :root[data-theme="light"] .theme-icon-moon { display: block; }
-
-  /* ─── HEADER ─────────────────────────────────────────────────────────────── */
-  .site-header {
-    position: relative;
-    z-index: 10;
-    padding: 20px 0;
-    border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    background: rgba(3,7,17,0.60);
-  }
-  :root[data-theme="light"] .site-header { background: rgba(250,251,255,0.75); }
-
-  .site-header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .site-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-  }
-  .site-logo-mark {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--indigo), var(--violet));
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-    box-shadow: 0 0 18px rgba(99,102,241,0.40);
-  }
-  .site-logo-text {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--text);
-    letter-spacing: -0.01em;
-  }
-  .site-logo-text span { font-weight: 400; color: var(--muted); }
-
-  .site-nav { display: flex; align-items: center; gap: 8px; }
-  .nav-link {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--text2);
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: var(--radius-pill);
-    border: 1px solid transparent;
-    letter-spacing: 0.02em;
-    transition: all 0.18s ease;
-  }
-  .nav-link:hover { color: var(--text); background: var(--surface2); border-color: var(--border2); }
-  .nav-link--back {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--text2);
-  }
-  .nav-link--back svg { transition: transform 0.18s ease; }
-  .nav-link--back:hover svg { transform: translateX(-3px); }
-
-  /* ─── PAGE HERO ──────────────────────────────────────────────────────────── */
-  .page-hero {
-    padding: 64px 0 40px;
-    text-align: center;
-  }
-  .page-hero__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 6px 16px;
-    background: var(--amber-dim);
-    border: 1px solid rgba(245,158,11,0.25);
-    border-radius: var(--radius-pill);
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--amber);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-  }
-  .page-hero__title {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    font-weight: 700;
-    line-height: 1.15;
-    background: linear-gradient(135deg, var(--text) 0%, var(--indigo) 60%, var(--violet) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 14px;
-  }
-  .page-hero__sub {
-    font-size: 1rem;
-    color: var(--text2);
-    max-width: 480px;
-    margin: 0 auto;
-    line-height: 1.7;
-  }
-
-  /* ─── LAYOUT PRINCIPAL — 2 colonnes ─────────────────────────────────────── */
-  .customizer-layout {
-    display: grid;
-    grid-template-columns: 1fr 420px;
-    gap: 40px;
-    align-items: start;
-    padding-bottom: 80px;
-  }
-
-  @media (max-width: 900px) {
-    .customizer-layout {
-      grid-template-columns: 1fr;
-      gap: 32px;
-    }
-  }
-
-  /* ─── COLONNE PREVIEW ────────────────────────────────────────────────────── */
-  .preview-col {
-    position: sticky;
-    top: 100px;
-  }
-
-  @media (max-width: 900px) {
-    .preview-col { position: static; }
-  }
-
-  .preview-card {
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius-card);
-    padding: 28px;
-    box-shadow: var(--shadow-card);
-  }
-
-  .preview-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--muted);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-  }
-  .preview-label-dot {
-    width: 7px; height: 7px;
-    background: var(--emerald);
-    border-radius: 50%;
-    box-shadow: 0 0 8px rgba(16,185,129,0.70);
-    animation: livePulse 2s ease-in-out infinite;
-  }
-  @keyframes livePulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%       { opacity: 0.55; transform: scale(0.85); }
-  }
-
-  .preview-canvas-wrap {
-    width: 100%;
-    aspect-ratio: 640 / 320;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #F4F1EC;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.30);
-  }
-  .preview-canvas-wrap canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  .preview-hint {
-    font-size: 0.78rem;
-    color: var(--muted);
-    text-align: center;
-    margin-top: 14px;
-    line-height: 1.5;
-  }
-
-  /* Indicateurs de confiance sous la preview */
-  .trust-badges {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 22px;
-    flex-wrap: wrap;
-  }
-  .trust-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.76rem;
-    font-weight: 500;
-    color: var(--text2);
-  }
-  .trust-badge svg { color: var(--emerald); flex-shrink: 0; }
-
-  /* ─── COLONNE FORMULAIRE ─────────────────────────────────────────────────── */
-  .form-col {}
-
-  /* Carte formulaire */
-  .form-card {
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius-card);
-    padding: 32px;
-    box-shadow: var(--shadow-card);
-    /* Accent coloré en haut */
-    position: relative;
-    overflow: hidden;
-  }
-  .form-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--indigo), var(--violet), var(--cyan));
-  }
-
-  .form-section-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 24px;
-  }
-
-  /* Champs */
-  .field-group {
-    margin-bottom: 20px;
-  }
-  .field-label {
-    display: block;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--text2);
-    margin-bottom: 8px;
-    letter-spacing: 0.02em;
-  }
-  .field-label span {
-    font-weight: 400;
-    color: var(--muted);
-    margin-left: 4px;
-  }
-
-  .field-input,
-  .field-select {
-    width: 100%;
-    padding: 12px 16px;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: 12px;
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.93rem;
-    line-height: 1.5;
-    transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-    outline: none;
-    appearance: none;
-    -webkit-appearance: none;
-  }
-  .field-input::placeholder { color: var(--muted); }
-  .field-input:focus,
-  .field-select:focus {
-    border-color: var(--indigo);
-    background: var(--surface3);
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.18);
-  }
-
-  /* Select custom arrow */
-  .field-select-wrap {
-    position: relative;
-  }
-  .field-select-wrap::after {
-    content: '';
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 0; height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid var(--muted);
-    pointer-events: none;
-    transition: border-top-color 0.18s ease;
-  }
-  .field-select-wrap:focus-within::after { border-top-color: var(--indigo); }
-  .field-select { padding-right: 36px; cursor: pointer; }
-  .field-select option { background: #0A0818; color: #F1F5F9; }
-  :root[data-theme="light"] .field-select option { background: #F3F4FA; color: #1E293B; }
-
-  /* Séparateur entre les champs */
-  .form-divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 24px 0;
-  }
-
-  /* Prix */
-  .price-block {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 24px;
-  }
-  .price-main {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 2.1rem;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1;
-  }
-  .price-main sup {
-    font-size: 1rem;
-    font-weight: 600;
-    vertical-align: top;
-    margin-top: 4px;
-    display: inline-block;
-  }
-  .price-shipping {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--emerald);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  /* Bouton commander */
-  .btn-order {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 16px 24px;
-    background: linear-gradient(135deg, var(--indigo) 0%, var(--violet) 100%);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-pill);
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(99,102,241,0.40);
-    transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease, opacity 0.18s ease;
-    position: relative;
-    overflow: hidden;
-  }
-  .btn-order::before {
-    /* Reflet gloss animé */
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%);
-    transform: translateX(-100%);
-    transition: transform 0.55s ease;
-  }
-  .btn-order:hover::before { transform: translateX(100%); }
-  .btn-order:hover:not(:disabled) {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 32px rgba(99,102,241,0.55);
-  }
-  .btn-order:active:not(:disabled) { transform: scale(0.98); }
-  .btn-order:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-    transform: none;
-  }
-  .btn-order svg { flex-shrink: 0; }
-
-  /* Spinner inline dans le bouton */
-  .btn-spinner {
-    width: 18px; height: 18px;
-    border: 2px solid rgba(255,255,255,0.35);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    flex-shrink: 0;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ─── ÉTAT SUCCÈS ────────────────────────────────────────────────────────── */
-  .success-card {
-    background: var(--surface);
-    border: 1px solid rgba(16,185,129,0.30);
-    border-radius: var(--radius-card);
-    padding: 40px 32px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .success-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--emerald), #34D399, var(--emerald));
-  }
-
-  .success-icon {
-    width: 64px; height: 64px;
-    background: var(--emerald-dim);
-    border: 1px solid rgba(16,185,129,0.30);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    color: var(--emerald);
-    animation: successPop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
-  }
-  @keyframes successPop {
-    from { opacity: 0; transform: scale(0.5); }
-    to   { opacity: 1; transform: scale(1); }
-  }
-
-  .success-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 10px;
-  }
-  .success-msg {
-    font-size: 0.90rem;
-    color: var(--text2);
-    line-height: 1.7;
-    margin-bottom: 8px;
-  }
-  .success-mock-tag {
-    display: inline-block;
-    padding: 3px 10px;
-    background: var(--amber-dim);
-    border: 1px solid rgba(245,158,11,0.25);
-    border-radius: var(--radius-pill);
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--amber);
-    letter-spacing: 0.04em;
-    margin-bottom: 28px;
-  }
-
-  .btn-restart {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 11px 22px;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius-pill);
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text2);
-    cursor: pointer;
-    transition: all 0.18s ease;
-  }
-  .btn-restart:hover { background: var(--surface3); border-color: var(--border3); color: var(--text); }
-
-  /* ─── BANDEAU CALCULER D'ABORD ───────────────────────────────────────────── */
-  .calc-cta {
-    margin-top: 40px;
-    padding: 24px 28px;
-    background: var(--indigo-dim);
-    border: 1px solid rgba(99,102,241,0.22);
-    border-radius: var(--radius-card);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  .calc-cta__text {
-    font-size: 0.88rem;
-    color: var(--text2);
-    line-height: 1.6;
-  }
-  .calc-cta__text strong {
-    display: block;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: var(--text);
-    margin-bottom: 3px;
-  }
-  .btn-calc-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 10px 20px;
-    background: var(--indigo);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-pill);
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-    box-shadow: 0 3px 14px rgba(99,102,241,0.35);
-  }
-  .btn-calc-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.50); color: #fff; }
-
-  /* ─── FOOTER ─────────────────────────────────────────────────────────────── */
-  .site-footer {
-    position: relative;
-    z-index: 1;
-    padding: 28px 0;
-    border-top: 1px solid var(--border);
-    text-align: center;
-    font-size: 0.80rem;
-    color: var(--muted);
-  }
-  .site-footer a { color: var(--muted); transition: color 0.18s; }
-  .site-footer a:hover { color: var(--text2); }
-  .site-footer-sep { margin: 0 8px; opacity: 0.45; }
-
-  /* ─── RESPONSIVE MOBILE ──────────────────────────────────────────────────── */
-  @media (max-width: 640px) {
-    .wrap { padding: 0 18px; }
-    .page-hero { padding: 40px 0 28px; }
-    .form-card, .preview-card { padding: 22px 20px; }
-    .price-main { font-size: 1.8rem; }
-    .calc-cta { flex-direction: column; align-items: flex-start; }
-    .theme-toggle-wrap { top: 16px; right: 16px; }
-    .btn-theme-toggle { width: 40px; height: 40px; }
-  }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #030711; color: #F1F5F9; min-height: 100vh; padding: 40px 20px; }
+    .wrap { max-width: 520px; margin: 0 auto; }
+    h1 { font-size: 1.6rem; margin-bottom: 8px; }
+    .sub { color: #94A3B8; font-size: 0.9rem; margin-bottom: 32px; }
+    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10); border-radius: 16px; padding: 28px; margin-bottom: 16px; }
+    label { display: block; font-size: 0.82rem; font-weight: 600; color: #94A3B8; margin-bottom: 6px; }
+    input, select { width: 100%; padding: 11px 14px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #F1F5F9; font-size: 0.93rem; margin-bottom: 14px; outline: none; }
+    input:focus, select:focus { border-color: #6366F1; }
+    input::placeholder { color: #475569; }
+    select option { background: #0A0818; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row input { margin-bottom: 0; }
+    .divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 20px 0; }
+    .price { font-size: 1.8rem; font-weight: 700; margin-bottom: 4px; }
+    .ship { font-size: 0.82rem; color: #10B981; margin-bottom: 20px; }
+    .btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #6366F1, #8B5CF6); color: #fff; border: none; border-radius: 50px; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hint { text-align: center; font-size: 0.75rem; color: #475569; margin-top: 10px; }
+    .back { display: inline-flex; align-items: center; gap: 6px; color: #6366F1; text-decoration: none; font-size: 0.85rem; margin-bottom: 28px; }
+    .success { text-align: center; padding: 40px 20px; }
+    .success h2 { font-size: 1.4rem; margin: 16px 0 8px; }
+    .success p { color: #94A3B8; font-size: 0.9rem; line-height: 1.6; }
+    .tag { display: inline-block; margin-top: 16px; padding: 4px 14px; border-radius: 50px; font-size: 0.78rem; font-weight: 600; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: #F59E0B; }
+    .tag.ok { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: #10B981; }
+    .tag.err { background: rgba(244,63,94,0.12); border-color: rgba(244,63,94,0.3); color: #F43F5E; }
+    .cancelled { background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.25); border-radius: 10px; padding: 12px 16px; font-size: 0.85rem; color: #F59E0B; margin-bottom: 16px; display: none; }
+    .mug-preview { background: #F4F1EC; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 20px; }
+    .mug-emoji { font-size: 4rem; display: block; margin-bottom: 10px; }
+    .mug-name { font-size: 1.4rem; font-weight: 700; color: #1A1A2E; }
+    .mug-ms { font-size: 0.95rem; color: #6366F1; font-weight: 600; margin-top: 4px; }
+    .mug-date { font-size: 0.8rem; color: #64748B; margin-top: 2px; }
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <a href="/" class="back">← MilestoneMe</a>
+    <h1>Mug Personnalisé</h1>
+    <p class="sub">19,90 € · Livraison gratuite en France</p>
 
-  <!-- ── THEME TOGGLE ───────────────────────────────────────────────────── -->
-  <div class="theme-toggle-wrap">
-    <button class="btn-theme-toggle" onclick="toggleTheme()" aria-label="Changer de thème" title="Mode clair / sombre">
-      <!-- Lune (dark mode actif) -->
-      <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="5"/>
-        <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-      </svg>
-      <!-- Soleil (light mode actif) -->
-      <svg class="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-      </svg>
-    </button>
+    <div id="cancelled-msg" class="cancelled">Paiement annulé — ton panier est toujours là.</div>
+
+    <div id="main">
+      <!-- Preview mug simple -->
+      <div class="mug-preview">
+        <span class="mug-emoji">☕</span>
+        <div class="mug-name" id="prev-name">Ton prénom</div>
+        <div class="mug-ms" id="prev-ms">10 000 jours</div>
+        <div class="mug-date" id="prev-date">bientôt…</div>
+      </div>
+
+      <div class="card">
+        <label>Prénom sur le mug</label>
+        <input type="text" id="cust-name" placeholder="Sophie" maxlength="24" oninput="updatePreview()">
+
+        <label>Milestone</label>
+        <select id="cust-milestone" onchange="updatePreview()">
+          <option>10 000 jours</option>
+          <option>1 milliard de secondes</option>
+          <option>1 000 semaines</option>
+          <option>500 lunaisons</option>
+          <option>1 million de minutes</option>
+          <option>100 000 heures</option>
+        </select>
+
+        <label>Date du milestone <span style="font-weight:400;color:#475569">(optionnel)</span></label>
+        <input type="text" id="cust-date" placeholder="le 15 mars 2027" maxlength="40" oninput="updatePreview()">
+      </div>
+
+      <div class="card">
+        <label style="font-size:0.9rem;color:#F1F5F9;margin-bottom:14px">Adresse de livraison</label>
+
+        <div class="row" style="margin-bottom:14px">
+          <div>
+            <label>Prénom</label>
+            <input type="text" id="addr-first" placeholder="Sophie" autocomplete="given-name">
+          </div>
+          <div>
+            <label>Nom</label>
+            <input type="text" id="addr-last" placeholder="Dupont" autocomplete="family-name">
+          </div>
+        </div>
+
+        <label>Email</label>
+        <input type="email" id="addr-email" placeholder="sophie@email.com" autocomplete="email">
+
+        <label>Adresse</label>
+        <input type="text" id="addr-street" placeholder="12 rue des Lilas" autocomplete="street-address">
+
+        <div class="row">
+          <div>
+            <label>Code postal</label>
+            <input type="text" id="addr-zip" placeholder="75001" maxlength="10">
+          </div>
+          <div>
+            <label>Ville</label>
+            <input type="text" id="addr-city" placeholder="Paris">
+          </div>
+        </div>
+      </div>
+
+      <div class="price">19,90 €</div>
+      <div class="ship">✓ Livraison gratuite en France</div>
+
+      <button class="btn" id="order-btn" onclick="submitOrder()">
+        <span id="btn-label">Payer &amp; Commander</span>
+        <span id="btn-spin" class="spinner" style="display:none"></span>
+      </button>
+      <p class="hint">Paiement sécurisé via Stripe</p>
+    </div>
+
+    <div id="success" style="display:none" class="success">
+      <div style="font-size:3rem">✅</div>
+      <h2>Commande enregistrée !</h2>
+      <p>Ton mug milestone est en cours de préparation.<br>Tu recevras une confirmation par email.</p>
+      <div id="success-tag" class="tag">MODE TEST</div>
+      <br><br>
+      <button class="btn" onclick="resetForm()" style="max-width:240px;margin:0 auto">Commander un autre</button>
+    </div>
   </div>
 
-  <!-- ── HEADER ─────────────────────────────────────────────────────────── -->
-  <header class="site-header" role="banner">
-    <div class="wrap">
-      <div class="site-header-inner">
-        <a href="/" class="site-logo" aria-label="MilestoneMe — accueil">
-          <div class="site-logo-mark" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-            </svg>
-          </div>
-          <span class="site-logo-text">MilestoneMe <span>/ Mug Personnalisé</span></span>
-        </a>
-
-        <nav class="site-nav" aria-label="Navigation principale">
-          <a href="/" class="nav-link nav-link--back" aria-label="Retour à MilestoneMe">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-            MilestoneMe
-          </a>
-          <a href="/boutique" class="nav-link">Boutique</a>
-        </nav>
-      </div>
-    </div>
-  </header>
-
-  <!-- ── PAGE HERO ──────────────────────────────────────────────────────── -->
-  <div class="wrap">
-    <section class="page-hero" aria-labelledby="hero-title">
-      <p class="page-hero__badge" aria-label="Produit personnalisé">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-        </svg>
-        Personnalisation unique
-      </p>
-      <h1 class="page-hero__title" id="hero-title">Ton mug milestone, sur mesure</h1>
-      <p class="page-hero__sub">Célèbre chaque étape de ta vie avec un objet qui dure. Aperçu en temps réel — commande en 2 minutes.</p>
-    </section>
-
-    <!-- ── LAYOUT CUSTOMIZER ───────────────────────────────────────────── -->
-    <div class="customizer-layout">
-
-      <!-- Colonne gauche : Preview canvas -->
-      <div class="preview-col" aria-label="Aperçu du mug">
-        <div class="preview-card">
-          <div class="preview-label" aria-live="polite">
-            <span class="preview-label-dot" aria-hidden="true"></span>
-            Apercu en temps reel
-          </div>
-
-          <div class="preview-canvas-wrap">
-            <canvas id="mug-canvas" aria-label="Apercu du mug personnalise" role="img"></canvas>
-          </div>
-
-          <p class="preview-hint">
-            L'apercu est une representation stylisee.<br>Le mug imprime peut presenter de legeres variations.
-          </p>
-
-          <!-- Indicateurs de confiance -->
-          <div class="trust-badges" role="list">
-            <div class="trust-badge" role="listitem">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-              Paiement securise
-            </div>
-            <div class="trust-badge" role="listitem">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-                <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-              </svg>
-              Livraison gratuite
-            </div>
-            <div class="trust-badge" role="listitem">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              Impression premium
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Colonne droite : Formulaire + commande -->
-      <div class="form-col">
-
-        <!-- Formulaire de personnalisation -->
-        <div id="order-form" class="form-card" role="form" aria-label="Formulaire de personnalisation du mug">
-          <h2 class="form-section-title">Personnalise ton mug</h2>
-
-          <!-- Prenom sur le mug -->
-          <div class="field-group">
-            <label class="field-label" for="cust-name">Prenom sur le mug</label>
-            <input type="text" id="cust-name" class="field-input"
-              placeholder="ex&nbsp;: Sophie" maxlength="24"
-              autocomplete="given-name" oninput="updatePreview()">
-            <p class="preview-hint" style="text-align:left; margin-top:6px;">Apparait en grand sur le mug — 24 car. max.</p>
-          </div>
-
-          <!-- Milestone -->
-          <div class="field-group">
-            <label class="field-label" for="cust-milestone">Ton milestone</label>
-            <div class="field-select-wrap">
-              <select id="cust-milestone" class="field-select" onchange="updatePreview()">
-                <option value="10 000 jours">10 000 jours</option>
-                <option value="1 milliard de secondes">1 milliard de secondes</option>
-                <option value="1 000 semaines">1 000 semaines</option>
-                <option value="500 lunaisons">500 lunaisons</option>
-                <option value="1 million de minutes">1 million de minutes</option>
-                <option value="100 000 heures">100 000 heures</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Date -->
-          <div class="field-group">
-            <label class="field-label" for="cust-date">Date du milestone <span>(optionnel)</span></label>
-            <input type="text" id="cust-date" class="field-input"
-              placeholder="ex&nbsp;: le 15 mars 2027" maxlength="40" oninput="updatePreview()">
-            <p class="preview-hint" style="text-align:left; margin-top:6px;">
-              Pas encore calcule ?
-              <a href="/" style="color:var(--indigo);font-weight:600;">Calcule ta date sur MilestoneMe</a>
-            </p>
-          </div>
-
-          <hr class="form-divider" aria-hidden="true">
-          <p class="form-section-title" style="font-size:0.9rem;margin-bottom:16px;">Adresse de livraison</p>
-
-          <!-- Nom / Prenom livraison -->
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div class="field-group" style="margin-bottom:0">
-              <label class="field-label" for="addr-first">Prenom</label>
-              <input type="text" id="addr-first" class="field-input" placeholder="Sophie" autocomplete="given-name">
-            </div>
-            <div class="field-group" style="margin-bottom:0">
-              <label class="field-label" for="addr-last">Nom</label>
-              <input type="text" id="addr-last" class="field-input" placeholder="Dupont" autocomplete="family-name">
-            </div>
-          </div>
-
-          <div class="field-group" style="margin-top:12px;">
-            <label class="field-label" for="addr-email">Email</label>
-            <input type="email" id="addr-email" class="field-input" placeholder="sophie@email.com" autocomplete="email">
-          </div>
-
-          <div class="field-group">
-            <label class="field-label" for="addr-street">Adresse</label>
-            <input type="text" id="addr-street" class="field-input" placeholder="12 rue des Lilas" autocomplete="street-address">
-          </div>
-
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div class="field-group" style="margin-bottom:0">
-              <label class="field-label" for="addr-zip">Code postal</label>
-              <input type="text" id="addr-zip" class="field-input" placeholder="75001" autocomplete="postal-code" maxlength="10">
-            </div>
-            <div class="field-group" style="margin-bottom:0">
-              <label class="field-label" for="addr-city">Ville</label>
-              <input type="text" id="addr-city" class="field-input" placeholder="Paris" autocomplete="address-level2">
-            </div>
-          </div>
-
-          <hr class="form-divider" aria-hidden="true">
-
-          <!-- Prix et bouton commande -->
-          <div class="price-block">
-            <div class="price-main" aria-label="Prix : 19 euros 90">
-              <sup>&euro;</sup>19<span style="font-size:1.3rem">,90</span>
-            </div>
-            <div class="price-shipping">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              Livraison gratuite en France
-            </div>
-          </div>
-
-          <button id="order-btn" class="btn-order" onclick="submitOrder()">
-            <span id="order-btn-label">Payer &amp; Commander — 19,90&nbsp;&euro;</span>
-            <svg id="order-btn-arrow" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-            </svg>
-            <span id="order-btn-spinner" class="btn-spinner" hidden aria-hidden="true"></span>
-          </button>
-
-          <p style="text-align:center;font-size:0.75rem;color:var(--muted);margin-top:12px;">
-            Paiement securise via Stripe — tu seras redirige vers la page de paiement
-          </p>
-        </div>
-
-        <!-- Etat succès (caché par défaut) -->
-        <div id="order-success" class="success-card" hidden aria-live="polite" aria-atomic="true">
-          <div class="success-icon" aria-hidden="true">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-          </div>
-          <h2 class="success-title">Commande enregistree !</h2>
-          <p class="success-msg">
-            Ton mug milestone est en cours de preparation.<br>
-            Tu recevras une confirmation par email tres bientot.
-          </p>
-          <div class="success-mock-tag">MODE TEST — aucune commande reelle creee</div>
-          <button class="btn-restart" onclick="resetForm()" aria-label="Commander un autre mug">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
-            </svg>
-            Commander un autre mug
-          </button>
-        </div>
-
-        <!-- Message paiement annule -->
-        <div id="cancelled-msg" hidden style="margin-bottom:16px;padding:14px 18px;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.25);border-radius:12px;font-size:0.85rem;color:var(--amber);">
-          Paiement annule — ton panier est toujours la, tu peux recommencer quand tu veux.
-        </div>
-
-        <!-- CTA : calculer d'abord -->
-        <div class="calc-cta" role="complementary" aria-label="Outil de calcul de milestone">
-          <div class="calc-cta__text">
-            <strong>Tu ne connais pas encore ta date ?</strong>
-            Calcule exactement quand tu atteindras tes 10 000 jours, 1 milliard de secondes et bien plus.
-          </div>
-          <a href="/" class="btn-calc-cta" aria-label="Calculer ma date de milestone sur MilestoneMe">
-            Calculer ma date
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-            </svg>
-          </a>
-        </div>
-
-      </div><!-- /form-col -->
-    </div><!-- /customizer-layout -->
-  </div><!-- /wrap -->
-
-  <!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
-  <footer class="site-footer" role="contentinfo">
-    <div class="wrap">
-      &copy; 2025 MilestoneMe
-      <span class="site-footer-sep">&middot;</span>
-      <a href="/">Accueil</a>
-      <span class="site-footer-sep">&middot;</span>
-      <a href="/boutique">Boutique</a>
-      <span class="site-footer-sep">&middot;</span>
-      <a href="mailto:contact@statsme.org">Contact</a>
-    </div>
-  </footer>
-
-  <!-- ── SCRIPTS ────────────────────────────────────────────────────────── -->
   <script>
-  /* MugPreview — inlined pour eviter les problemes MIME Cloudflare */
-  (function () {
-  'use strict';
-  if (!CanvasRenderingContext2D.prototype.roundRect) {
-    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-      var rad = Array.isArray(r) ? r[0] : (typeof r === 'number' ? r : 0);
-      this.beginPath();
-      this.moveTo(x + rad, y);
-      this.arcTo(x + w, y,     x + w, y + h, rad);
-      this.arcTo(x + w, y + h, x,     y + h, rad);
-      this.arcTo(x,     y + h, x,     y,     rad);
-      this.arcTo(x,     y,     x + w, y,     rad);
-      this.closePath();
-    };
-  }
-  var P = {
-    bg:'#F4F1EC', mugBody:'#FFFFFF', mugStroke:'#DDE1EA',
-    accent:'#6366F1', textPrimary:'#1A1A2E', textDate:'#64748B',
-    handleFill:'#F8F8F8', handleStroke:'#DDE1EA',
-    decoLine:'#E8EAF0', dots:'#CBD5E1',
-  };
-  var W = 640, H = 320;
-  var MUG = { x:80, y:28, w:420, h:256, r:20, bandH:48 };
-  function drawMug(canvas, data) {
-    if (!canvas) return;
-    var ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = P.bg; ctx.fillRect(0, 0, W, H);
-    var vig = ctx.createRadialGradient(W/2,H/2,H*0.3,W/2,H/2,H*0.8);
-    vig.addColorStop(0,'rgba(0,0,0,0)'); vig.addColorStop(1,'rgba(0,0,0,0.06)');
-    ctx.fillStyle = vig; ctx.fillRect(0, 0, W, H);
-    ctx.beginPath();
-    ctx.ellipse(MUG.x+MUG.w/2, MUG.y+MUG.h+16, MUG.w/2-10, 16, 0, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(0,0,0,0.09)'; ctx.fill();
-    ctx.roundRect(MUG.x, MUG.y, MUG.w, MUG.h, MUG.r);
-    ctx.fillStyle = P.mugBody; ctx.fill();
-    var ig = ctx.createLinearGradient(MUG.x,0,MUG.x+60,0);
-    ig.addColorStop(0,'rgba(0,0,0,0.04)'); ig.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.roundRect(MUG.x, MUG.y, MUG.w, MUG.h, MUG.r); ctx.fillStyle = ig; ctx.fill();
-    ctx.roundRect(MUG.x, MUG.y, MUG.w, MUG.h, MUG.r);
-    ctx.strokeStyle = P.mugStroke; ctx.lineWidth = 1.5; ctx.stroke();
-    var hcx = MUG.x+MUG.w+38, hcy = MUG.y+MUG.h/2;
-    ctx.beginPath(); ctx.ellipse(hcx,hcy,42,60,0,-Math.PI*0.62,Math.PI*0.62);
-    ctx.strokeStyle = P.handleStroke; ctx.lineWidth = 30; ctx.lineCap = 'round'; ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(hcx,hcy,42,60,0,-Math.PI*0.62,Math.PI*0.62);
-    ctx.strokeStyle = P.handleFill; ctx.lineWidth = 18; ctx.stroke(); ctx.lineCap = 'butt';
-    ctx.save();
-    ctx.beginPath(); ctx.roundRect(MUG.x, MUG.y, MUG.w, MUG.h, MUG.r); ctx.clip();
-    var bg = ctx.createLinearGradient(MUG.x,0,MUG.x+MUG.w,0);
-    bg.addColorStop(0,'#4F46E5'); bg.addColorStop(0.5,'#6366F1'); bg.addColorStop(1,'#8B5CF6');
-    ctx.fillStyle = bg; ctx.fillRect(MUG.x, MUG.y, MUG.w, MUG.bandH);
-    var rf = ctx.createLinearGradient(0,MUG.y,0,MUG.y+MUG.bandH);
-    rf.addColorStop(0,'rgba(255,255,255,0.22)'); rf.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.fillStyle = rf; ctx.fillRect(MUG.x, MUG.y, MUG.w, MUG.bandH);
-    ctx.restore();
-    var cx = MUG.x+MUG.w/2;
-    ctx.font = '600 13px "Space Grotesk",sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.92)'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('MilestoneMe', cx, MUG.y+MUG.bandH/2);
-    var lineY = MUG.y+MUG.bandH+22;
-    ctx.beginPath(); ctx.moveTo(MUG.x+36,lineY); ctx.lineTo(MUG.x+MUG.w-36,lineY);
-    ctx.strokeStyle = P.decoLine; ctx.lineWidth = 1; ctx.stroke();
-    var top = MUG.y+MUG.bandH+44;
-    var name = (data && data.name) ? data.name.trim() : 'Ton prénom';
-    ctx.font = 'bold 30px Georgia,serif'; ctx.fillStyle = P.textPrimary;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-    var dn = name;
-    while (ctx.measureText(dn).width > MUG.w-60 && dn.length > 1) dn = dn.slice(0,-1);
-    if (dn !== name) dn += '…';
-    ctx.fillText(dn, cx, top);
-    var ms = (data && data.milestone) ? data.milestone : '10 000 jours';
-    ctx.font = '700 20px "Space Grotesk",sans-serif'; ctx.fillStyle = P.accent;
-    ctx.fillText(ms, cx, top+36);
-    var dt = (data && data.date) ? data.date.trim() : 'bientôt…';
-    ctx.font = '400 14px Inter,sans-serif'; ctx.fillStyle = P.textDate;
-    ctx.fillText(dt, cx, top+64);
-    ctx.font = '12px sans-serif'; ctx.fillStyle = P.dots;
-    ctx.fillText('· · ·', cx, top+88);
-    ctx.save();
-    ctx.beginPath(); ctx.roundRect(MUG.x, MUG.y, MUG.w, MUG.h, MUG.r); ctx.clip();
-    var sh = ctx.createLinearGradient(MUG.x,MUG.y,MUG.x+MUG.w*0.35,MUG.y+MUG.h*0.6);
-    sh.addColorStop(0,'rgba(255,255,255,0.18)'); sh.addColorStop(0.4,'rgba(255,255,255,0.04)'); sh.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.fillStyle = sh; ctx.fillRect(MUG.x, MUG.y+MUG.bandH, MUG.w*0.35, MUG.h-MUG.bandH);
-    ctx.restore();
-  }
-  window.MugPreview = {
-    init: function(id, data) {
-      var c = document.getElementById(id); if (!c) return;
-      c.width = W; c.height = H; drawMug(c, data || {});
-    },
-    update: function(id, data) {
-      var c = document.getElementById(id); if (c) drawMug(c, data);
-    },
-    toBase64: function(id) {
-      var c = document.getElementById(id); return c ? c.toDataURL('image/png') : null;
-    },
-  };
-  })();
-  </script>
-
-  <script>
-    /* ─── Theme toggle ──────────────────────────────────────────────────── */
-    function toggleTheme() {
-      var root = document.documentElement;
-      var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-      root.setAttribute('data-theme', next);
-      try { localStorage.setItem('theme', next); } catch (e) {}
-    }
-
-    /* ─── Init ──────────────────────────────────────────────────────────── */
-    document.addEventListener('DOMContentLoaded', function () {
-      // Init canvas TOUJOURS en premier
-      MugPreview.init('mug-canvas', { name: 'Ton prenom', milestone: '10 000 jours', date: 'le 15 mars 2027' });
-
-      var params = new URLSearchParams(location.search);
-
-      // Retour apres paiement Stripe OK
-      if (params.get('success') === '1') {
-        var orderId = params.get('order_id');
-        _handlePaymentSuccess(orderId);
-        return;
-      }
-
-      // Paiement annule
-      if (params.get('cancelled') === '1') {
-        history.replaceState({}, '', '/mug-customizer');
-        var msg = document.getElementById('cancelled-msg');
-        if (msg) { msg.hidden = false; }
-      }
-    });
-
-    /* ─── Preview live ──────────────────────────────────────────────────── */
     function updatePreview() {
-      MugPreview.update('mug-canvas', {
-        name:      document.getElementById('cust-name').value      || 'Ton prenom',
-        milestone: document.getElementById('cust-milestone').value,
-        date:      document.getElementById('cust-date').value       || 'bientot\u2026',
-      });
+      var n = document.getElementById('cust-name').value || 'Ton prénom';
+      var m = document.getElementById('cust-milestone').value;
+      var d = document.getElementById('cust-date').value || 'bientôt…';
+      document.getElementById('prev-name').textContent = n;
+      document.getElementById('prev-ms').textContent   = m;
+      document.getElementById('prev-date').textContent = d;
     }
 
-    /* ─── Validation champ requis ───────────────────────────────────────── */
-    function _require(id, msg) {
+    function req(id) {
       var el = document.getElementById(id);
       if (!el.value.trim()) {
-        el.focus();
-        el.style.borderColor = 'var(--rose)';
-        el.style.boxShadow   = '0 0 0 3px rgba(244,63,94,0.18)';
-        setTimeout(function () { el.style.borderColor = ''; el.style.boxShadow = ''; }, 2200);
+        el.focus(); el.style.borderColor = '#F43F5E';
+        setTimeout(function(){ el.style.borderColor = ''; }, 2000);
         return false;
       }
       return true;
     }
 
-    /* ─── Soumission : sauvegarde + redirect Stripe ─────────────────────── */
+    document.addEventListener('DOMContentLoaded', function () {
+      var p = new URLSearchParams(location.search);
+      if (p.get('success') === '1') { _handleSuccess(p.get('order_id'), p.get('session_id')); return; }
+      if (p.get('cancelled') === '1') {
+        history.replaceState({}, '', '/mug-customizer');
+        document.getElementById('cancelled-msg').style.display = 'block';
+      }
+    });
+
     async function submitOrder() {
-      var btn     = document.getElementById('order-btn');
-      var label   = document.getElementById('order-btn-label');
-      var arrow   = document.getElementById('order-btn-arrow');
-      var spinner = document.getElementById('order-btn-spinner');
+      if (!req('cust-name') || !req('addr-first') || !req('addr-last') ||
+          !req('addr-email') || !req('addr-street') || !req('addr-zip') || !req('addr-city')) return;
 
-      // Validation
-      if (!_require('cust-name'))   return;
-      if (!_require('addr-first'))  return;
-      if (!_require('addr-last'))   return;
-      if (!_require('addr-email'))  return;
-      if (!_require('addr-street')) return;
-      if (!_require('addr-zip'))    return;
-      if (!_require('addr-city'))   return;
+      var btn = document.getElementById('order-btn');
+      btn.disabled = true;
+      document.getElementById('btn-label').textContent = 'Redirection…';
+      document.getElementById('btn-spin').style.display = 'block';
 
-      btn.disabled   = true;
-      label.textContent = 'Redirection vers le paiement\u2026';
-      arrow.hidden   = true;
-      spinner.hidden = false;
-
-      // Genere un ID unique pour cette commande
-      var orderId = 'ms-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
-
-      // Sauvegarde les donnees en localStorage (recup apres paiement)
-      var orderData = {
+      var orderId = 'ms-' + Date.now();
+      var data = {
         customerName:  document.getElementById('cust-name').value.trim(),
         milestone:     document.getElementById('cust-milestone').value,
         milestoneDate: document.getElementById('cust-date').value,
-        imageBase64:   MugPreview.toBase64('mug-canvas'),
+        imageBase64:   null,
         address: {
           first_name: document.getElementById('addr-first').value.trim(),
           last_name:  document.getElementById('addr-last').value.trim(),
@@ -1176,122 +183,75 @@
           country:    'FR',
         },
       };
-      try { localStorage.setItem('mug_order_' + orderId, JSON.stringify(orderData)); } catch (e) {}
+      try { localStorage.setItem('mug_order_' + orderId, JSON.stringify(data)); } catch(e) {}
 
       try {
         var ctrl = new AbortController();
-        var ctid = setTimeout(function () { ctrl.abort(); }, 12000);
-        var res = await fetch('/api/checkout', {
-          method: 'POST',
+        setTimeout(function(){ ctrl.abort(); }, 12000);
+        var res  = await fetch('/api/checkout', {
+          method: 'POST', signal: ctrl.signal,
           headers: { 'Content-Type': 'application/json' },
-          signal: ctrl.signal,
-          body: JSON.stringify({
-            customerName: orderData.customerName,
-            milestone:    orderData.milestone,
-            orderId:      orderId,
-          }),
+          body: JSON.stringify({ customerName: data.customerName, milestone: data.milestone, orderId: orderId }),
         });
-        clearTimeout(ctid);
-        var data = await res.json();
-
-        if (data.mock) {
-          // Mode test (pas de cle Stripe) : simuler succes
-          await new Promise(function (r) { setTimeout(r, 800); });
-          _handlePaymentSuccess(orderId);
-          return;
-        }
-
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          throw new Error(data.error || 'Checkout error');
-        }
-
-      } catch (err) {
-        console.error('[checkout]', err);
-        btn.disabled   = false;
-        label.textContent = 'Payer & Commander — 19,90\u202f\u20ac';
-        arrow.hidden   = false;
-        spinner.hidden = true;
+        var json = await res.json();
+        if (json.mock) { await new Promise(r => setTimeout(r, 600)); _handleSuccess(orderId); return; }
+        if (json.url)  { window.location.href = json.url; return; }
+        throw new Error(json.error || 'Erreur checkout');
+      } catch(err) {
+        btn.disabled = false;
+        document.getElementById('btn-label').textContent = 'Payer & Commander';
+        document.getElementById('btn-spin').style.display = 'none';
         alert('Erreur : ' + err.message);
       }
     }
 
-    /* ─── Apres retour Stripe success ────────────────────────────────────── */
-    async function _handlePaymentSuccess(orderId) {
-      document.getElementById('order-form').hidden    = true;
-      document.getElementById('order-success').hidden = false;
+    async function _handleSuccess(orderId, sessionId) {
+      document.getElementById('main').style.display    = 'none';
+      document.getElementById('success').style.display = 'block';
       history.replaceState({}, '', '/mug-customizer');
 
-      // Recupere les donnees de la commande
       var raw = null;
-      try { raw = localStorage.getItem('mug_order_' + orderId); } catch (e) {}
-      if (!raw) { _setSuccessTag(null, null); return; }
+      try { raw = localStorage.getItem('mug_order_' + orderId); } catch(e) {}
+      if (!raw) return;
 
       var orderData = JSON.parse(raw);
-      _setSuccessTag('loading', null);
+      if (sessionId) orderData.session_id = sessionId;
+      var tag = document.getElementById('success-tag');
+      tag.textContent = 'Création commande Printify…';
 
-      // Cree la commande Printify
-      var controller = new AbortController();
-      var tid = setTimeout(function () { controller.abort(); }, 40000);
       try {
-        var res = await fetch('/api/order', {
-          method: 'POST',
+        var ctrl = new AbortController();
+        setTimeout(function(){ ctrl.abort(); }, 40000);
+        var res    = await fetch('/api/order', {
+          method: 'POST', signal: ctrl.signal,
           headers: { 'Content-Type': 'application/json' },
-          signal: controller.signal,
           body: JSON.stringify(orderData),
         });
-        clearTimeout(tid);
         var result = await res.json();
-        console.log('[printify]', result);
-        _setSuccessTag(result, orderId);
-        try { localStorage.removeItem('mug_order_' + orderId); } catch (e) {}
-      } catch (err) {
-        clearTimeout(tid);
-        console.warn('[printify fallback]', err.message);
-        _setSuccessTag(null, orderId);
+        try { localStorage.removeItem('mug_order_' + orderId); } catch(e) {}
+        if (result.id && !result.mock) {
+          tag.className = 'tag ok'; tag.textContent = 'Commande Printify #' + result.id;
+        } else if (result.error) {
+          tag.className = 'tag err'; tag.textContent = 'Erreur Printify : ' + result.error;
+        } else {
+          tag.textContent = 'MODE TEST — aucune commande réelle';
+        }
+      } catch(err) {
+        tag.className = 'tag err'; tag.textContent = 'Timeout Printify : ' + err.message;
       }
     }
 
-    function _setSuccessTag(result, orderId) {
-      var tag = document.querySelector('.success-mock-tag');
-      if (!tag) return;
-      if (result === 'loading') {
-        tag.textContent = 'Creation de la commande en cours\u2026';
-      } else if (result && result.id && !result.mock) {
-        tag.textContent = 'Commande Printify #' + result.id;
-        tag.style.background   = 'var(--emerald-dim)';
-        tag.style.borderColor  = 'rgba(16,185,129,0.30)';
-        tag.style.color        = 'var(--emerald)';
-      } else if (result && result.error) {
-        tag.textContent = 'Erreur : ' + result.error;
-        tag.style.background  = 'rgba(244,63,94,0.10)';
-        tag.style.borderColor = 'rgba(244,63,94,0.25)';
-        tag.style.color       = 'var(--rose)';
-      } else if (result && result.mock) {
-        tag.textContent = 'MODE TEST — paiement simule, aucune commande reelle';
-      } else {
-        tag.textContent = orderId ? 'Ref. ' + orderId : 'Commande enregistree';
-      }
-    }
-
-    /* ─── Reset formulaire ──────────────────────────────────────────────── */
     function resetForm() {
       ['cust-name','cust-date','addr-first','addr-last','addr-email','addr-street','addr-zip','addr-city']
-        .forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ''; });
+        .forEach(function(id){ var el = document.getElementById(id); if(el) el.value=''; });
       document.getElementById('cust-milestone').selectedIndex = 0;
-      var btn = document.getElementById('order-btn');
-      var label = document.getElementById('order-btn-label');
-      btn.disabled = false;
-      label.textContent = 'Payer & Commander — 19,90\u202f\u20ac';
-      document.getElementById('order-btn-arrow').hidden   = false;
-      document.getElementById('order-btn-spinner').hidden = true;
-      document.getElementById('order-success').hidden = true;
-      document.getElementById('order-form').hidden    = false;
+      document.getElementById('order-btn').disabled = false;
+      document.getElementById('btn-label').textContent = 'Payer & Commander';
+      document.getElementById('btn-spin').style.display = 'none';
+      document.getElementById('success').style.display  = 'none';
+      document.getElementById('main').style.display     = 'block';
       updatePreview();
-      document.getElementById('cust-name').focus();
     }
   </script>
-
 </body>
 </html>

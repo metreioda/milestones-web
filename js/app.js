@@ -8,6 +8,7 @@ let _posterData = null;       // données pour generatePoster()
 // ── CITIES ────────────────────────────────────────────────────────────────────
 function buildCitiesDatalist() {
   const dl = document.getElementById('cities-list');
+  if (!dl) return;
   CITIES.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c.name;
@@ -29,7 +30,8 @@ function findCity(input) {
 // ── PERSONNALISATION ──────────────────────────────────────────────────────────
 function getPersonalization() {
   const name    = (document.getElementById('pname').value || '').trim();
-  const passion = document.getElementById('passion').value;
+  const passion = document.getElementById('passion')?.value || '';
+  // genre is reserved for future use (m/f/n gender agreement in French)
   return { name, genre: '', passion };
 }
 
@@ -42,8 +44,38 @@ function togglePersonalize() {
 }
 
 function accord(genre, masc, fem, neutre) {
-  return masc;
+  if (genre === 'f' || genre === 'F') return fem;
+  if (genre === 'n' || genre === 'N') return neutre || masc;
+  return masc; // default: masculine (also when genre is '' or undefined)
 }
+
+// ── HTML ESCAPING (XSS prevention) ───────────────────────────────────────────
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ── CONSTANTS ────────────────────────────────────────────────────────────────
+const ANIMATION_DELAY_CAP    = 400;   // max stagger delay for card animations (ms)
+const ANIMATION_DELAY_STEP   = 40;    // per-card stagger step (ms)
+const CONFETTI_COUNT         = 90;    // number of confetti pieces (standard)
+const CONFETTI_BURST_COUNT   = 120;   // number of confetti pieces (burst)
+const CONFETTI_CLEANUP_MS    = 6000;  // auto-remove confetti after (ms)
+const TOAST_DURATION_MS      = 6500;  // milestone toast display time
+const TOAST_EXIT_MS          = 420;   // toast exit animation duration
+const TOAST_MAX_STACKED      = 3;     // maximum simultaneous toasts
+const CELEBRATION_DELAY_MS   = 200;   // delay before confetti burst
+const HOT_THRESHOLD_MS       = 864e5 * 7; // 7 days — countdown "hot" threshold
+const FUTURE_PREVIEW_COUNT   = 3;     // visible future cards before "show more"
+const PAST_PREVIEW_COUNT     = 3;     // visible past cards before "show more"
+const SCROLL_REVEAL_DELAY    = 80;    // ms before smooth scroll to results
+const FRIEND_WINDOW_CLOSE_MS = 30 * 864e5; // 30 days — friend comparison window
+const FRIEND_WINDOW_SYNC_MS  = 7 * 864e5;  // 7 days — "simultaneous" threshold
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function fmtAge(ms) {
@@ -227,7 +259,7 @@ function sharePast(milestoneJson, dateStr) {
 // ── CONFETTI ──────────────────────────────────────────────────────────────────
 function confetti() {
   const cols = ['#f5c842','#9b59ff','#3fffaa','#ff4eb8','#ffffff','#ff6b6b'];
-  for (let i = 0; i < 90; i++) {
+  for (let i = 0; i < CONFETTI_COUNT; i++) {
     setTimeout(() => {
       const p = document.createElement('div');
       p.className = 'c-piece';
@@ -241,7 +273,7 @@ function confetti() {
         animation-delay:${Math.random()*0.4}s;
       `;
       document.body.appendChild(p);
-      setTimeout(() => p.remove(), 6000);
+      setTimeout(() => p.remove(), CONFETTI_CLEANUP_MS);
     }, i * 22);
   }
 }
@@ -250,7 +282,7 @@ function confetti() {
 function confettiBurst() {
   // Denser, gold-biased burst for the milestone moment
   const cols = ['#fbbf24','#f59e0b','#6366f1','#8b5cf6','#ffffff','#34d399','#fbbf24'];
-  for (let i = 0; i < 120; i++) {
+  for (let i = 0; i < CONFETTI_BURST_COUNT; i++) {
     setTimeout(() => {
       const p = document.createElement('div');
       p.className = 'c-piece';
@@ -266,7 +298,7 @@ function confettiBurst() {
         animation-delay:${Math.random() * 0.6}s;
       `;
       document.body.appendChild(p);
-      setTimeout(() => p.remove(), 6000);
+      setTimeout(() => p.remove(), CONFETTI_CLEANUP_MS);
     }, i * 14);
   }
 }
@@ -285,38 +317,41 @@ function showMilestoneToast(milestone) {
   const container = document.getElementById('milestone-toast-container');
   if (!container) return;
 
-  const DURATION_MS = 6500;
-
   const toast = document.createElement('div');
   toast.className = 'milestone-toast';
   toast.setAttribute('role', 'alert');
-  toast.style.setProperty('--toast-duration', `${DURATION_MS / 1000}s`);
+  toast.style.setProperty('--toast-duration', `${TOAST_DURATION_MS / 1000}s`);
 
   toast.innerHTML = `
-    <div class="toast-icon" aria-hidden="true">${milestone.e}</div>
+    <div class="toast-icon" aria-hidden="true">${escapeHtml(milestone.e)}</div>
     <div class="toast-body">
       <div class="toast-title">Milestone atteint !</div>
-      <div class="toast-name">${milestone.n}</div>
-      <div class="toast-tagline">${milestone.t}</div>
+      <div class="toast-name">${escapeHtml(milestone.n)}</div>
+      <div class="toast-tagline">${escapeHtml(milestone.t)}</div>
     </div>
-    <button class="toast-close" aria-label="Fermer" onclick="this.closest('.milestone-toast').dispatchEvent(new Event('dismiss'))">✕</button>
+    <button class="toast-close" aria-label="Fermer">✕</button>
     <div class="toast-progress" aria-hidden="true"></div>
   `;
 
+  // Use addEventListener instead of inline onclick
+  toast.querySelector('.toast-close').addEventListener('click', () => {
+    toast.dispatchEvent(new Event('dismiss'));
+  });
+
   const dismiss = () => {
     toast.classList.add('toast-exit');
-    setTimeout(() => toast.remove(), 420);
+    setTimeout(() => toast.remove(), TOAST_EXIT_MS);
   };
 
   toast.addEventListener('dismiss', dismiss);
 
-  // Limit to 3 stacked toasts max — remove oldest if needed
-  while (container.children.length >= 3) {
+  // Limit stacked toasts — remove oldest if needed
+  while (container.children.length >= TOAST_MAX_STACKED) {
     container.firstElementChild.remove();
   }
 
   container.appendChild(toast);
-  setTimeout(dismiss, DURATION_MS);
+  setTimeout(dismiss, TOAST_DURATION_MS);
 }
 
 function celebrateMilestone(item, cardEl) {
@@ -355,7 +390,7 @@ function celebrateMilestone(item, cardEl) {
     showMilestoneFlash();
 
     // 4. Confetti burst (staggered slightly after flash)
-    setTimeout(confettiBurst, 200);
+    setTimeout(confettiBurst, CELEBRATION_DELAY_MS);
   }
 
   // 5. Toast notification — always shown, CSS handles reduced-motion appearance
@@ -428,6 +463,12 @@ function prefillMilestone(isoDate) {
 
 // ── MAIN CALCULATE ────────────────────────────────────────────────────────────
 function calculate() {
+  try { _calculate(); } catch (err) {
+    console.error('[MilestoneMe] Erreur dans calculate():', err);
+  }
+}
+
+function _calculate() {
   let val = document.getElementById('bd').value;
   // Fallback : reconstruire depuis les segments visibles si #bd est vide
   if (!val) {
@@ -485,9 +526,10 @@ function calculate() {
   }
 
   // ── Age ──
-  document.getElementById('age-val').textContent = fmtAge(ageMs);
+  const ageValEl = document.getElementById('age-val');
+  if (ageValEl) ageValEl.textContent = fmtAge(ageMs);
   const ageLbl = document.querySelector('.age-box .lbl');
-  if (ageLbl) ageLbl.textContent = name ? `Bonjour ${name} ! Tu as vécu` : 'Tu as vécu';
+  if (ageLbl) ageLbl.textContent = name ? `Bonjour ${name} ! Tu as vécu` : 'Tu as vécu'; // textContent is safe
 
   // ── Geo origin tag in age-box ──
   const ageBox = document.querySelector('.age-box');
@@ -496,13 +538,14 @@ function calculate() {
   if (detectedCity && ageBox) {
     const tag = document.createElement('div');
     tag.className = 'geo-origin-tag';
-    tag.innerHTML = `${detectedCity.flag} ${detectedCity.name}, ${detectedCity.country}`;
+    tag.textContent = `${detectedCity.flag} ${detectedCity.name}, ${detectedCity.country}`;
     tag.style.cssText = 'font-size:0.82rem;color:var(--muted);margin-top:10px;font-weight:600;letter-spacing:0.02em;';
     ageBox.appendChild(tag);
   }
 
   // ── Stats ──
   const statsRow = document.getElementById('stats-row');
+  if (!statsRow) return;
   const totalS = Math.floor(ageMs/1e3);
   statsRow.innerHTML = `
     <div class="stat-pill s-pill"><strong id="live-s">${fmt(totalS)}</strong><span>⚡ secondes</span></div>
@@ -647,15 +690,18 @@ function calculate() {
   `;
 
   // ── ICS all ──
-  document.getElementById('ics-all-btn').textContent =
-    `📅 Ajouter mes ${Math.min(future.length, 10)} prochains milestones au calendrier`;
-  document.getElementById('ics-all-btn').onclick = () =>
-    downloadICS(future.slice(0,10).map(x => ({ m: x.m, date: x.date })));
+  const icsBtn = document.getElementById('ics-all-btn');
+  if (icsBtn) {
+    icsBtn.textContent =
+      `📅 Ajouter mes ${Math.min(future.length, 10)} prochains milestones au calendrier`;
+    icsBtn.onclick = () =>
+      downloadICS(future.slice(0,10).map(x => ({ m: x.m, date: x.date })));
+  }
 
   // ── Future cards (collapsed by default) ──
-  const FUTURE_PREVIEW = 3;
+  const FUTURE_PREVIEW = FUTURE_PREVIEW_COUNT;
   const futureTitle = name
-    ? `⏳ Les prochains milestones de ${name} (${future.length})`
+    ? `⏳ Les prochains milestones de ${escapeHtml(name)} (${future.length})`
     : `⏳ Prochains milestones (${future.length})`;
   const fSec = document.getElementById('future-section');
   if (future.length) {
@@ -678,7 +724,7 @@ function calculate() {
   }
 
   // ── Past cards (collapsed by default) ──
-  const PAST_PREVIEW = 3;
+  const PAST_PREVIEW = PAST_PREVIEW_COUNT;
   const pSec = document.getElementById('past-section');
   if (past.length) {
     const pastCards = past.map((x, i) => renderPastCard(x, i));
@@ -874,7 +920,7 @@ function calculate() {
           <input type="time" id="friend-bt">
         </div>
         <div class="friend-form-field friend-form-field--name">
-          <label for="friend-name">Prenom <span class="field-optional">(optionnel)</span></label>
+          <label for="friend-name">Prénom <span class="field-optional">(optionnel)</span></label>
           <input type="text" id="friend-name" placeholder="Alex, Sarah…" maxlength="30" autocomplete="off" spellcheck="false">
         </div>
         <button class="btn-compare" onclick="compareFriend(false)">
@@ -1026,9 +1072,9 @@ function compareFriend(showAll) {
 
   const friendFuture = _computeFutureMilestones(friendBirth);
 
-  // Fenêtres de comparaison (en ms)
-  const WINDOW_CLOSE = 30 * 864e5;   // 30 jours
-  const WINDOW_SYNC  =  7 * 864e5;   //  7 jours => "simultané"
+  // Fenêtres de comparaison (en ms) — defined as top-level constants
+  const WINDOW_CLOSE = FRIEND_WINDOW_CLOSE_MS;
+  const WINDOW_SYNC  = FRIEND_WINDOW_SYNC_MS;
 
   // Construire les paires de milestones proches
   // On parcourt les futures de l'utilisateur et on cherche des correspondances
@@ -1548,9 +1594,45 @@ function initSegmentedDate() {
   };
 }
 
+// ── EVENT DELEGATION — replaces inline onclick handlers ──────────────────────
+// Handles data-action="share", data-action="download-ics", data-action="share-past"
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+
+  const action = btn.dataset.action;
+
+  if (action === 'share') {
+    const idx = parseInt(btn.dataset.idx, 10);
+    if (!isNaN(idx)) shareIdx(idx);
+  }
+
+  else if (action === 'download-ics') {
+    const idx = parseInt(btn.dataset.idx, 10);
+    if (!isNaN(idx) && futureItems[idx]) {
+      downloadICS([{ m: futureItems[idx].m, date: futureItems[idx].date }]);
+    }
+  }
+
+  else if (action === 'share-past') {
+    try {
+      const milestoneJson = decodeURIComponent(escape(atob(btn.dataset.milestone)));
+      const dateStr = btn.dataset.date;
+      sharePast(milestoneJson, dateStr);
+    } catch (err) {
+      console.warn('Failed to parse past milestone data:', err);
+    }
+  }
+
+  else if (action === 'expand-timeline') {
+    if (typeof expandTimeline === 'function') expandTimeline();
+  }
+});
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 // Set max date to today
-document.getElementById('bd').max = new Date().toISOString().split('T')[0];
+const bdEl = document.getElementById('bd');
+if (bdEl) bdEl.max = new Date().toISOString().split('T')[0];
 
 // Allow Enter key on friend date field (event delegation — l'input est injecté dynamiquement par calculate())
 document.addEventListener('keydown', e => {

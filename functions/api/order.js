@@ -24,7 +24,22 @@ export async function onRequestPost({ request, env }) {
 
   // ── MODE PRODUCTION ───────────────────────────────────────────────────────
   try {
-    const { customerName, milestone, milestoneDate, imageBase64, address } = await request.json();
+    const { customerName, milestone, milestoneDate, imageBase64, address, session_id } = await request.json();
+
+    // Vérification paiement Stripe avant de créer la commande Printify
+    if (env.STRIPE_SECRET_KEY && session_id) {
+      const stripeRes = await fetch(`https://api.stripe.com/v1/checkout/sessions/${session_id}`, {
+        headers: { 'Authorization': `Basic ${btoa(env.STRIPE_SECRET_KEY + ':')}` },
+      });
+      const session = await stripeRes.json();
+      if (session.payment_status !== 'paid') {
+        return json({ error: 'Paiement non confirmé' }, 402);
+      }
+    }
+
+    if (!imageBase64) {
+      return json({ error: 'Image manquante' }, 400);
+    }
 
     // 1. Upload image sur Printify
     const upload = await printify(env, 'POST', '/uploads/images.json', {
@@ -37,11 +52,14 @@ export async function onRequestPost({ request, env }) {
       external_id: `ms-${Date.now()}`,
       line_items: [{
         product_id: env.MUG_PRODUCT_ID,
-        variant_id: env.MUG_VARIANT_ID,
+        variant_id: parseInt(env.MUG_VARIANT_ID),
         quantity: 1,
-        print_areas: { front: [{ src: upload.id, scale: 1, x: 0.5, y: 0.5, angle: 0 }] }
+        print_areas: {
+          front: [{ src: upload.preview_url, scale: 1, x: 0.5, y: 0.5, angle: 0 }]
+        }
       }],
       shipping_method: 1,
+      send_shipping_notification: true,
       address_to: address,
     });
 

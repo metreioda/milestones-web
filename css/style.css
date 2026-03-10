@@ -6867,3 +6867,79 @@ body.theme-seasons::after {
     animation: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   RESULT CHAPTERS — Chapitres thématiques résultats
+   ═══════════════════════════════════════════════════════════ */
+
+.result-chapter {
+  border-radius: 20px;
+  padding: 40px 24px;
+  margin: 16px 0;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-top: 2px solid var(--chapter-accent);
+  background: var(--chapter-bg);
+}
+
+/* Bannière de chapitre : ─── ⏱ TES MILESTONES ─── */
+.chapter-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.chapter-banner::before,
+.chapter-banner::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--chapter-accent);
+  opacity: 0.6;
+}
+.chapter-banner-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--chapter-accent-text);
+  opacity: 0.9;
+}
+
+/* Variables par chapitre */
+.chapter-milestones {
+  --chapter-bg: rgba(79, 70, 229, 0.08);
+  --chapter-accent: rgba(99, 102, 241, 0.35);
+  --chapter-accent-text: #818cf8;
+}
+.chapter-profil {
+  --chapter-bg: rgba(139, 92, 246, 0.08);
+  --chapter-accent: rgba(167, 139, 250, 0.35);
+  --chapter-accent-text: #a78bfa;
+}
+.chapter-univers {
+  --chapter-bg: rgba(30, 41, 59, 0.35);
+  --chapter-accent: rgba(148, 163, 184, 0.25);
+  --chapter-accent-text: #94a3b8;
+}
+.chapter-culture {
+  --chapter-bg: rgba(180, 120, 20, 0.08);
+  --chapter-accent: rgba(251, 191, 36, 0.35);
+  --chapter-accent-text: #fbbf24;
+}
+.chapter-partage {
+  --chapter-bg: rgba(51, 65, 85, 0.25);
+  --chapter-accent: rgba(100, 116, 139, 0.35);
+  --chapter-accent-text: #94a3b8;
+}
+
+/* Mobile : réduire padding */
+@media (max-width: 600px) {
+  .result-chapter {
+    padding: 28px 12px;
+    border-radius: 14px;
+    margin: 10px 0;
+  }
+}

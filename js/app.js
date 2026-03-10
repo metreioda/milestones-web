@@ -428,7 +428,17 @@ function prefillMilestone(isoDate) {
 
 // ── MAIN CALCULATE ────────────────────────────────────────────────────────────
 function calculate() {
-  const val = document.getElementById('bd').value;
+  let val = document.getElementById('bd').value;
+  // Fallback : reconstruire depuis les segments visibles si #bd est vide
+  if (!val) {
+    const d = (document.getElementById('seg-day')?.value || '').trim();
+    const m = (document.getElementById('seg-month')?.value || '').trim();
+    const y = (document.getElementById('seg-year')?.value || '').trim();
+    if (d && m && y && y.length === 4) {
+      val = `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+      document.getElementById('bd').value = val;
+    }
+  }
   if (!val) { alert('Entre ta date de naissance 🎂'); return; }
 
   const timeVal = document.getElementById('bt').value || '12:00';
@@ -1418,8 +1428,18 @@ function createSegment(inputEl, opts) {
   // Focus/clic → sélectionner tout le contenu
   inputEl.addEventListener('focus', () => inputEl.select());
   inputEl.addEventListener('click', () => inputEl.select());
-  // Bloquer toute saisie directe (paste, composition, etc.) — on gère tout via keydown
-  inputEl.addEventListener('beforeinput', e => e.preventDefault());
+  // Fallback mobile : certains claviers virtuels passent par `input` pas `keydown`
+  inputEl.addEventListener('input', () => {
+    const digits = inputEl.value.replace(/\D/g, '');
+    if (!digits) { inputEl.value = ''; return; }
+    // Rejouer chaque chiffre via la même logique que keydown
+    inputEl.value = '';
+    buffer = '';
+    for (const ch of digits) {
+      const fakeKey = { key: ch, preventDefault: () => {}, metaKey: false, ctrlKey: false };
+      handleKey(fakeKey);
+    }
+  });
 
   return { el: inputEl, display, opts, reset: () => { buffer = ''; inputEl.value = ''; } };
 }

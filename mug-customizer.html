@@ -995,6 +995,7 @@
 
     /* ─── Init ──────────────────────────────────────────────────────────── */
     document.addEventListener('DOMContentLoaded', function () {
+      // Init canvas TOUJOURS en premier
       MugPreview.init('mug-canvas', { name: 'Ton prenom', milestone: '10 000 jours', date: 'le 15 mars 2027' });
 
       var params = new URLSearchParams(location.search);
@@ -1079,15 +1080,19 @@
       try { localStorage.setItem('mug_order_' + orderId, JSON.stringify(orderData)); } catch (e) {}
 
       try {
+        var ctrl = new AbortController();
+        var ctid = setTimeout(function () { ctrl.abort(); }, 12000);
         var res = await fetch('/api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: ctrl.signal,
           body: JSON.stringify({
             customerName: orderData.customerName,
             milestone:    orderData.milestone,
             orderId:      orderId,
           }),
         });
+        clearTimeout(ctid);
         var data = await res.json();
 
         if (data.mock) {

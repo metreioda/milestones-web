@@ -1018,12 +1018,20 @@
 
       var imageBase64 = MugPreview.toBase64('mug-canvas');
 
+      // Timeout 40s pour l'upload image Printify (peut être lent)
+      var controller = new AbortController();
+      var timeoutId  = setTimeout(function () { controller.abort(); }, 40000);
+
+      // Messages progressifs pour rassurer l'utilisateur
+      var msgTimer = setTimeout(function () {
+        label.textContent = 'Upload en cours\u2026 (peut prendre 15\u202fs)';
+      }, 4000);
+
       try {
-        // Appel au Worker Cloudflare (mode test avec ?mock=true)
-        // En production : retirer le parametre ?mock=true
         var res = await fetch('/api/order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify({
             customerName:  name,
             milestone:     document.getElementById('cust-milestone').value,
@@ -1033,18 +1041,38 @@
           }),
         });
 
-        // On affiche le succes quelle que soit la reponse (mode mock)
+        clearTimeout(timeoutId);
+        clearTimeout(msgTimer);
         var result = await res.json();
-        _showSuccess();
+        console.log('[order]', result);
+        _showSuccess(result);
 
       } catch (err) {
-        // Worker non deploye ou reseau indisponible : simulation locale
-        await new Promise(function (resolve) { setTimeout(resolve, 1200); });
-        _showSuccess();
+        clearTimeout(timeoutId);
+        clearTimeout(msgTimer);
+        console.warn('[order] fallback:', err.message);
+        _showSuccess(null);
       }
     }
 
-    function _showSuccess() {
+    function _showSuccess(result) {
+      var isMock = !result || result.mock || result.error;
+      var tag = document.querySelector('.success-mock-tag');
+      if (tag) {
+        if (result && result.error) {
+          tag.textContent = 'Erreur API : ' + result.error;
+          tag.style.background = 'rgba(244,63,94,0.10)';
+          tag.style.borderColor = 'rgba(244,63,94,0.25)';
+          tag.style.color = 'var(--rose)';
+        } else if (result && !result.mock) {
+          tag.textContent = 'Commande Printify #' + result.id;
+          tag.style.background = 'var(--emerald-dim)';
+          tag.style.borderColor = 'rgba(16,185,129,0.30)';
+          tag.style.color = 'var(--emerald)';
+        } else {
+          tag.textContent = 'MODE TEST — aucune commande reelle creee';
+        }
+      }
       document.getElementById('order-form').hidden    = true;
       document.getElementById('order-success').hidden = false;
     }

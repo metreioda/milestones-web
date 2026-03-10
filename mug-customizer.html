@@ -825,29 +825,20 @@
         <div id="order-form" class="form-card" role="form" aria-label="Formulaire de personnalisation du mug">
           <h2 class="form-section-title">Personnalise ton mug</h2>
 
-          <!-- Prenom -->
+          <!-- Prenom sur le mug -->
           <div class="field-group">
-            <label class="field-label" for="cust-name">Ton prenom</label>
-            <input
-              type="text"
-              id="cust-name"
-              class="field-input"
-              placeholder="ex&nbsp;: Sophie"
-              maxlength="24"
-              autocomplete="given-name"
-              oninput="updatePreview()"
-              aria-describedby="name-hint"
-            >
-            <p id="name-hint" class="preview-hint" style="text-align:left; margin-top:6px;">
-              Apparait en grand sur le mug — 24 caracteres max.
-            </p>
+            <label class="field-label" for="cust-name">Prenom sur le mug</label>
+            <input type="text" id="cust-name" class="field-input"
+              placeholder="ex&nbsp;: Sophie" maxlength="24"
+              autocomplete="given-name" oninput="updatePreview()">
+            <p class="preview-hint" style="text-align:left; margin-top:6px;">Apparait en grand sur le mug — 24 car. max.</p>
           </div>
 
           <!-- Milestone -->
           <div class="field-group">
             <label class="field-label" for="cust-milestone">Ton milestone</label>
             <div class="field-select-wrap">
-              <select id="cust-milestone" class="field-select" onchange="updatePreview()" aria-label="Choix du milestone">
+              <select id="cust-milestone" class="field-select" onchange="updatePreview()">
                 <option value="10 000 jours">10 000 jours</option>
                 <option value="1 milliard de secondes">1 milliard de secondes</option>
                 <option value="1 000 semaines">1 000 semaines</option>
@@ -860,22 +851,49 @@
 
           <!-- Date -->
           <div class="field-group">
-            <label class="field-label" for="cust-date">
-              Date du milestone <span>(optionnel)</span>
-            </label>
-            <input
-              type="text"
-              id="cust-date"
-              class="field-input"
-              placeholder="ex&nbsp;: le 15 mars 2027"
-              maxlength="40"
-              oninput="updatePreview()"
-              aria-describedby="date-hint"
-            >
-            <p id="date-hint" class="preview-hint" style="text-align:left; margin-top:6px;">
+            <label class="field-label" for="cust-date">Date du milestone <span>(optionnel)</span></label>
+            <input type="text" id="cust-date" class="field-input"
+              placeholder="ex&nbsp;: le 15 mars 2027" maxlength="40" oninput="updatePreview()">
+            <p class="preview-hint" style="text-align:left; margin-top:6px;">
               Pas encore calcule ?
-              <a href="/" style="color: var(--indigo); font-weight:600;">Calcule ta date sur MilestoneMe</a>
+              <a href="/" style="color:var(--indigo);font-weight:600;">Calcule ta date sur MilestoneMe</a>
             </p>
+          </div>
+
+          <hr class="form-divider" aria-hidden="true">
+          <p class="form-section-title" style="font-size:0.9rem;margin-bottom:16px;">Adresse de livraison</p>
+
+          <!-- Nom / Prenom livraison -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="field-group" style="margin-bottom:0">
+              <label class="field-label" for="addr-first">Prenom</label>
+              <input type="text" id="addr-first" class="field-input" placeholder="Sophie" autocomplete="given-name">
+            </div>
+            <div class="field-group" style="margin-bottom:0">
+              <label class="field-label" for="addr-last">Nom</label>
+              <input type="text" id="addr-last" class="field-input" placeholder="Dupont" autocomplete="family-name">
+            </div>
+          </div>
+
+          <div class="field-group" style="margin-top:12px;">
+            <label class="field-label" for="addr-email">Email</label>
+            <input type="email" id="addr-email" class="field-input" placeholder="sophie@email.com" autocomplete="email">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="addr-street">Adresse</label>
+            <input type="text" id="addr-street" class="field-input" placeholder="12 rue des Lilas" autocomplete="street-address">
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="field-group" style="margin-bottom:0">
+              <label class="field-label" for="addr-zip">Code postal</label>
+              <input type="text" id="addr-zip" class="field-input" placeholder="75001" autocomplete="postal-code" maxlength="10">
+            </div>
+            <div class="field-group" style="margin-bottom:0">
+              <label class="field-label" for="addr-city">Ville</label>
+              <input type="text" id="addr-city" class="field-input" placeholder="Paris" autocomplete="address-level2">
+            </div>
           </div>
 
           <hr class="form-divider" aria-hidden="true">
@@ -893,18 +911,17 @@
             </div>
           </div>
 
-          <button
-            id="order-btn"
-            class="btn-order"
-            onclick="submitOrder()"
-            aria-label="Commander mon mug personnalise"
-          >
-            <span id="order-btn-label">Commander mon mug</span>
+          <button id="order-btn" class="btn-order" onclick="submitOrder()">
+            <span id="order-btn-label">Payer &amp; Commander — 19,90&nbsp;&euro;</span>
             <svg id="order-btn-arrow" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
             </svg>
             <span id="order-btn-spinner" class="btn-spinner" hidden aria-hidden="true"></span>
           </button>
+
+          <p style="text-align:center;font-size:0.75rem;color:var(--muted);margin-top:12px;">
+            Paiement securise via Stripe — tu seras redirige vers la page de paiement
+          </p>
         </div>
 
         <!-- Etat succès (caché par défaut) -->
@@ -926,6 +943,11 @@
             </svg>
             Commander un autre mug
           </button>
+        </div>
+
+        <!-- Message paiement annule -->
+        <div id="cancelled-msg" hidden style="margin-bottom:16px;padding:14px 18px;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.25);border-radius:12px;font-size:0.85rem;color:var(--amber);">
+          Paiement annule — ton panier est toujours la, tu peux recommencer quand tu veux.
         </div>
 
         <!-- CTA : calculer d'abord -->
@@ -966,22 +988,33 @@
     /* ─── Theme toggle ──────────────────────────────────────────────────── */
     function toggleTheme() {
       var root = document.documentElement;
-      var current = root.getAttribute('data-theme');
-      var next = current === 'light' ? 'dark' : 'light';
+      var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
       root.setAttribute('data-theme', next);
       try { localStorage.setItem('theme', next); } catch (e) {}
     }
 
-    /* ─── Init preview ──────────────────────────────────────────────────── */
+    /* ─── Init ──────────────────────────────────────────────────────────── */
     document.addEventListener('DOMContentLoaded', function () {
-      MugPreview.init('mug-canvas', {
-        name: 'Ton prenom',
-        milestone: '10 000 jours',
-        date: 'le 15 mars 2027',
-      });
+      MugPreview.init('mug-canvas', { name: 'Ton prenom', milestone: '10 000 jours', date: 'le 15 mars 2027' });
+
+      var params = new URLSearchParams(location.search);
+
+      // Retour apres paiement Stripe OK
+      if (params.get('success') === '1') {
+        var orderId = params.get('order_id');
+        _handlePaymentSuccess(orderId);
+        return;
+      }
+
+      // Paiement annule
+      if (params.get('cancelled') === '1') {
+        history.replaceState({}, '', '/mug-customizer');
+        var msg = document.getElementById('cancelled-msg');
+        if (msg) { msg.hidden = false; }
+      }
     });
 
-    /* ─── Mise a jour live ──────────────────────────────────────────────── */
+    /* ─── Preview live ──────────────────────────────────────────────────── */
     function updatePreview() {
       MugPreview.update('mug-canvas', {
         name:      document.getElementById('cust-name').value      || 'Ton prenom',
@@ -990,118 +1023,168 @@
       });
     }
 
-    /* ─── Soumission de commande (mock + graceful fallback) ─────────────── */
+    /* ─── Validation champ requis ───────────────────────────────────────── */
+    function _require(id, msg) {
+      var el = document.getElementById(id);
+      if (!el.value.trim()) {
+        el.focus();
+        el.style.borderColor = 'var(--rose)';
+        el.style.boxShadow   = '0 0 0 3px rgba(244,63,94,0.18)';
+        setTimeout(function () { el.style.borderColor = ''; el.style.boxShadow = ''; }, 2200);
+        return false;
+      }
+      return true;
+    }
+
+    /* ─── Soumission : sauvegarde + redirect Stripe ─────────────────────── */
     async function submitOrder() {
       var btn     = document.getElementById('order-btn');
       var label   = document.getElementById('order-btn-label');
       var arrow   = document.getElementById('order-btn-arrow');
       var spinner = document.getElementById('order-btn-spinner');
 
-      // Validation minimale
-      var name = document.getElementById('cust-name').value.trim();
-      if (!name) {
-        document.getElementById('cust-name').focus();
-        document.getElementById('cust-name').style.borderColor = 'var(--rose)';
-        document.getElementById('cust-name').style.boxShadow  = '0 0 0 3px rgba(244,63,94,0.18)';
-        setTimeout(function () {
-          document.getElementById('cust-name').style.borderColor = '';
-          document.getElementById('cust-name').style.boxShadow  = '';
-        }, 2200);
-        return;
-      }
+      // Validation
+      if (!_require('cust-name'))   return;
+      if (!_require('addr-first'))  return;
+      if (!_require('addr-last'))   return;
+      if (!_require('addr-email'))  return;
+      if (!_require('addr-street')) return;
+      if (!_require('addr-zip'))    return;
+      if (!_require('addr-city'))   return;
 
-      // Etat chargement
-      btn.disabled = true;
-      label.textContent = 'Envoi en cours\u2026';
+      btn.disabled   = true;
+      label.textContent = 'Redirection vers le paiement\u2026';
       arrow.hidden   = true;
       spinner.hidden = false;
 
-      var imageBase64 = MugPreview.toBase64('mug-canvas');
+      // Genere un ID unique pour cette commande
+      var orderId = 'ms-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
 
-      // Timeout 40s pour l'upload image Printify (peut être lent)
+      // Sauvegarde les donnees en localStorage (recup apres paiement)
+      var orderData = {
+        customerName:  document.getElementById('cust-name').value.trim(),
+        milestone:     document.getElementById('cust-milestone').value,
+        milestoneDate: document.getElementById('cust-date').value,
+        imageBase64:   MugPreview.toBase64('mug-canvas'),
+        address: {
+          first_name: document.getElementById('addr-first').value.trim(),
+          last_name:  document.getElementById('addr-last').value.trim(),
+          email:      document.getElementById('addr-email').value.trim(),
+          address1:   document.getElementById('addr-street').value.trim(),
+          zip:        document.getElementById('addr-zip').value.trim(),
+          city:       document.getElementById('addr-city').value.trim(),
+          country:    'FR',
+        },
+      };
+      try { localStorage.setItem('mug_order_' + orderId, JSON.stringify(orderData)); } catch (e) {}
+
+      try {
+        var res = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerName: orderData.customerName,
+            milestone:    orderData.milestone,
+            orderId:      orderId,
+          }),
+        });
+        var data = await res.json();
+
+        if (data.mock) {
+          // Mode test (pas de cle Stripe) : simuler succes
+          await new Promise(function (r) { setTimeout(r, 800); });
+          _handlePaymentSuccess(orderId);
+          return;
+        }
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error(data.error || 'Checkout error');
+        }
+
+      } catch (err) {
+        console.error('[checkout]', err);
+        btn.disabled   = false;
+        label.textContent = 'Payer & Commander — 19,90\u202f\u20ac';
+        arrow.hidden   = false;
+        spinner.hidden = true;
+        alert('Erreur : ' + err.message);
+      }
+    }
+
+    /* ─── Apres retour Stripe success ────────────────────────────────────── */
+    async function _handlePaymentSuccess(orderId) {
+      document.getElementById('order-form').hidden    = true;
+      document.getElementById('order-success').hidden = false;
+      history.replaceState({}, '', '/mug-customizer');
+
+      // Recupere les donnees de la commande
+      var raw = null;
+      try { raw = localStorage.getItem('mug_order_' + orderId); } catch (e) {}
+      if (!raw) { _setSuccessTag(null, null); return; }
+
+      var orderData = JSON.parse(raw);
+      _setSuccessTag('loading', null);
+
+      // Cree la commande Printify
       var controller = new AbortController();
-      var timeoutId  = setTimeout(function () { controller.abort(); }, 40000);
-
-      // Messages progressifs pour rassurer l'utilisateur
-      var msgTimer = setTimeout(function () {
-        label.textContent = 'Upload en cours\u2026 (peut prendre 15\u202fs)';
-      }, 4000);
-
+      var tid = setTimeout(function () { controller.abort(); }, 40000);
       try {
         var res = await fetch('/api/order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           signal: controller.signal,
-          body: JSON.stringify({
-            customerName:  name,
-            milestone:     document.getElementById('cust-milestone').value,
-            milestoneDate: document.getElementById('cust-date').value,
-            imageBase64:   imageBase64,
-            address:       {}, // TODO : ajouter formulaire adresse complet
-          }),
+          body: JSON.stringify(orderData),
         });
-
-        clearTimeout(timeoutId);
-        clearTimeout(msgTimer);
+        clearTimeout(tid);
         var result = await res.json();
-        console.log('[order]', result);
-        _showSuccess(result);
-
+        console.log('[printify]', result);
+        _setSuccessTag(result, orderId);
+        try { localStorage.removeItem('mug_order_' + orderId); } catch (e) {}
       } catch (err) {
-        clearTimeout(timeoutId);
-        clearTimeout(msgTimer);
-        console.warn('[order] fallback:', err.message);
-        _showSuccess(null);
+        clearTimeout(tid);
+        console.warn('[printify fallback]', err.message);
+        _setSuccessTag(null, orderId);
       }
     }
 
-    function _showSuccess(result) {
-      var isMock = !result || result.mock || result.error;
+    function _setSuccessTag(result, orderId) {
       var tag = document.querySelector('.success-mock-tag');
-      if (tag) {
-        if (result && result.error) {
-          tag.textContent = 'Erreur API : ' + result.error;
-          tag.style.background = 'rgba(244,63,94,0.10)';
-          tag.style.borderColor = 'rgba(244,63,94,0.25)';
-          tag.style.color = 'var(--rose)';
-        } else if (result && !result.mock) {
-          tag.textContent = 'Commande Printify #' + result.id;
-          tag.style.background = 'var(--emerald-dim)';
-          tag.style.borderColor = 'rgba(16,185,129,0.30)';
-          tag.style.color = 'var(--emerald)';
-        } else {
-          tag.textContent = 'MODE TEST — aucune commande reelle creee';
-        }
+      if (!tag) return;
+      if (result === 'loading') {
+        tag.textContent = 'Creation de la commande en cours\u2026';
+      } else if (result && result.id && !result.mock) {
+        tag.textContent = 'Commande Printify #' + result.id;
+        tag.style.background   = 'var(--emerald-dim)';
+        tag.style.borderColor  = 'rgba(16,185,129,0.30)';
+        tag.style.color        = 'var(--emerald)';
+      } else if (result && result.error) {
+        tag.textContent = 'Erreur : ' + result.error;
+        tag.style.background  = 'rgba(244,63,94,0.10)';
+        tag.style.borderColor = 'rgba(244,63,94,0.25)';
+        tag.style.color       = 'var(--rose)';
+      } else if (result && result.mock) {
+        tag.textContent = 'MODE TEST — paiement simule, aucune commande reelle';
+      } else {
+        tag.textContent = orderId ? 'Ref. ' + orderId : 'Commande enregistree';
       }
-      document.getElementById('order-form').hidden    = true;
-      document.getElementById('order-success').hidden = false;
     }
 
     /* ─── Reset formulaire ──────────────────────────────────────────────── */
     function resetForm() {
-      // Remet le formulaire a zero
-      document.getElementById('cust-name').value = '';
-      document.getElementById('cust-date').value = '';
+      ['cust-name','cust-date','addr-first','addr-last','addr-email','addr-street','addr-zip','addr-city']
+        .forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ''; });
       document.getElementById('cust-milestone').selectedIndex = 0;
-
-      // Remet l'etat du bouton
-      var btn     = document.getElementById('order-btn');
-      var label   = document.getElementById('order-btn-label');
-      var arrow   = document.getElementById('order-btn-arrow');
-      var spinner = document.getElementById('order-btn-spinner');
-      btn.disabled   = false;
-      label.textContent = 'Commander mon mug';
-      arrow.hidden   = false;
-      spinner.hidden = true;
-
-      // Bascule l'affichage
+      var btn = document.getElementById('order-btn');
+      var label = document.getElementById('order-btn-label');
+      btn.disabled = false;
+      label.textContent = 'Payer & Commander — 19,90\u202f\u20ac';
+      document.getElementById('order-btn-arrow').hidden   = false;
+      document.getElementById('order-btn-spinner').hidden = true;
       document.getElementById('order-success').hidden = true;
       document.getElementById('order-form').hidden    = false;
-
-      // Met a jour le preview avec les valeurs par defaut
       updatePreview();
-
-      // Focus sur le premier champ
       document.getElementById('cust-name').focus();
     }
   </script>

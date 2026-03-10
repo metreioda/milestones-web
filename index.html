@@ -287,6 +287,12 @@
   <!-- RESULTS -->
   <div id="results">
 
+    <!-- ═══ CHAPITRE 1 : TES MILESTONES ═══ -->
+    <section class="result-chapter chapter-milestones">
+      <div class="chapter-banner">
+        <span class="chapter-banner-label">⏱ Tes milestones</span>
+      </div>
+
     <!-- 1. Age hero display -->
     <div class="age-box">
       <div class="lbl">Tu as vécu</div>
@@ -299,8 +305,14 @@
     <!-- 3. TOP 3 MILESTONES -->
     <div id="top-milestones-section" class="top-milestones-wrap"></div>
 
-    <!-- 4. Astro profile — remonté -->
-    <div id="astro-section"></div>
+    <!-- ═══ CHAPITRE 2 : TON PROFIL ═══ -->
+    <section class="result-chapter chapter-profil">
+      <div class="chapter-banner">
+        <span class="chapter-banner-label">✨ Ton profil</span>
+      </div>
+      <!-- 4. Astro profile — remonté -->
+      <div id="astro-section"></div>
+    </section><!-- /chapter-profil -->
 
     <!-- 5. ICS button + Timeline CTA -->
     <div class="ics-all-wrap">
@@ -368,43 +380,59 @@
     <!-- 9. Timeline chronologique (vue alternative) -->
     <div id="timeline-section" style="display:none"></div>
 
-    <!-- 8. Life stats & geo -->
-    <div id="lifestats-section"></div>
-    <div id="planet-section"></div>
+    </section><!-- /chapter-milestones -->
 
-    <!-- 9. Saisons -->
-    <div id="season-events-section"></div>
+    <!-- ═══ CHAPITRE 3 : TON UNIVERS ═══ -->
+    <section class="result-chapter chapter-univers">
+      <div class="chapter-banner">
+        <span class="chapter-banner-label">🌌 Ton univers</span>
+      </div>
+      <!-- Life stats & geo -->
+      <div id="lifestats-section"></div>
+      <div id="planet-section"></div>
+      <!-- Saisons -->
+      <div id="season-events-section"></div>
+      <!-- Calendriers -->
+      <div id="calendars-section"></div>
+    </section><!-- /chapter-univers -->
 
-    <!-- 10. Calendriers -->
-    <div id="calendars-section"></div>
+    <!-- ═══ CHAPITRE 4 : TA CULTURE ═══ -->
+    <section class="result-chapter chapter-culture">
+      <div class="chapter-banner">
+        <span class="chapter-banner-label">🎵 Ta culture</span>
+      </div>
+      <!-- Hit du jour de ta naissance -->
+      <div id="chart-hit-section" style="display:none">
+        <h2 class="section-head">Le hit du jour de ta naissance</h2>
+        <p class="section-sub" style="font-size:0.88rem;color:var(--muted);margin-top:-8px;margin-bottom:4px;">Ce titre était #1 le jour où tu es né·e</p>
+        <div id="chart-hit-content"></div>
+      </div>
+      <!-- Ils sont nés comme toi -->
+      <div id="born-like-you-section"></div>
+    </section><!-- /chapter-culture -->
 
-    <!-- 11. Hit du jour de ta naissance -->
-    <div id="chart-hit-section" style="display:none">
-      <h2 class="section-head">Le hit du jour de ta naissance</h2>
-      <p class="section-sub" style="font-size:0.88rem;color:var(--muted);margin-top:-8px;margin-bottom:4px;">Ce titre était #1 le jour où tu es né·e</p>
-      <div id="chart-hit-content"></div>
-    </div>
-
-    <!-- 12. Ils sont nés comme toi -->
-    <div id="born-like-you-section"></div>
-
-    <!-- 12. Comparaison avec un ami -->
-    <div id="friend-compare-section" class="friend-compare-section"></div>
-
-    <!-- 13. Bouton poster -->
-    <div id="poster-wrap" class="poster-wrap" style="display:none">
-      <button id="btn-poster" class="btn-poster" onclick="generatePoster()" type="button"
-              aria-label="Générer et télécharger mon poster de milestones en PNG">
-        <svg class="poster-btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <rect x="3" y="3" width="18" height="18" rx="2.5"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <polyline points="21 15 16 10 5 21"/>
-        </svg>
-        <span>Générer mon poster</span>
-      </button>
-      <p class="poster-hint">Télécharge une image PNG à partager</p>
-    </div>
+    <!-- ═══ CHAPITRE 5 : PARTAGE ═══ -->
+    <section class="result-chapter chapter-partage">
+      <div class="chapter-banner">
+        <span class="chapter-banner-label">👥 Partage</span>
+      </div>
+      <!-- Comparaison avec un ami -->
+      <div id="friend-compare-section" class="friend-compare-section"></div>
+      <!-- Bouton poster -->
+      <div id="poster-wrap" class="poster-wrap" style="display:none">
+        <button id="btn-poster" class="btn-poster" onclick="generatePoster()" type="button"
+                aria-label="Générer et télécharger mon poster de milestones en PNG">
+          <svg class="poster-btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2.5"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>Générer mon poster</span>
+        </button>
+        <p class="poster-hint">Télécharge une image PNG à partager</p>
+      </div>
+    </section><!-- /chapter-partage -->
 
   </div>
 

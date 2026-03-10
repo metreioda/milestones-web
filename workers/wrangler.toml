@@ -1,0 +1,16 @@
+name = "printify-worker"
+main = "printify-worker.js"
+compatibility_date = "2024-01-01"
+
+# Route : le worker répond sur printify-worker.statsme.org/*
+# À configurer dans Cloudflare Dashboard > Workers > Triggers > Custom Domains
+# (ou ajouter une route : printify-worker.statsme.org/*)
+
+[vars]
+# Ces variables sont en clair — utiliser les Secrets pour PRINTIFY_TOKEN
+# Dashboard > Workers > printify-worker > Settings > Variables & Secrets
+#
+# PRINTIFY_TOKEN   → Secret (ne pas mettre ici !)
+# SHOP_ID          → ex: "12345678"
+# MUG_PRODUCT_ID   → ex: "64b2f0e6b8aa6b1e2b3c4d5e"
+# MUG_VARIANT_ID   → ex: 1234 (entier)

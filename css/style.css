@@ -816,7 +816,7 @@ input[type="date"]:focus,
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .seg-input {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 4px;
   padding: 10px 14px;

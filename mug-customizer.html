@@ -982,7 +982,106 @@
   </footer>
 
   <!-- ── SCRIPTS ────────────────────────────────────────────────────────── -->
-  <script src="js/mug-preview.js"></script>
+  <script>
+  /* MugPreview — inlined pour eviter les problemes MIME Cloudflare */
+  (function () {
+  'use strict';
+  if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+      var rad = Array.isArray(r) ? r[0] : (typeof r === 'number' ? r : 0);
+      this.beginPath();
+      this.moveTo(x + rad, y);
+      this.arcTo(x + w, y,     x + w, y + h, rad);
+      this.arcTo(x + w, y + h, x,     y + h, rad);
+      this.arcTo(x,     y + h, x,     y,     rad);
+      this.arcTo(x,     y,     x + w, y,     rad);
+      this.closePath();
+    };
+  }
+  var P = {
+    bg:'#F4F1EC', mugBody:'#FFFFFF', mugStroke:'#DDE1EA',
+    accent:'#6366F1', textPrimary:'#1A1A2E', textDate:'#64748B',
+    handleFill:'#F8F8F8', handleStroke:'#DDE1EA',
+    decoLine:'#E8EAF0', dots:'#CBD5E1',
+  };
+  var W = 640, H = 320;
+  var MUG = { x:80, y:28, w:420, h:256, r:20, bandH:48 };
+  function drawMug(canvas, data) {
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = P.bg; ctx.fillRect(0, 0, W, H);
+    var vig = ctx.createRadialGradient(W/2,H/2,H*0.3,W/2,H/2,H*0.8);
+    vig.addColorStop(0,'rgba(0,0,0,0)'); vig.addColorStop(1,'rgba(0,0,0,0.06)');
+    ctx.fillStyle = vig; ctx.fillRect(0, 0, W, H);
+    ctx.beginPath();
+    ctx.ellipse(MUG.x+MUG.w/2, MUG.y+MUG.h+16, MUG.w/2-10, 16, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.09)'; ctx.fill();
+    ctx.roundRect(MUG.x, MUG.y, MUG.w, MUG.h, MUG.r);
+    ctx.fillStyle = P.mugBody; ctx.fill();
+    var ig = ctx.createLinearGradient(MUG.x,0,MUG.x+60,0);
+    ig.addColorStop(0,'rgba(0,0,0,0.04)'); ig.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.roundRect(MUG.x, MUG.y, MUG.w, MUG.h, MUG.r); ctx.fillStyle = ig; ctx.fill();
+    ctx.roundRect(MUG.x, MUG.y, MUG.w, MUG.h, MUG.r);
+    ctx.strokeStyle = P.mugStroke; ctx.lineWidth = 1.5; ctx.stroke();
+    var hcx = MUG.x+MUG.w+38, hcy = MUG.y+MUG.h/2;
+    ctx.beginPath(); ctx.ellipse(hcx,hcy,42,60,0,-Math.PI*0.62,Math.PI*0.62);
+    ctx.strokeStyle = P.handleStroke; ctx.lineWidth = 30; ctx.lineCap = 'round'; ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(hcx,hcy,42,60,0,-Math.PI*0.62,Math.PI*0.62);
+    ctx.strokeStyle = P.handleFill; ctx.lineWidth = 18; ctx.stroke(); ctx.lineCap = 'butt';
+    ctx.save();
+    ctx.beginPath(); ctx.roundRect(MUG.x, MUG.y, MUG.w, MUG.h, MUG.r); ctx.clip();
+    var bg = ctx.createLinearGradient(MUG.x,0,MUG.x+MUG.w,0);
+    bg.addColorStop(0,'#4F46E5'); bg.addColorStop(0.5,'#6366F1'); bg.addColorStop(1,'#8B5CF6');
+    ctx.fillStyle = bg; ctx.fillRect(MUG.x, MUG.y, MUG.w, MUG.bandH);
+    var rf = ctx.createLinearGradient(0,MUG.y,0,MUG.y+MUG.bandH);
+    rf.addColorStop(0,'rgba(255,255,255,0.22)'); rf.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle = rf; ctx.fillRect(MUG.x, MUG.y, MUG.w, MUG.bandH);
+    ctx.restore();
+    var cx = MUG.x+MUG.w/2;
+    ctx.font = '600 13px "Space Grotesk",sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.92)'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('MilestoneMe', cx, MUG.y+MUG.bandH/2);
+    var lineY = MUG.y+MUG.bandH+22;
+    ctx.beginPath(); ctx.moveTo(MUG.x+36,lineY); ctx.lineTo(MUG.x+MUG.w-36,lineY);
+    ctx.strokeStyle = P.decoLine; ctx.lineWidth = 1; ctx.stroke();
+    var top = MUG.y+MUG.bandH+44;
+    var name = (data && data.name) ? data.name.trim() : 'Ton prénom';
+    ctx.font = 'bold 30px Georgia,serif'; ctx.fillStyle = P.textPrimary;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    var dn = name;
+    while (ctx.measureText(dn).width > MUG.w-60 && dn.length > 1) dn = dn.slice(0,-1);
+    if (dn !== name) dn += '…';
+    ctx.fillText(dn, cx, top);
+    var ms = (data && data.milestone) ? data.milestone : '10 000 jours';
+    ctx.font = '700 20px "Space Grotesk",sans-serif'; ctx.fillStyle = P.accent;
+    ctx.fillText(ms, cx, top+36);
+    var dt = (data && data.date) ? data.date.trim() : 'bientôt…';
+    ctx.font = '400 14px Inter,sans-serif'; ctx.fillStyle = P.textDate;
+    ctx.fillText(dt, cx, top+64);
+    ctx.font = '12px sans-serif'; ctx.fillStyle = P.dots;
+    ctx.fillText('· · ·', cx, top+88);
+    ctx.save();
+    ctx.beginPath(); ctx.roundRect(MUG.x, MUG.y, MUG.w, MUG.h, MUG.r); ctx.clip();
+    var sh = ctx.createLinearGradient(MUG.x,MUG.y,MUG.x+MUG.w*0.35,MUG.y+MUG.h*0.6);
+    sh.addColorStop(0,'rgba(255,255,255,0.18)'); sh.addColorStop(0.4,'rgba(255,255,255,0.04)'); sh.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle = sh; ctx.fillRect(MUG.x, MUG.y+MUG.bandH, MUG.w*0.35, MUG.h-MUG.bandH);
+    ctx.restore();
+  }
+  window.MugPreview = {
+    init: function(id, data) {
+      var c = document.getElementById(id); if (!c) return;
+      c.width = W; c.height = H; drawMug(c, data || {});
+    },
+    update: function(id, data) {
+      var c = document.getElementById(id); if (c) drawMug(c, data);
+    },
+    toBase64: function(id) {
+      var c = document.getElementById(id); return c ? c.toDataURL('image/png') : null;
+    },
+  };
+  })();
+  </script>
 
   <script>
     /* ─── Theme toggle ──────────────────────────────────────────────────── */
